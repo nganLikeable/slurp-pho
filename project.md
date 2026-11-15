@@ -8,7 +8,7 @@ Húp Phở is a one-page browser game where you slurp a bowl of Vietnamese noodl
 
 - **Audience:** Vietnamese Gen Z on Threads, TikTok and Zalo. The interface is in Vietnamese.
 - **Model:** the same shape as Nón Lá, the L/N pronunciation game that went viral on Threads in November 2026. One mechanic, no install, an unusual input, and an in-joke everyone already shares.
-- **Why it could spread:** the player is the content. Someone slurping loudly at their phone in a café is the clip, and each run ends with a result line to copy and post.
+- **Why it could spread:** the player is the content. Someone slurping loudly at their phone in a café is the clip, and each run ends with a big stamped result card worth a screenshot.
 - **Where it is:** the [playable page](https://claude.ai/artifact/87YLrrBnLv7unVFp5B22At) and a single `index.html` file with the same code.
 
 ## How the game plays
@@ -18,7 +18,7 @@ A run is one bowl against the clock: the timer starts on your first slurp and st
 1. Pick a dish, or play the daily bowl.
 2. Slurp to drain the bowl. One long slurp drains faster than short sips.
 3. React to whatever floats up, and rest before your breath runs out.
-4. Empty the bowl to get a time, a title and a result line to share.
+4. Empty the bowl to get a time and a title on a result card.
 
 Every dish shares these mechanics, and each adds one rule of its own.
 
@@ -80,7 +80,7 @@ The page is styled as a street stall: a red and yellow hand-painted sign on a mi
 - **Vessels:** each dish can have its own container. Mì ly is a cup with a peeled lid, and lẩu mì is a pot with handles on a burner. The other 28 use the bowl.
 - **Menu book:** opens over the game from "Thực đơn 30 tô" (or "Cách chơi"). Five spreads: how to play, then Miền Bắc, Miền Trung, Miền Nam and Mì gói, each with its own colours, landmarks and animated scene. It is built mobile first: phones show one half page at a time, and from 641px wide the book opens to two pages and turns a whole spread. The "Húp Phở" sign sits at the top. Each card shows the bowl, its rule and your best time. A panel under the book shows the chosen dish with a big steaming bowl, its region and place ("Miền Trung · Món 3/7"), its rule and a "Húp tô này" button; it starts on the dish being played. The first tap on a card shows it there; the second, or the button, stamps "CHỌN!" and loads the dish. The game clock pauses while the book is open.
 - **Themes:** light and dark, following the viewer's setting.
-- **Language:** a VI | EN switch at the top of the game and in the menu. Vietnamese is the default; the choice is saved on the device. Every interface word, message, rule, title and the share line switch over in place, even mid-bowl. Dish names stay in Vietnamese, and English times use a decimal point instead of a comma.
+- **Language:** a VI | EN switch at the top of the game and in the menu. Vietnamese is the default; the choice is saved on the device. Every interface word, message, rule, title and result switch over in place, even mid-bowl. Dish names stay in Vietnamese, and English times use a decimal point instead of a comma.
 
 ## Retention
 
@@ -90,7 +90,7 @@ Expect a spike of a week or two, as with any joke game. The aim is a daily reaso
 
 - **Tô hôm nay:** one dish per day, rotating through all 30. Only the first attempt counts, and it tracks a day streak.
 - **Personal bests:** one per dish, shown on the menu cards.
-- **Result line:** time, dish and title, with a button to copy it.
+- **Result card:** slides up when the bowl is clean, with a stamped verdict ("SẠCH TÔ!", or "THẮNG!", "THUA!" or "HÒA!" in a 1v1), the time and title, and confetti and a chime on a win. "Đóng" closes it; after a race the main button reopens it. The old copy-result button was removed.
 
 **Planned, needs a backend**
 
@@ -111,7 +111,8 @@ Built as live matchmaking through a small Node.js server in `server/`, which you
 2. The server pairs the first two players waiting and picks one dish for both, plus a shared hazard seed. Both players get the same chilies, dough sticks and long noodles, in the same order and with the same gaps.
 3. Both press "Bắt đầu húp". The mic opens and measures the room. When both are ready, both screens count down 3-2-1 together.
 4. A row above your bowl shows the opponent's bowl draining live, about 10 updates a second, with their big moments ("Sặc!", "Hết hơi!").
-5. When both bowls are clean: "Bạn thắng!", "Thua rồi!" or "Hòa!", with both times. The share line names the opponent. Buttons: "Đấu lại" and "Tìm đối thủ mới".
+5. When you finish, the result card slides up. If your opponent is still eating it shows "XONG! CHỜ…" with their clock ticking. Then the verdict stamps in ("THẮNG!", "THUA!" or "HÒA!") above a you-vs-them score with the winner highlighted. Buttons: "Đấu lại", "Tìm đối thủ mới" and "Đóng".
+6. If your opponent leaves, a red banner drops in at the top with a warning beep, their row greys out with an "ĐÃ RỜI" tag, and the result card says you won because they left.
 
 **When nobody is online:** after 6 seconds alone you race a recorded run of an earlier real player on the same dish and seed, labelled "Lượt ghi". If that dish has no recordings yet, you race a labelled bot ("Máy") at 1.6 times the dish's par time. Every finished race is saved as a future recording; the server keeps the last 20 per dish.
 

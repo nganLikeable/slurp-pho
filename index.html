@@ -102,9 +102,49 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 .meter{flex:1;height:6px;background:var(--line);border-radius:3px;position:relative;overflow:hidden}
 .meter i{position:absolute;inset:0 auto 0 0;width:0;background:var(--ink)}
 .meter b{position:absolute;top:0;bottom:0;width:2px;background:var(--sign);left:50%}
-.result{background:var(--card);border:1.5px solid var(--ink);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
-.result h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0;color:var(--sign)}
+/* result: a card that slides up from the bottom, mobile first; centred and a little wider from 641px */
+.result{position:fixed;left:10px;right:10px;bottom:10px;z-index:15;max-width:460px;margin:0 auto;max-height:calc(100% - 20px);overflow-y:auto;
+  background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:18px 16px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+  box-shadow:0 -6px 0 var(--gold) inset,0 16px 40px #0007;animation:sheet .45s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes sheet{from{transform:translateY(120%)}}
+.result h2{font-family:var(--display);font-weight:400;font-size:18px;margin:0;color:var(--ink)}
 .result p{margin:0}
+.result .controls{width:100%;justify-content:center}
+.result .btn.main{flex:1 1 160px;font-size:16px}
+.rstamp{font:400 clamp(34px,11vw,52px)/1 var(--display);letter-spacing:1px;padding:8px 18px 6px;border:4px solid currentColor;border-radius:10px;color:var(--sign);
+  transform:rotate(-6deg);background:#FFFFFF;margin:4px 0 6px}
+.rstamp.thump{animation:stamp .5s cubic-bezier(.3,1.7,.5,1) both}
+@keyframes stamp{from{transform:rotate(-6deg) scale(2.6);opacity:0}}
+.rstamp.win{color:#B8860B;background:#FFF6D6}
+.rstamp.lose{color:#4B6B62;background:#EEF3F0}
+.rstamp.wait{color:var(--soft);font-size:clamp(26px,8vw,36px)}
+.vs{width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.vsx{font:400 14px var(--display);color:var(--soft)}
+.side{display:flex;flex-direction:column;gap:2px;padding:8px 6px;border-radius:12px;border:1.5px solid var(--line);min-width:0}
+.side.best{border-color:var(--gold);background:#F9BE1A33}
+.side.gone{opacity:.55}
+.side.gone .vsn{text-decoration:line-through}
+.vsn{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vst{font:400 24px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.rwarn{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--sign);text-align:left}
+.wicon{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--sign);color:#FFFFFF;font:400 14px/1 var(--display)}
+.result .bit{position:absolute;left:var(--x);top:var(--y);width:11px;height:5px;border-radius:3px;background:var(--c);pointer-events:none;animation:fly .9s cubic-bezier(.2,.7,.3,1) forwards}
+/* toast: drops in at the top for warnings such as an opponent leaving */
+.toast{position:fixed;top:10px;left:10px;right:10px;z-index:25;max-width:460px;margin:0 auto;display:flex;align-items:center;gap:10px;
+  background:var(--sign);color:#FFFFFF;border:2px solid #10312A;border-radius:14px;padding:10px 14px;box-shadow:0 10px 24px #0006;animation:toastin .4s cubic-bezier(.2,1.3,.4,1) both,nudge .5s .4s}
+.toast .wicon{background:#FFFFFF;color:var(--sign)}
+.toast b{display:block;font-size:15px}
+.toast span span{font-size:13px}
+@keyframes toastin{from{transform:translateY(-140%)}}
+@keyframes nudge{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+/* the opponent's row once they have left */
+.opp.gone .oname{text-decoration:line-through;color:var(--soft)}
+.opp.gone .olevel i{background:var(--soft)}
+.opp.gone .otag{background:var(--sign);color:#FFFFFF;padding:1px 6px;border-radius:999px}
+.opp.gone .ostat{color:var(--sign);font-weight:600}
+.duel.alert{border-color:var(--sign);box-shadow:0 0 0 3px #D7262B33}
+@media (min-width:641px){.result{bottom:20px;padding:22px 22px 16px}}
+@media (prefers-reduced-motion:reduce){.result,.rstamp.thump,.toast,.result .bit{animation:none}}
 .foot{font-size:12px;color:var(--soft)}
 .linkbtn{font:inherit;color:var(--ink);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
 /* menu book, mobile first: a phone sees one half page at a time; from 641px wide the book opens to two pages around a spine */
@@ -408,17 +448,27 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     <span id="mstate">đang nghe</span>
   </div>
 
-  <section class="result" id="result" hidden aria-live="polite">
+  <!-- the result slides up over the bottom of the screen: a stamped verdict, the race score, then what to do next -->
+  <section class="result" id="result" hidden role="dialog" aria-labelledby="rbig" aria-live="polite">
+    <div class="rstamp" id="rstamp"><span id="rbig">SẠCH TÔ!</span></div>
+    <p class="rwarn" id="rwarn" hidden><span class="wicon" aria-hidden="true">!</span><span id="rwarntext"></span></p>
+    <div class="vs" id="vs" hidden>
+      <div class="side" id="vsme"><span class="vsn" id="vsmen"></span><b class="vst" id="vsmet"></b></div>
+      <span class="vsx">VS</span>
+      <div class="side" id="vsop"><span class="vsn" id="vsopn"></span><b class="vst" id="vsopt"></b></div>
+    </div>
     <h2 id="rtitle">Thánh Húp</h2>
     <p id="rtext"></p>
-    <p class="dres" id="dres" hidden></p>
     <div class="controls">
-      <button class="btn" id="copy" type="button">Chép kết quả để khoe</button>
-      <button class="btn" id="rnext" type="button" data-en="Next bowl ›">Tô tiếp theo ›</button>
-      <button class="btn" id="drematch" type="button" hidden>Đấu lại</button>
+      <button class="btn main" id="rnext" type="button" data-en="Next bowl ›">Tô tiếp theo ›</button>
+      <button class="btn main" id="drematch" type="button" hidden>Đấu lại</button>
       <button class="btn" id="dnew" type="button" hidden data-en="New opponent">Tìm đối thủ mới</button>
+      <button class="btn" id="rclose" type="button" data-en="Close">Đóng</button>
     </div>
   </section>
+
+  <!-- warnings that must not be missed, such as an opponent leaving -->
+  <div class="toast" id="toast" hidden role="alert"><span class="wicon" aria-hidden="true">!</span><span><b id="toastt"></b><span id="toasts"></span></span></div>
 
   <p class="foot"><span data-en="Records are saved on this device only.">Kỷ lục chỉ lưu trên máy này.</span> <button class="linkbtn" id="howto" type="button" data-en="How to play">Cách chơi</button></p>
 </main>
@@ -590,7 +640,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   var level=1, breath=1, holdT=0, elapsed=0, started=false, done=false, last=null;
   var micOn=false, micSlurp=false, pendingStart=false, calibrating=false, lock=false, was=false;
   var ev=null, longN=null, longCount=0, nextEv=0, blockUntil=0, blockKind='', blockText='';
-  var treats=0, pours=0, bowls=1, flashText='', flashHot=false, flashUntil=0, lastText='';
+  var treats=0, pours=0, bowls=1, flashText='', flashHot=false, flashUntil=0;
 
   function fmt(s){return lang==='en'?s.toFixed(2):s.toFixed(2).replace('.',',');}
   /* hazard randomness: Math.random normally; in a 1v1 a generator seeded by the server, so both players
@@ -1200,7 +1250,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     var NICK=['Ớt Hiểm','Quẩy Giòn','Hành Phi','Chanh Leo','Rau Thơm','Sa Tế','Mắm Tôm','Nước Dùng','Bánh Phở','Tỏi Phi','Giá Sống','Bò Tái','Chả Lụa','Hến Xào','Bún Tươi','Trứng Lòng Đào'];
     var EVT={choke:['Sặc!','Choked!'],gasp:['Hết hơi!','Out of air!'],scold:['Bị mẹ mắng!','Mom caught them!']};
     var ws=null,state='off',kind='',opp=null,seed=0,dishI=0,run=null,botTime=0,res=null,oppDone=null,oppLeft=false,oppReady=false,rematchAsked=false;
-    var samples=[],lastSample=-1,lastSend=0,cdTimer=null,connTimer=null,dm=['',''];
+    var samples=[],lastSample=-1,lastSend=0,cdTimer=null,connTimer=null,dm=['',''],myT=0;
     function newNick(){return NICK[Math.floor(Math.random()*NICK.length)]+' '+(1+Math.floor(Math.random()*99));}
     function nick(){if(!store.nick){store.nick=newNick();save();}return store.nick;}
     function url(){
@@ -1230,7 +1280,8 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
       sock.onclose=function(){
         if(ws!==sock)return;ws=null;
         if(state==='connecting'){fail();return;}
-        if(kind==='live'&&state!=='off'&&state!=='finished'){oppLeft=true;paint();M('Mất kết nối với máy chủ. Bạn vẫn húp tiếp được.','Lost connection to the server. You can still finish your bowl.');}
+        if(kind==='live'&&state!=='off'&&state!=='finished'){oppLeft=true;paint();M('Mất kết nối với máy chủ. Bạn vẫn húp tiếp được.','Lost connection to the server. You can still finish your bowl.');
+          $('duel').classList.add('alert');toast(tx('Mất kết nối máy chủ','Lost connection to the server'),tx('Bạn vẫn húp tiếp được.','You can still finish your bowl.'));}
       };
     }
     function fail(){clearTimeout(connTimer);state='off';kind='';paint();lock(false);
@@ -1246,11 +1297,16 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
         case 'go':countdown();break;
         case 'p':if(opp&&kind==='live'){opp.lvl=m.lvl;opp.at=m.at;if(m.e){opp.e=m.e;opp.eAt=Date.now();}paintOpp();}break;
         case 'oppdone':if(opp){oppDone=m.time;opp.lvl=0;paintOpp();}break;
-        case 'result':res={you:m.you,opp:m.opp,forfeit:!!m.forfeit};showResult();break;
-        case 'left':oppLeft=true;paint();
+        case 'result':res={you:m.you,opp:m.opp,forfeit:!!m.forfeit};announce();break;
+        case 'left':oppLeft=true;$('duel').classList.add('alert');paint();
+          /* an opponent leaving gets a banner, a beep, a greyed-out row and a note on the result */
           if(state==='matched'||state==='waiting'||state==='countdown'){clearTimeout(cdTimer);$('count').hidden=true;state='left';paint();paintStart();
-            M('Đối thủ đã rời trận trước khi bắt đầu. Tìm đối thủ mới nhé.','Your opponent left before the start. Find a new one.');}
-          else if(state==='racing')M('Đối thủ đã rời trận. Húp xong là bạn thắng.','Your opponent left. Finish your bowl to win.');
+            M('Đối thủ đã rời trận trước khi bắt đầu. Tìm đối thủ mới nhé.','Your opponent left before the start. Find a new one.');
+            toast(tx(opp.name+' đã rời trận','Your opponent left'),tx('Trận bị hủy. Tìm đối thủ mới nhé.','The race is off. Find a new opponent.'));}
+          else if(state==='racing'){M('Đối thủ đã rời trận. Húp xong là bạn thắng.','Your opponent left. Finish your bowl to win.');
+            toast(tx(opp.name+' đã rời trận','Your opponent left'),tx('Húp xong là bạn thắng.','Finish your bowl to win.'));}
+          else if(state==='finished'&&!res)toast(tx(opp.name+' đã rời trận','Your opponent left'),tx('Bạn thắng vì đối thủ bỏ cuộc.','You win because they gave up.'));
+          else if(state==='finished')toast(tx(opp.name+' đã rời trận','Your opponent left'),tx('Không đấu lại được nữa.','A rematch is no longer possible.'));
           break;
         case 'rematchasked':rematchAsked=true;paintRes();break;
       }
@@ -1258,7 +1314,8 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     function setup(k,dish,s,name){
       kind=k;state='matched';dishI=dish;seed=s;
       opp={name:k==='bot'?'':(name||'?'),lvl:1,at:0,e:'',eAt:0};
-      oppDone=null;oppLeft=false;oppReady=false;res=null;rematchAsked=false;samples=[];lastSample=-1;
+      oppDone=null;oppLeft=false;oppReady=false;res=null;rematchAsked=false;samples=[];lastSample=-1;myT=0;
+      $('duel').classList.remove('alert');$('toast').hidden=true;
       botTime=k==='ghost'?run.time:k==='bot'?Math.round(par(DISHES[dish])*1.6*100)/100:0;
       lock(true);seedRnd(seed);pick(dish,false);
       $('opic').innerHTML=thumb(DISHES[dish]);
@@ -1311,22 +1368,32 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     }
     function event(k){if(kind==='live'&&state==='racing')out({type:'p',lvl:+Math.max(0,level/Math.max(d.start,.01)).toFixed(3),at:+elapsed.toFixed(2),e:k});}
     function thin(a,max){if(a.length<=max)return a;var o=[],i;for(i=0;i<max-1;i++)o.push(a[Math.round(i*(a.length-1)/(max-1))]);o.push(a[a.length-1]);return o;}
+    /* returns true when it was a race, so the game leaves the stamp, confetti and sound to the duel */
     function finish(t){
-      if(state!=='racing')return;
-      state='finished';
+      if(state!=='racing')return false;
+      state='finished';myT=t;
       out({type:'done',time:+t.toFixed(2),samples:thin(samples.concat([[+t.toFixed(2),0]]),60)});
-      if(kind!=='live'){res={you:t,opp:botTime,forfeit:false};oppDone=botTime;}   /* show the ghost's or bot's own final time */
+      if(kind!=='live'){res={you:t,opp:botTime,forfeit:false};oppDone=botTime;opp.lvl=0;}   /* show the ghost's or bot's own final time */
       else if(oppLeft)res={you:t,opp:null,forfeit:true};
-      paintStart();showResult();
+      paintStart();announce();
+      return true;
     }
-    function showResult(){paintResult();paint();}
+    /* the verdict lands: stamp, then confetti and a chime for a win, a falling tune for a loss */
+    function announce(){
+      paintResult();paint();$('result').hidden=false;thump();
+      if(!res)return;
+      var win=res.forfeit||res.opp==null||res.you<res.opp,lose=!win&&res.you>res.opp;
+      if(win){burst();chime();}
+      else if(lose){beep(523,.16,'triangle',.16);beep(392,.16,'triangle',.16,.18);beep(262,.4,'triangle',.16,.36);}
+      else beep(660,.25,'triangle',.16);
+    }
 
     function paintOpp(){
       var box=$('opp');
       if(!opp){box.hidden=true;return;}
-      box.hidden=false;
+      box.hidden=false;box.classList.toggle('gone',oppLeft);
       $('oname').textContent=kind==='bot'?tx('Máy','Bot'):opp.name;
-      $('otag').textContent=kind==='live'?tx('Trực tiếp','Live'):kind==='ghost'?tx('Lượt ghi','Recorded'):'';
+      $('otag').textContent=oppLeft?tx('Đã rời','Left'):kind==='live'?tx('Trực tiếp','Live'):kind==='ghost'?tx('Lượt ghi','Recorded'):'';
       $('obar').style.width=Math.round(opp.lvl*100)+'%';
       $('otime').textContent=oppDone!=null?fmt(oppDone):(state==='racing'||state==='finished')&&opp.at?fmt(opp.at):'';
       var st='';
@@ -1336,18 +1403,28 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
       else if(state==='matched'||state==='waiting')st=kind==='live'?(oppReady?tx('Sẵn sàng','Ready'):tx('Đang chuẩn bị mic…','Getting their mic ready…')):tx('Chờ bạn','Waiting for you');
       else if(state==='racing'||state==='finished')st=tx('Đang húp…','Slurping…');
       $('ostat').textContent=st;
+      if(state==='finished'&&!res&&!$('result').hidden)paintRes();   /* keep their clock ticking on the waiting card */
     }
+    /* the race card: verdict stamp, you vs them with the winner highlighted, and a warning if they left.
+       Returns false outside a finished race so the solo card is drawn instead. */
     function paintRes(){
-      var el=$('dres'),rm=$('drematch'),nw=$('dnew');
-      if(state!=='finished'){el.hidden=true;rm.hidden=true;nw.hidden=true;return;}
-      el.hidden=false;nw.hidden=false;rm.hidden=!(kind==='live'&&!oppLeft);
+      var rm=$('drematch'),nw=$('dnew');
+      if(state!=='finished'||!opp){rm.hidden=true;nw.hidden=true;return false;}
+      $('rnext').hidden=true;nw.hidden=false;rm.hidden=!(kind==='live'&&!oppLeft);
       rm.textContent=rematchAsked?tx('Đối thủ muốn đấu lại!','They want a rematch!'):tx('Đấu lại','Rematch');
-      var who=kind==='bot'?tx('máy','the bot'):opp.name;
-      if(!res){el.textContent=tx('Chờ '+who+' húp xong…','Waiting for '+who+' to finish…');return;}
-      if(res.forfeit||res.opp==null)el.textContent=tx('Bạn thắng! Đối thủ đã rời trận.','You win! Your opponent left.');
-      else if(res.you<res.opp)el.textContent=tx('Bạn thắng! ','You win! ')+fmt(res.you)+' s · '+who+' '+fmt(res.opp)+' s';
-      else if(res.you>res.opp)el.textContent=tx('Thua rồi! ','You lost! ')+fmt(res.you)+' s · '+who+' '+fmt(res.opp)+' s';
-      else el.textContent=tx('Hòa! Cả hai ','A tie! Both ')+fmt(res.you)+' s';
+      var who=kind==='bot'?tx('Máy','Bot'):opp.name,me=$('vsme'),op=$('vsop');
+      $('vs').hidden=false;me.className='side';op.className='side';
+      $('vsmen').textContent=tx('Bạn','You')+' · '+nick();
+      $('vsopn').textContent=who+(kind==='ghost'?tx(' · lượt ghi',' · recorded'):'');
+      $('vsmet').textContent=fmt(myT)+' s';
+      $('vsopt').textContent=res&&res.opp!=null?fmt(res.opp)+' s':oppLeft?tx('Đã rời','Left'):oppDone!=null?fmt(oppDone)+' s':(opp.at?fmt(opp.at)+'…':'…');
+      $('rwarn').hidden=!oppLeft;
+      if(oppLeft){op.classList.add('gone');$('rwarntext').textContent=res?tx(who+' đã rời trận, nên bạn thắng.',who+' left the race, so you win.'):tx(who+' đã rời trận.',who+' left the race.');}
+      if(!res){setStamp('wait',tx('XONG! CHỜ…','DONE! WAITING…'));$('rtitle').textContent=tx('Chờ '+who+' húp xong','Waiting for '+who+' to finish');return true;}
+      if(res.forfeit||res.opp==null||res.you<res.opp){setStamp('win',tx('THẮNG!','YOU WIN!'));me.classList.add('best');}
+      else if(res.you>res.opp){setStamp('lose',tx('THUA!','YOU LOST!'));op.classList.add('best');}
+      else setStamp('',tx('HÒA!','A TIE!'));
+      return true;
     }
     function paint(){
       $('dmyname').textContent=nick();
@@ -1361,6 +1438,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
       if(ws){var s=ws;ws=null;try{s.close();}catch(e){}}
       clearTimeout(cdTimer);clearTimeout(connTimer);$('count').hidden=true;
       var was=state;state='off';kind='';opp=null;res=null;run=null;dm=['',''];$('dmsg').textContent='';
+      $('duel').classList.remove('alert');$('toast').hidden=true;
       seedRnd(null);lock(false);$('duel').hidden=true;paint();
       if(was!=='off'&&was!=='connecting'&&was!=='searching')reset();else paintStart();
     }
@@ -1368,7 +1446,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
       if(state==='connecting'||state==='searching')return tx('Đang tìm đối thủ…','Finding opponent…');
       if(state==='waiting')return tx('Chờ đối thủ…','Waiting…');
       if(state==='countdown')return tx('Sắp bắt đầu…','Get ready…');
-      if(state==='finished')return tx('Xong trận','Race over');
+      if(state==='finished')return tx('Xem kết quả','See result');
       if(state==='left')return tx('Trận đã hủy','Race cancelled');
       return '';
     }
@@ -1378,14 +1456,9 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     $('dreroll').addEventListener('click',function(){store.nick=newNick();save();paint();if(state==='searching')out({type:'find',name:nick()});});
     $('drematch').addEventListener('click',function(){out({type:'rematch'});M('Đã mời đấu lại. Chờ đối thủ đồng ý…','Rematch requested. Waiting for your opponent…');});
     return {
-      hold:hold,frame:frame,event:event,finish:finish,paint:paint,label:label,
-      blocks:function(){return state==='connecting'||state==='searching'||state==='finished'||state==='left';},
-      shareSuffix:function(){
-        if(state!=='finished'||!res||!opp)return '';
-        var who=kind==='bot'?tx('máy','the bot'):opp.name;
-        if(res.forfeit||res.opp==null||res.you<res.opp)return tx(' Thắng '+who+' trong 1v1.',' Beat '+who+' in 1v1.');
-        return res.you>res.opp?tx(' Thua '+who+' trong 1v1.',' Lost to '+who+' in 1v1.'):tx(' Hòa với '+who+'.',' Tied with '+who+'.');
-      }
+      hold:hold,frame:frame,event:event,finish:finish,paint:paint,label:label,paintRes:paintRes,
+      /* after a race the main button reopens the result card instead of starting a bowl */
+      blocks:function(){if(state==='finished'){$('result').hidden=false;return true;}return state==='connecting'||state==='searching'||state==='left';}
     };
   })();
 
@@ -1494,9 +1567,30 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     var t=title(lastRun.el),n=lastRun.note==='daily'?tx(' Đã ghi kết quả hôm nay.',' Today’s result is saved.'):lastRun.note==='best'?tx(' Kỷ lục mới.',' New record.'):'';
     $('rtitle').textContent=t;
     $('rtext').textContent=tx('Húp sạch '+d.n+' trong '+fmt(lastRun.el)+' giây.','Finished '+d.n+' in '+fmt(lastRun.el)+' seconds.')+n;
-    lastText=tx('Húp Phở · '+d.n+' · '+fmt(lastRun.el)+' giây · '+t+'. Húp nhanh hơn tôi đi.','Húp Phở · '+d.n+' · '+fmt(lastRun.el)+' s · '+t+'. Beat my time.');
-    $('copy').textContent=tx('Chép kết quả để khoe','Copy result to share');
-    if(Duel)lastText+=Duel.shareSuffix();
+    /* solo: a "clean bowl" stamp; in a 1v1 the duel paints the race verdict and the score instead */
+    if(!Duel.paintRes()){setStamp('',tx('SẠCH TÔ!','CLEAN BOWL!'));$('vs').hidden=true;$('rwarn').hidden=true;$('rnext').hidden=false;}
+  }
+  function setStamp(cls,text){$('rstamp').className='rstamp'+(cls?' '+cls:'');$('rbig').textContent=text;}
+  /* the stamp lands with a thump; a win also throws confetti out of the card */
+  function thump(){var s=$('rstamp');s.classList.remove('thump');void s.offsetWidth;s.classList.add('thump');}
+  function burst(){
+    if(calm)return;
+    var r=$('result'),cx=r.clientWidth/2,cols=['#F9BE1A','#D7262B','#3FA860','#FAEEDA','#F0884A'],k,b,a,dd;
+    for(k=0;k<22;k++){
+      b=document.createElement('i');b.className='bit';a=Math.random()*Math.PI*2;dd=60+Math.random()*90;
+      b.style.setProperty('--x',cx+'px');b.style.setProperty('--y','46px');b.style.setProperty('--c',cols[k%cols.length]);
+      b.style.setProperty('--dx',(Math.cos(a)*dd).toFixed(0)+'px');b.style.setProperty('--dy',(Math.sin(a)*dd-20).toFixed(0)+'px');b.style.setProperty('--r',(Math.random()*720-360).toFixed(0)+'deg');
+      r.appendChild(b);(function(b){setTimeout(function(){b.remove();},1000);})(b);
+    }
+  }
+  function chime(){beep(660,.12,'triangle',.18);beep(880,.12,'triangle',.18,.12);beep(1320,.3,'triangle',.18,.24);}
+  /* a warning that drops in at the top and stays for five seconds */
+  var toastTimer=null;
+  function toast(t,s){
+    var el=$('toast');$('toastt').textContent=t;$('toasts').textContent=s||'';
+    el.hidden=true;void el.offsetWidth;el.hidden=false;
+    clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.hidden=true;},5000);
+    beep(880,.1,'square',.1);beep(660,.16,'square',.1,.16);
   }
   function finish(){
     done=true;ev=null;longN=null;slurpBtn.classList.remove('on');bowl.classList.remove('shake');paintStart();
@@ -1510,8 +1604,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     save();
     lastRun={el:elapsed,note:note};paintResult();
     result.hidden=false;say(tx('Sạch tô!','Bowl cleaned!'));showBest();
-    beep(660,.12,'triangle',.18);beep(880,.12,'triangle',.18,.12);beep(1320,.3,'triangle',.18,.24);
-    Duel.finish(elapsed);
+    if(!Duel.finish(elapsed)){thump();burst();chime();}
   }
   function spawn(){
     var m=d.mix,keys=Object.keys(m),tot=0,k,i;
@@ -1657,11 +1750,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   $('rnext').addEventListener('click',function(){pick((cur+1)%DISHES.length,false);});
   $('tomenu').addEventListener('click',function(){Menu.open(1+['B','T','N','V'].indexOf(d.r));});
   $('howto').addEventListener('click',function(){Menu.open(0);});
-  $('copy').addEventListener('click',function(){
-    var b=$('copy');
-    try{navigator.clipboard.writeText(lastText).then(function(){b.textContent=tx('Đã chép. Dán vào đâu cũng được.','Copied. Paste it anywhere.');},function(){b.textContent=lastText;});}
-    catch(e){b.textContent=lastText;}
-  });
+  $('rclose').addEventListener('click',function(){result.hidden=true;});
 
   var actx=null,analyser=null,stream=null,buf=null,lo0=0,lo1=0,hi0=0,hi1=0,floorDb=-90,calN=0,calSum=0,calUntil=0,onFrames=0,offAt=0;
   /* turning the mic off mid-bowl pauses the run; "Bắt đầu húp" picks it up again */
