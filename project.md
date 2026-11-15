@@ -29,7 +29,7 @@ Every dish shares these mechanics, and each adds one rule of its own.
 | Quẩy | Floats for about 1.3 seconds | Slurp while it floats and the bowl drops 7% |
 | Long noodle (Sợi dài) | Up to twice per bowl; release, then slurp unbroken for 1.6 seconds | Finish it for an 8% bonus; break it and 12% falls back in |
 
-**Controls:** hold the yellow button (or Space) to slurp, or turn on the mic and slurp for real. Tap the bowl (or press X) to pick out bones and shells.
+**Controls:** press "Bắt đầu húp". If the mic is off it asks for permission, measures the room's background noise for one second, then the run starts and the clock runs; only real slurps into the mic drain the bowl. "Tắt mic" pauses the run. There is no hold-to-slurp button or keyboard slurp any more, so the game needs a working mic. Tap the bowl (or press X) to pick out bones and shells. Steam rises from the bowl while you eat.
 
 **Titles:** Thánh Húp, Húp như bố, Tạm được, or Ăn như mèo, set by how close your time is to a simulated ideal run of that dish.
 
@@ -72,13 +72,13 @@ There are 30 dishes in four groups, and each adds one rule on top of the shared 
 
 ## Look and feel
 
-The page is styled as a street stall: a red and yellow hand-painted sign on a mint wall, with the bowl on a steel table and the menu board below.
+The page is styled as a street stall: a red and yellow hand-painted sign on a mint wall, with the bowl on a steel table and an illustrated menu book one tap away.
 
 - **Bowl:** see-through, so the broth colour shows through the side. Toppings sit large on the surface, and faint noodles and toppings bob inside the liquid at about 30% opacity.
 - **Broth:** shimmers gently. The animation is off for people with reduced motion turned on.
 - **Draining:** the liquid level drops through the bowl and the surface narrows with the bowl's shape. "SẠCH!" shows on the bottom when it is empty.
 - **Vessels:** each dish can have its own container. Mì ly is a cup with a peeled lid, and lẩu mì is a pot with handles on a burner. The other 28 use the bowl.
-- **Menu board:** one card per dish, grouped by region, with a small picture of its bowl, its rule, and your best time.
+- **Menu book:** opens over the game from "Thực đơn 30 tô" (or "Cách chơi"). Five spreads: how to play, then Miền Bắc, Miền Trung, Miền Nam and Mì gói, each with its own colours, landmarks and animated scene. It is built mobile first: phones show one half page at a time, and from 641px wide the book opens to two pages and turns a whole spread. The "Húp Phở" sign sits at the top. Each card shows the bowl, its rule and your best time. A panel under the book shows the chosen dish with a big steaming bowl, its region and place ("Miền Trung · Món 3/7"), its rule and a "Húp tô này" button; it starts on the dish being played. The first tap on a card shows it there; the second, or the button, stamps "CHỌN!" and loads the dish. The game clock pauses while the book is open.
 - **Themes:** light and dark, following the viewer's setting.
 
 ## Retention
