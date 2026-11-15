@@ -80,6 +80,7 @@ The page is styled as a street stall: a red and yellow hand-painted sign on a mi
 - **Vessels:** each dish can have its own container. Mì ly is a cup with a peeled lid, and lẩu mì is a pot with handles on a burner. The other 28 use the bowl.
 - **Menu book:** opens over the game from "Thực đơn 30 tô" (or "Cách chơi"). Five spreads: how to play, then Miền Bắc, Miền Trung, Miền Nam and Mì gói, each with its own colours, landmarks and animated scene. It is built mobile first: phones show one half page at a time, and from 641px wide the book opens to two pages and turns a whole spread. The "Húp Phở" sign sits at the top. Each card shows the bowl, its rule and your best time. A panel under the book shows the chosen dish with a big steaming bowl, its region and place ("Miền Trung · Món 3/7"), its rule and a "Húp tô này" button; it starts on the dish being played. The first tap on a card shows it there; the second, or the button, stamps "CHỌN!" and loads the dish. The game clock pauses while the book is open.
 - **Themes:** light and dark, following the viewer's setting.
+- **Language:** a VI | EN switch at the top of the game and in the menu. Vietnamese is the default; the choice is saved on the device. Every interface word, message, rule, title and the share line switch over in place, even mid-bowl. Dish names stay in Vietnamese, and English times use a decimal point instead of a comma.
 
 ## Retention
 

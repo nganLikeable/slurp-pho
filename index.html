@@ -37,6 +37,13 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 .sign h1{font-family:var(--display);font-weight:400;font-size:38px;line-height:1;margin:0;color:var(--gold);letter-spacing:1px}
 .sign p{margin:4px 0 0;font-size:13px;font-weight:600;color:#fff}
 .nav{display:flex;flex-wrap:wrap;gap:6px}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.lang{display:flex;flex:none;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;margin-top:4px}
+.lang button{font:600 12px var(--body);padding:6px 10px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--wall)}
+.lang button:focus-visible{outline:3px solid var(--sign);outline-offset:-3px}
+.mtools{display:flex;align-items:center;gap:8px;flex:none}
+.mtools .lang{margin-top:0}
 .chip{font:600 13px var(--body);padding:7px 11px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
 .chip.daily{border-color:var(--sign);color:var(--sign)}
 .chip.daily[aria-pressed="true"]{background:var(--sign);color:#fff}
@@ -295,16 +302,19 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 </head>
 <body>
 <main id="top">
-  <header class="sign">
-    <h1>Húp Phở</h1>
-    <p>30 tô, mỗi tô một luật. Ai sạch tô trước thì thắng.</p>
-  </header>
+  <div class="topbar">
+    <header class="sign">
+      <h1>Húp Phở</h1>
+      <p data-en="30 bowls, one rule each. First to empty the bowl wins.">30 tô, mỗi tô một luật. Ai sạch tô trước thì thắng.</p>
+    </header>
+    <div class="lang" role="group" aria-label="Ngôn ngữ / Language"><button type="button" data-lang="vi">VI</button><button type="button" data-lang="en">EN</button></div>
+  </div>
 
-  <nav class="nav" aria-label="Chọn tô">
-    <button class="chip daily" id="dailybtn" type="button">Tô hôm nay</button>
-    <button class="chip" id="prev" type="button" aria-label="Tô trước">‹</button>
-    <button class="chip" id="next" type="button" aria-label="Tô sau">›</button>
-    <button class="chip" id="tomenu" type="button" aria-haspopup="dialog">Thực đơn 30 tô</button>
+  <nav class="nav" aria-label="Chọn tô" data-en-label="Choose a bowl">
+    <button class="chip daily" id="dailybtn" type="button" data-en="Daily bowl">Tô hôm nay</button>
+    <button class="chip" id="prev" type="button" aria-label="Tô trước" data-en-label="Previous bowl">‹</button>
+    <button class="chip" id="next" type="button" aria-label="Tô sau" data-en-label="Next bowl">›</button>
+    <button class="chip" id="tomenu" type="button" aria-haspopup="dialog" data-en="Menu: 30 bowls">Thực đơn 30 tô</button>
     <button class="chip" id="sndbtn" type="button">Tiếng: bật</button>
   </nav>
 
@@ -321,7 +331,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   </div>
 
   <div class="table">
-    <svg viewBox="0 0 320 240" role="img" aria-label="Tô mì. Chạm vào tô để gắp xương." id="svg">
+    <svg viewBox="0 0 320 240" role="img" aria-label="Tô mì. Chạm vào tô để gắp xương." data-en-label="Bowl of noodles. Tap the bowl to pick out bones." id="svg">
       <defs><clipPath id="lvclip"><rect id="lvrect" x="0" y="98" width="320" height="150"/></clipPath></defs>
       <g id="bowl">
         <g id="steam" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round" opacity=".9">
@@ -340,16 +350,16 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
         </g>
       </g>
     </svg>
-    <div class="gauge" aria-hidden="true"><span>Tô</span><div class="level"><i id="bar"></i></div></div>
-    <div class="gauge" aria-hidden="true"><span>Hơi</span><div class="level"><i id="breath"></i></div></div>
+    <div class="gauge" aria-hidden="true"><span data-en="Bowl">Tô</span><div class="level"><i id="bar"></i></div></div>
+    <div class="gauge" aria-hidden="true"><span data-en="Air">Hơi</span><div class="level"><i id="breath"></i></div></div>
   </div>
 
   <div class="msg" id="msg" role="status"></div>
 
   <div class="controls">
     <button class="btn main" id="slurp" type="button">Bắt đầu húp</button>
-    <button class="btn" id="micbtn" type="button" hidden>Tắt mic</button>
-    <button class="btn" id="again" type="button">Múc tô mới</button>
+    <button class="btn" id="micbtn" type="button" hidden data-en="Mic off">Tắt mic</button>
+    <button class="btn" id="again" type="button" data-en="New bowl">Múc tô mới</button>
   </div>
 
   <div class="mic" id="microw" hidden>
@@ -363,33 +373,33 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     <p id="rtext"></p>
     <div class="controls">
       <button class="btn" id="copy" type="button">Chép kết quả để khoe</button>
-      <button class="btn" id="rnext" type="button">Tô tiếp theo ›</button>
+      <button class="btn" id="rnext" type="button" data-en="Next bowl ›">Tô tiếp theo ›</button>
     </div>
   </section>
 
-  <p class="foot">Bản thử nghiệm. Kỷ lục chỉ lưu trên máy này. <button class="linkbtn" id="howto" type="button">Cách chơi</button></p>
+  <p class="foot"><span data-en="Records are saved on this device only.">Kỷ lục chỉ lưu trên máy này.</span> <button class="linkbtn" id="howto" type="button" data-en="How to play">Cách chơi</button></p>
 </main>
 
 <div class="menuwrap" id="menuwrap" hidden>
-  <div class="menu" role="dialog" aria-modal="true" aria-label="Thực đơn Húp Phở">
+  <div class="menu" role="dialog" aria-modal="true" aria-label="Thực đơn Húp Phở" data-en-label="Húp Phở menu">
     <div class="menubar">
       <header class="sign msign">
         <h2>Húp Phở</h2>
-        <p>Thực đơn 30 tô, bản thử. Lật trang để đi từ Bắc vào Nam.</p>
+        <p data-en="A menu of 30 bowls. Turn the pages from North to South.">Thực đơn 30 tô. Lật trang để đi từ Bắc vào Nam.</p>
       </header>
-      <button class="chip" id="bookclose" type="button">Đóng ✕</button>
+      <div class="mtools"><div class="lang" role="group" aria-label="Ngôn ngữ / Language"><button type="button" data-lang="vi">VI</button><button type="button" data-lang="en">EN</button></div><button class="chip" id="bookclose" type="button" data-en="Close ✕">Đóng ✕</button></div>
     </div>
-    <nav class="ribbons" id="ribbons" aria-label="Các trang thực đơn"></nav>
+    <nav class="ribbons" id="ribbons" aria-label="Các trang thực đơn" data-en-label="Menu pages"></nav>
     <div class="stage">
       <div class="book" id="book">
-        <button class="corner prev" id="cprev" type="button" aria-label="Lật về trang trước"></button>
-        <button class="corner next" id="cnext" type="button" aria-label="Lật sang trang sau"></button>
+        <button class="corner prev" id="cprev" type="button" aria-label="Lật về trang trước" data-en-label="Turn back a page"></button>
+        <button class="corner next" id="cnext" type="button" aria-label="Lật sang trang sau" data-en-label="Turn the page"></button>
       </div>
     </div>
     <div class="turns">
-      <button class="chip" id="bprev" type="button">‹ Trang trước</button>
+      <button class="chip" id="bprev" type="button" data-en="‹ Previous page">‹ Trang trước</button>
       <span id="pnum" aria-live="polite"></span>
-      <button class="chip" id="bnext" type="button">Trang sau ›</button>
+      <button class="chip" id="bnext" type="button" data-en="Next page ›">Trang sau ›</button>
     </div>
     <section class="detail" id="detail" aria-live="polite">
       <div class="dpic" id="dpic"></div>
@@ -397,7 +407,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
         <p class="dreg" id="dreg"></p>
         <h3 class="dname" id="dname"></h3>
         <p class="drule" id="drule"></p>
-        <button class="go" id="go" type="button">Húp tô này</button>
+        <button class="go" id="go" type="button" data-en="Slurp this bowl">Húp tô này</button>
       </div>
     </section>
   </div>
@@ -487,6 +497,47 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   function load(){try{return JSON.parse(localStorage.getItem('huppho2')||'{}')||{};}catch(e){return {};}}
   function save(){try{localStorage.setItem('huppho2',JSON.stringify(store));}catch(e){}}
   var store=load(); store.best=store.best||{}; store.daily=store.daily||{};
+  /* language: Vietnamese by default, English from the VI/EN switch; dish names stay in Vietnamese */
+  var lang=store.lang==='en'?'en':'vi';
+  function tx(v,e){return lang==='en'?e:v;}
+  var RULE_EN={
+    phobo:'Basic rules. A bowl to warm up on.',
+    phoga:'Dough sticks float up all the time. Slurp as many as you can to go faster.',
+    buncha:'One dip at a time: each slurp lasts 1 second at most, then let go and go again.',
+    bunrieu:'Eat 3 toppings before the bowl can be finished.',
+    bundau:'Pungent shrimp paste: your breath comes back at half speed.',
+    bunthang:'All long noodles. Nearly every slurp has to go unbroken.',
+    bunoc:'Snail shells in the bowl: tap the bowl to pick them out, or you choke.',
+    mienluon:'Slippery glass noodles: stop slurping and they slide back in.',
+    banhdacua:'Wide flat noodles: the first half second of each slurp does nothing.',
+    vanthan:'The orange carrot looks like chili but is harmless. Don’t stop for it.',
+    bbh:'Double chili. Thick noodles: long slurps pay off.',
+    miquang:'Little broth, so the bowl starts 70% full, but you run out of breath fast.',
+    caolau:'Chewy noodles: short slurps barely help, long ones go faster and faster.',
+    bunchaca:'Fish bones: tap the bowl to pick them out. Chili still floats up too.',
+    banhcanh:'The noodles swell: the longer you wait, the fuller the bowl gets.',
+    bunhen:'Eat 5 clams before the bowl can be finished.',
+    phokho:'Two bowls: finish the dry one, then the soup.',
+    hutieunv:'Bird’s eye chili: hot the moment it floats up, so react fast.',
+    hutieugo:'A small student-priced bowl with no chili. Pure speed.',
+    bunmam:'The kind owner tops up your broth twice.',
+    phoxelua:'A giant bowl, nearly twice the size. Pace yourself.',
+    bunthitnuong:'Slurp the lime as soon as it floats up, or it turns sour and the bowl refills.',
+    bokho:'Piping hot: short slurps only for the first 4 seconds, or you burn your tongue.',
+    bunsuong:'Long and slippery: lots of long noodles, and they slide back if you stop.',
+    mitom:'When Mom looks over, stop, or you get scolded.',
+    mily:'Straight from the cup in one breath: let go halfway and it refills.',
+    micay:'Chili everywhere, hot enough to leave you breathless.',
+    mitron:'Steady slurps: each one only counts between half a second and 1.5 seconds.',
+    laumi:'Eat straight from the pot. Friends add noodles three times. More chili too.',
+    thapcam:'Final boss: chili, carrot, lime, bones, long noodles and Mom.'
+  };
+  var WORD_EN={'Quẩy':'Dough stick','Topping':'Topping','Hến':'Clam','xương':'bone','vỏ ốc':'snail shell','xương cá':'fish bone',
+    'Cô chủ chan thêm nước!':'The owner tops up your broth!','Bạn gắp thêm mì vào nồi!':'A friend adds more noodles!'};
+  var REG_EN={B:'North',T:'Central',N:'South',V:'Instant and new'};
+  function RULE(q){return tx(q.rule,RULE_EN[q.id]||q.rule);}
+  function W(v){return tx(v,WORD_EN[v]||v);}
+  function REGN(r){return tx(REG[r],REG_EN[r]);}
 
   var now0=new Date();
   var dayNum=Math.floor((now0.getTime()-now0.getTimezoneOffset()*60000)/86400000);
@@ -498,7 +549,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   var ev=null, longN=null, longCount=0, nextEv=0, blockUntil=0, blockKind='', blockText='';
   var treats=0, pours=0, bowls=1, flashText='', flashHot=false, flashUntil=0, lastText='';
 
-  function fmt(s){return s.toFixed(2).replace('.',',');}
+  function fmt(s){return lang==='en'?s.toFixed(2):s.toFixed(2).replace('.',',');}
   function wave(x,y,amp,len,x1){var p='M'+x+' '+y+' q'+(len/2)+' '+(-amp)+' '+len+' 0';for(var c=x+len;c<x1;c+=len)p+=' t'+len+' 0';return p;}
   function rate(q,t){return (q.base+Math.min(t,2.5)*q.bonus)*q.speed;}
   function par(q){
@@ -520,7 +571,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     }
     return t+q.needTreats*1.2;
   }
-  function title(s){var r=s/par(d);return r<1.3?'Thánh Húp':r<1.9?'Húp như bố':r<2.7?'Tạm được':'Ăn như mèo';}
+  function title(s){var r=s/par(d);return r<1.3?tx('Thánh Húp','Slurp Saint'):r<1.9?tx('Húp như bố','Slurp Boss'):r<2.7?tx('Tạm được','Not Bad'):tx('Ăn như mèo','Eats Like a Cat');}
 
   var calm=false;try{calm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
   function contents(q,live){
@@ -872,12 +923,12 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 
   /* ---------- the spreads ---------- */
   var HOW=[
-    ['<rect x="-8" y="-12" width="40" height="22" rx="6" fill="#F9BE1A" stroke="#10312A" stroke-width="2"/>','Bấm "Bắt đầu húp", cho phép mic, rồi húp thật vào điện thoại.'],
-    ['<rect x="-8" y="-6" width="40" height="10" rx="5" fill="none" stroke="#10312A" stroke-width="2"/><rect x="-8" y="-6" width="12" height="10" rx="5" fill="#D7262B"/>','Húp lâu là cạn hơi. Nhả ra để thở, hết hơi là nghỉ 2 giây.'],
-    [ART.chili,'Ớt nổi lên: ngừng húp ngay, không là sặc.'],
-    [ART.treat,'Quẩy nổi lên: húp ngay, tô vơi thêm một miếng.'],
-    ['<path d="M-6 -4 q8 -14 16 0 t16 0" stroke="#10312A" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M-6 -4 q8 -14 16 0 t16 0" stroke="#FAEEDA" stroke-width="4" fill="none" stroke-linecap="round"/>','Sợi dài: lấy hơi, rồi húp một hơi không ngắt.'],
-    [ART.bone,'Xương, vỏ ốc: chạm vào tô (hoặc bấm X) để gắp ra.']
+    ['<rect x="-8" y="-12" width="40" height="22" rx="6" fill="#F9BE1A" stroke="#10312A" stroke-width="2"/>','Bấm "Bắt đầu húp", cho phép mic, rồi húp thật vào điện thoại.','Press "Start slurping", allow the mic, then slurp into your phone for real.'],
+    ['<rect x="-8" y="-6" width="40" height="10" rx="5" fill="none" stroke="#10312A" stroke-width="2"/><rect x="-8" y="-6" width="12" height="10" rx="5" fill="#D7262B"/>','Húp lâu là cạn hơi. Nhả ra để thở, hết hơi là nghỉ 2 giây.','Long slurps use up your air. Pause to breathe; run out and you rest for 2 seconds.'],
+    [ART.chili,'Ớt nổi lên: ngừng húp ngay, không là sặc.','Chili floats up: stop slurping right away, or you choke.'],
+    [ART.treat,'Quẩy nổi lên: húp ngay, tô vơi thêm một miếng.','A dough stick floats up: slurp it now for an extra bite.'],
+    ['<path d="M-6 -4 q8 -14 16 0 t16 0" stroke="#10312A" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M-6 -4 q8 -14 16 0 t16 0" stroke="#FAEEDA" stroke-width="4" fill="none" stroke-linecap="round"/>','Sợi dài: lấy hơi, rồi húp một hơi không ngắt.','Long noodle: take a breath, then slurp it in one go.'],
+    [ART.bone,'Xương, vỏ ốc: chạm vào tô (hoặc bấm X) để gắp ra.','Bones and shells: tap the bowl (or press X) to pick them out.']
   ];
   var SPREADS=[
     {t:'cover',tab:'Cách chơi',tc:'#F9BE1A',title:'HÚP PHỞ',sub:'30 tô, mỗi tô một luật',mark:'Cách chơi',small:'chili',land:'bigbowl',mL:['chili','quay','bone'],mR:['quay','lime','chili'],
@@ -891,6 +942,10 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     {t:'modern',r:'V',tab:'Mì gói',tc:'#FFD84A',title:'MÌ GÓI',sub:'và món mới',edge:'streetfood',land:'skyline',mL:['sign24','cup','kettle'],mR:['kettle','sign24','cup'],
       foot:road}
   ];
+  /* menu words: English for the ribbons, titles and subtitles */
+  var SP_EN={'Cách chơi':'How to play','HÚP PHỞ':'HÚP PHỞ','30 tô, mỗi tô một luật':'30 bowls, one rule each','Miền Bắc':'North','MIỀN BẮC':'THE NORTH',
+    'Miền Trung':'Central','MIỀN TRUNG':'THE CENTRAL','Miền Nam':'South','MIỀN NAM':'THE SOUTH','Mì gói':'Instant','MÌ GÓI':'INSTANT','và món mới':'and new dishes'};
+  function SPT(v){return tx(v,SP_EN[v]||v);}
   var BG={cover:'#17594A',north:'#A9CF7C',central:'#63C0D1',south:'#F5C543',modern:'#2B2350'};
   var SCAL='<svg class="scal" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M100 0 H15 C7 0 2 4 6 10 C12 19 12 27 5 35 C-1 44 -1 56 5 65 C12 73 12 81 6 90 C2 96 7 100 15 100 H100 Z" fill="#FFF8E6"/></svg>';
   var STEAM='<svg class="st" viewBox="0 0 30 16" aria-hidden="true"><path d="M9 14 q-4 -4 0 -8" fill="none" stroke="#10312A" stroke-width="2" stroke-linecap="round"/><path d="M21 14 q-4 -4 0 -8" fill="none" stroke="#10312A" stroke-width="2" stroke-linecap="round"/></svg>';
@@ -899,7 +954,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   function inn(html,cls,i){return '<span class="in '+(cls||'')+'" style="--i:'+i+'">'+html+'</span>';}
   function cardHtml(i){
     var q=DISHES[i];
-    return '<button type="button" class="card" id="item-'+q.id+'" data-i="'+i+'"><span class="pic">'+STEAM+pic(q).replace('<svg ','<svg class="bowlpic" ')+'</span><span class="txt"><b>'+q.n+' <span class="cbest" id="best-'+q.id+'"></span></b><span class="crule">'+q.rule+'</span></span></button>';
+    return '<button type="button" class="card" id="item-'+q.id+'" data-i="'+i+'"><span class="pic">'+STEAM+pic(q).replace('<svg ','<svg class="bowlpic" ')+'</span><span class="txt"><b>'+q.n+' <span class="cbest" id="best-'+q.id+'"></span></b><span class="crule">'+RULE(q)+'</span></span></button>';
   }
   function pageHtml(sp,si,side){
     var L=side==='L',body='',k,half;
@@ -908,14 +963,14 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
       half=Math.ceil(ids.length/2);
       body=(L?ids.slice(0,half):ids.slice(half)).map(cardHtml).join('');
     }else{
-      body=HOW.slice(L?0:3,L?3:6).map(function(h){return '<div class="how"><svg viewBox="-12 -22 50 38" aria-hidden="true">'+h[0]+'</svg><span>'+h[1]+'</span></div>';}).join('');
+      body=HOW.slice(L?0:3,L?3:6).map(function(h){return '<div class="how"><svg viewBox="-12 -22 50 38" aria-hidden="true">'+h[0]+'</svg><span>'+tx(h[1],h[2])+'</span></div>';}).join('');
     }
-    var rg=/^MIỀN (.+)$/.exec(sp.title),ttl=rg?'<small>MIỀN</small><span class="big">'+rg[1]+'</span>':sp.title;
-    var band=L?'<div class="tt"><h2 class="ttl'+(rg?' rg':'')+'">'+ttl+'</h2>'+(sp.sub?'<span class="psub">'+sp.sub+'</span>':'')+'</div>'+(sp.edge?inn(A[sp.edge](),'edge',1):inn(A[sp.small](),'small',1))
-              :(sp.mark?'<span class="mark">'+sp.mark+'</span>':'')+(sp.small2?inn(A[sp.small2](),'small '+(sp.big2?'s3':'s2'),1):'')+inn(A[sp.land](),'land',0);
+    var tl=SPT(sp.title),rg=/^(MIỀN|THE) (.+)$/.exec(tl),ttl=rg?'<small>'+rg[1]+'</small><span class="big">'+rg[2]+'</span>':tl;
+    var band=L?'<div class="tt"><h2 class="ttl'+(rg?' rg':'')+'">'+ttl+'</h2>'+(sp.sub?'<span class="psub">'+SPT(sp.sub)+'</span>':'')+'</div>'+(sp.edge?inn(A[sp.edge](),'edge',1):inn(A[sp.small](),'small',1))
+              :(sp.mark?'<span class="mark">'+SPT(sp.mark)+'</span>':'')+(sp.small2?inn(A[sp.small2](),'small '+(sp.big2?'s3':'s2'),1):'')+inn(A[sp.land](),'land',0);
     var mar=(L?sp.mL:sp.mR).map(function(a,j){return inn(A[a](),'',j+2);}).join('');
     var obj=L?sp.objL:sp.objR;
-    return '<section class="page '+side+' t-'+sp.t+'" id="'+side+si+'" aria-label="'+sp.tab+(L?', trang trái':', trang phải')+'">'+
+    return '<section class="page '+side+' t-'+sp.t+'" id="'+side+si+'" aria-label="'+SPT(sp.tab)+(L?tx(', trang trái',', left page'):tx(', trang phải',', right page'))+'">'+
       '<div class="band">'+band+'</div><div class="margin">'+mar+'</div>'+
       '<div class="panel">'+SCAL+'<div class="cards">'+body+'</div></div>'+
       '<div class="pfoot">'+sp.foot()+(obj?(sp.travel&&L?inn('<span class="sail">'+A[obj]()+'</span>','obj trav',5):inn(A[obj](),'obj',5)):'')+'</div></section>';
@@ -931,17 +986,20 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   function hp(n){return $((n%2?'R':'L')+(n>>1));}
   function shown(){return mobile()?[hp(half)]:pg(cur);}
   function enter(list){if(calm)return;list.forEach(function(p){p.classList.remove('enter');void p.offsetWidth;p.classList.add('enter');});}
-  function build(){
-    book=$('book');
+  /* pages and ribbons are drawn in the current language; switching language draws them again */
+  function render(){
+    [].forEach.call(book.querySelectorAll('.page'),function(p){p.remove();});
+    $('ribbons').innerHTML='';ribs=[];
     var h='';SPREADS.forEach(function(sp,i){h+=pageHtml(sp,i,'L')+pageHtml(sp,i,'R');});
     book.insertAdjacentHTML('afterbegin',h);
     SPREADS.forEach(function(sp,i){
-      var b=document.createElement('button');b.type='button';b.className='rib';b.textContent=sp.tab;
+      var b=document.createElement('button');b.type='button';b.className='rib';b.textContent=SPT(sp.tab);
       b.style.setProperty('--c',BG[sp.t]);b.style.setProperty('--t',sp.tc);
       b.addEventListener('click',function(){jump(i);});$('ribbons').appendChild(b);ribs.push(b);
     });
-    wire();show();
   }
+  function build(){book=$('book');render();wire();show();}
+  function relang(){finish();render();show();if(bookOpen&&sel>=0&&!timer)detail(sel,false);}
   function show(){
     finish();
     [].forEach.call(book.querySelectorAll('.page'),function(p){p.classList.remove('show');});
@@ -951,8 +1009,8 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   function paint(){
     ribs.forEach(function(b,i){b.setAttribute('aria-pressed',String(i===cur));});
     var first,last;
-    if(mobile()){$('pnum').textContent='Trang '+(half+1)+' / '+N*2;first=half===0;last=half===N*2-1;}
-    else{$('pnum').textContent='Trang '+(cur*2+1)+'–'+(cur*2+2)+' / '+N*2;first=cur===0;last=cur===N-1;}
+    if(mobile()){$('pnum').textContent=tx('Trang ','Page ')+(half+1)+' / '+N*2;first=half===0;last=half===N*2-1;}
+    else{$('pnum').textContent=tx('Trang ','Pages ')+(cur*2+1)+'–'+(cur*2+2)+' / '+N*2;first=cur===0;last=cur===N-1;}
     $('bprev').disabled=first;$('bnext').disabled=last;$('cprev').hidden=first;$('cnext').hidden=last;
   }
   var FX=['turn','outR','outL','inL','inR','covered','revealed','mOut','mIn'];
@@ -997,9 +1055,9 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   /* the panel under the book: region and place in it, name, rule, and a steaming bowl */
   function detail(i,picked){
     var q=DISHES[i],same=DISHES.filter(function(x){return x.r===q.r;});
-    $('dreg').textContent=REG[q.r]+' · Món '+(same.indexOf(q)+1)+'/'+same.length;
-    $('dname').textContent=picked?'Đã chọn: '+q.n:q.n;
-    $('drule').textContent=picked?'Đang múc tô ra bàn…':q.rule;
+    $('dreg').textContent=REGN(q.r)+tx(' · Món ',' · Dish ')+(same.indexOf(q)+1)+'/'+same.length;
+    $('dname').textContent=picked?tx('Đã chọn: ','Picked: ')+q.n:q.n;
+    $('drule').textContent=picked?tx('Đang múc tô ra bàn…','Serving it up…'):RULE(q);
     $('dpic').innerHTML=HOT+pic(q).replace('<svg ','<svg class="dbowl" ');
     $('go').disabled=!!picked;
     var s=$('detail');s.classList.remove('pop');void s.offsetWidth;s.classList.add('pop');
@@ -1020,7 +1078,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     el=el||$('item-'+q.id);
     var seen=el&&el.closest('.page').classList.contains('show');
     el.classList.remove('hop');void el.offsetWidth;el.classList.add('hop');
-    var st=document.createElement('span');st.className='stamp';st.textContent='CHỌN!';el.appendChild(st);
+    var st=document.createElement('span');st.className='stamp';st.textContent=tx('CHỌN!','PICKED!');el.appendChild(st);
     if(!calm&&seen){
       var br=book.getBoundingClientRect(),r=el.getBoundingClientRect(),cx=r.left-br.left+r.width/2,cy=r.top-br.top+r.height/2,cols=['#F9BE1A','#D7262B','#3FA860','#FAEEDA','#F0884A'],k,b,a,dd;
       for(k=0;k<16;k++){
@@ -1082,7 +1140,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     bookOpen=false;$('menuwrap').hidden=true;document.body.style.overflow='';
     $('tomenu').focus({preventScroll:true});
   }
-  return {build:build,open:open,close:close};
+  return {build:build,open:open,close:close,relang:relang};
   })();
   function buildBoard(){Menu.build();DISHES.forEach(function(q){paintBest(q);});}
 
@@ -1093,7 +1151,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     var p=PAL[d.pal];
     var v=VES[d.ves||'bowl'];
     $('vessel').innerHTML=vesselSvg(d,3,'bowlclip',
-      '<text x="160" y="'+v.textY+'" text-anchor="middle" font-family="Bungee, Arial Black, sans-serif" font-size="24" fill="#D7262B">SẠCH!</text>'+
+      '<text x="160" y="'+v.textY+'" text-anchor="middle" font-family="Bungee, Arial Black, sans-serif" font-size="24" fill="#D7262B">'+tx('SẠCH!','CLEAN!')+'</text>'+
       '<g clip-path="url(#lvclip)"><rect x="0" y="60" width="320" height="180" fill="'+p[0]+'"/>'+sunk(d,true)+'</g>'+
       '<g id="fill">'+contents(d,true)+'<g id="ev" opacity="0"></g></g>');
     steam.setAttribute('transform','translate(0,'+(v.top-98)+')');
@@ -1102,26 +1160,27 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     strand.setAttribute('stroke',d.nd);strand.setAttribute('stroke-width',d.w);
     $('ln1').setAttribute('stroke-width',d.w+6);$('ln2').setAttribute('stroke',d.nd);$('ln2').setAttribute('stroke-width',d.w+2);
     bar.style.background=p[1];
-    $('dish').textContent=isDaily?('Tô hôm nay: '+d.n):d.n;
-    $('rule').textContent=d.rule;
+    paintDish();
     $('dailybtn').setAttribute('aria-pressed',String(isDaily));
-    DISHES.forEach(function(q){var b=$('item-'+q.id);if(b)b.setAttribute('aria-pressed',String(q===d&&!isDaily));});
+    markItems();
     reset();
   }
+  function paintDish(){$('dish').textContent=isDaily?(tx('Tô hôm nay: ','Daily bowl: ')+d.n):d.n;$('rule').textContent=RULE(d);}
+  function markItems(){DISHES.forEach(function(q){var b=$('item-'+q.id);if(b)b.setAttribute('aria-pressed',String(q===d&&!isDaily));});}
   function showBest(){
     var el=$('best');
     if(isDaily){
       var t=store.daily[dayNum];
-      el.textContent=t?('Hôm nay: '+fmt(t)+' s · chuỗi '+(store.streak||1)+' ngày'):'Lượt đầu mới được tính';
+      el.textContent=t?(tx('Hôm nay: ','Today: ')+fmt(t)+' s · '+tx('chuỗi '+(store.streak||1)+' ngày',(store.streak||1)+'-day streak')):tx('Lượt đầu mới được tính','Only your first try counts');
     }else{
-      var b=store.best[d.id];el.textContent=b?('Kỷ lục: '+fmt(b)+' s'):'Chưa có kỷ lục';
+      var b=store.best[d.id];el.textContent=b?(tx('Kỷ lục: ','Best: ')+fmt(b)+' s'):tx('Chưa có kỷ lục','No record yet');
     }
   }
   function hud(){
     var a=[];
-    if(d.needTreats)a.push(d.treatName+' '+Math.min(treats,d.needTreats)+'/'+d.needTreats);
-    if(d.bowls>1)a.push('Tô '+(d.bowls-bowls+1)+'/'+d.bowls);
-    if(d.pour)a.push('Còn chan thêm '+pours+' lần');
+    if(d.needTreats)a.push(W(d.treatName)+' '+Math.min(treats,d.needTreats)+'/'+d.needTreats);
+    if(d.bowls>1)a.push(tx('Tô ','Bowl ')+(d.bowls-bowls+1)+'/'+d.bowls);
+    if(d.pour)a.push(tx('Còn chan thêm '+pours+' lần',pours+' top-ups left'));
     $('hud').textContent=a.join(' · ');
   }
   function say(t,hot){if(msg.textContent!==t)msg.textContent=t;msg.classList.toggle('hot',!!hot);}
@@ -1162,12 +1221,13 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     snd.gain.gain.setTargetAtTime(on&&!quiet()?.2:0,t,.04);
     if(on)snd.filt.frequency.setTargetAtTime(1300+Math.min(holdT,2.5)*900+Math.sin(now/45)*250,t,.03);
   }
-  function paintSound(){$('sndbtn').textContent=muted?'Tiếng: tắt':'Tiếng: bật';}
+  function paintSound(){$('sndbtn').textContent=muted?tx('Tiếng: tắt','Sound: off'):tx('Tiếng: bật','Sound: on');}
   function clearEv(base){ev=null;schedule(base||2.2);}
-  function idleText(){return started&&!done?'Húp thật vào điện thoại đi.':'Bấm "Bắt đầu húp", cho phép mic, rồi húp thật vào điện thoại.';}
+  function idleText(){return started&&!done?tx('Húp thật vào điện thoại đi.','Slurp into your phone for real.'):tx('Bấm "Bắt đầu húp", cho phép mic, rồi húp thật vào điện thoại.','Press "Start slurping", allow the mic, then slurp into your phone for real.');}
+  function pausedText(){return tx('Mic đã tắt, tô đang chờ. Bấm "Bắt đầu húp" để ăn tiếp.','Mic off, your bowl is waiting. Press "Start slurping" to carry on.');}
   /* the start button says where the run is: idle, opening the mic, measuring the room, eating, or finished */
   function paintStart(){
-    slurpBtn.textContent=done?'Húp lại':started?'Đang húp…':pendingStart?(calibrating?'Im lặng một giây…':'Đang mở mic…'):'Bắt đầu húp';
+    slurpBtn.textContent=done?tx('Húp lại','Again'):started?tx('Đang húp…','Slurping…'):pendingStart?(calibrating?tx('Im lặng một giây…','Quiet for a second…'):tx('Đang mở mic…','Opening mic…')):tx('Bắt đầu húp','Start slurping');
     bowl.classList.toggle('eating',started&&!done);
   }
   function begin(){
@@ -1181,21 +1241,27 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     bowl.classList.remove('shake');slurpBtn.classList.remove('on');result.hidden=true;
     paintStart();say(idleText());showBest();hud();
   }
+  var lastRun=null;
+  function paintResult(){
+    if(!lastRun)return;
+    var t=title(lastRun.el),n=lastRun.note==='daily'?tx(' Đã ghi kết quả hôm nay.',' Today’s result is saved.'):lastRun.note==='best'?tx(' Kỷ lục mới.',' New record.'):'';
+    $('rtitle').textContent=t;
+    $('rtext').textContent=tx('Húp sạch '+d.n+' trong '+fmt(lastRun.el)+' giây.','Finished '+d.n+' in '+fmt(lastRun.el)+' seconds.')+n;
+    lastText=tx('Húp Phở · '+d.n+' · '+fmt(lastRun.el)+' giây · '+t+'. Húp nhanh hơn tôi đi.','Húp Phở · '+d.n+' · '+fmt(lastRun.el)+' s · '+t+'. Beat my time.');
+    $('copy').textContent=tx('Chép kết quả để khoe','Copy result to share');
+  }
   function finish(){
     done=true;ev=null;longN=null;slurpBtn.classList.remove('on');bowl.classList.remove('shake');paintStart();
     var t=title(elapsed),note='';
     if(isDaily){
       if(!store.daily[dayNum]){
-        store.daily[dayNum]=elapsed;store.streak=(store.lastDay===dayNum-1)?(store.streak||0)+1:1;store.lastDay=dayNum;note=' Đã ghi kết quả hôm nay.';
+        store.daily[dayNum]=elapsed;store.streak=(store.lastDay===dayNum-1)?(store.streak||0)+1:1;store.lastDay=dayNum;note='daily';
       }
     }
-    if(!store.best[d.id]||elapsed<store.best[d.id]){store.best[d.id]=elapsed;if(!note)note=' Kỷ lục mới.';paintBest(d);}
+    if(!store.best[d.id]||elapsed<store.best[d.id]){store.best[d.id]=elapsed;if(!note)note='best';paintBest(d);}
     save();
-    $('rtitle').textContent=t;
-    $('rtext').textContent='Húp sạch '+d.n+' trong '+fmt(elapsed)+' giây.'+note;
-    lastText='Húp Phở · '+d.n+' · '+fmt(elapsed)+' giây · '+t+'. Húp nhanh hơn tôi đi.';
-    $('copy').textContent='Chép kết quả để khoe';
-    result.hidden=false;say('Sạch tô!');showBest();
+    lastRun={el:elapsed,note:note};paintResult();
+    result.hidden=false;say(tx('Sạch tô!','Bowl cleaned!'));showBest();
     beep(660,.12,'triangle',.18);beep(880,.12,'triangle',.18,.12);beep(1320,.3,'triangle',.18,.24);
   }
   function spawn(){
@@ -1229,64 +1295,64 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
         var age=elapsed-ev.t0;
         if(ev.type==='chili'){
           if(age>1.5)clearEv();
-          else if(age>d.grace&&slurping){block('choke',1.5,'Sặc ớt! Ho một giây rưỡi.');slurping=false;clearEv(3);}
+          else if(age>d.grace&&slurping){block('choke',1.5,tx('Sặc ớt! Ho một giây rưỡi.','Chili choke! Coughing for a second and a half.'));slurping=false;clearEv(3);}
         }else if(ev.type==='fake'){
           if(age>1.3)clearEv(1.8);
         }else if(ev.type==='treat'){
-          if(slurping&&age>.25){treats++;level=Math.max(0,level-d.treatBonus);clearEv();flash('Trúng '+d.treatName.toLowerCase()+'! Tô vơi thêm một miếng.');beep(990,.14,'sine',.16);}
-          else if(age>1.3){clearEv();flash(d.treatName+' chìm mất rồi.');}
+          if(slurping&&age>.25){treats++;level=Math.max(0,level-d.treatBonus);clearEv();flash(tx('Trúng '+W(d.treatName).toLowerCase()+'! Tô vơi thêm một miếng.','Got the '+W(d.treatName).toLowerCase()+'! The bowl drops a bite.'));beep(990,.14,'sine',.16);}
+          else if(age>1.3){clearEv();flash(tx(W(d.treatName)+' chìm mất rồi.','The '+W(d.treatName).toLowerCase()+' sank.'));}
         }else if(ev.type==='lime'){
-          if(slurping&&age>.25){level=Math.max(0,level-.03);clearEv();flash('Vắt chanh xong, ngon.');}
-          else if(age>1.4){level=Math.min(cap,level+.1);clearEv();flash('Chua quá! Tô đầy lại.',true);}
+          if(slurping&&age>.25){level=Math.max(0,level-.03);clearEv();flash(tx('Vắt chanh xong, ngon.','Lime squeezed. Tasty.'));}
+          else if(age>1.4){level=Math.min(cap,level+.1);clearEv();flash(tx('Chua quá! Tô đầy lại.','Too sour! The bowl refills.'),true);}
         }else if(ev.type==='bone'){
           if(age>6)clearEv();
-          else if(age>.6&&slurping){block('choke',2,'Hóc '+d.boneName+'! Nghỉ hai giây.');slurping=false;clearEv(3);}
+          else if(age>.6&&slurping){block('choke',2,tx('Hóc '+W(d.boneName)+'! Nghỉ hai giây.','A '+W(d.boneName)+' got stuck! Two seconds to recover.'));slurping=false;clearEv(3);}
         }else if(ev.type==='mom'){
           if(age>2)clearEv();
-          else if(age>.6&&slurping){block('scold',2,'Mẹ mắng: lại ăn mì tôm! Đứng hình hai giây.');slurping=false;clearEv(3);}
+          else if(age>.6&&slurping){block('scold',2,tx('Mẹ mắng: lại ăn mì tôm! Đứng hình hai giây.','Mom: instant noodles again?! Frozen for two seconds.'));slurping=false;clearEv(3);}
         }
       }
       if(longN){
         if(longN.wait){if(!slurping)longN.wait=false;}
         else if(slurping){
           longN.on=true;longN.got+=dt;
-          if(longN.got>=d.longLen){longN=null;level=Math.max(0,level-.08);schedule(2.5);flash('Trọn sợi! Thưởng thêm một ngụm.');}
-        }else if(longN.on){longN=null;level=Math.min(cap,level+.12);schedule(2.5);flash('Đứt sợi! Rơi lại vào tô.',true);}
+          if(longN.got>=d.longLen){longN=null;level=Math.max(0,level-.08);schedule(2.5);flash(tx('Trọn sợi! Thưởng thêm một ngụm.','Whole noodle! Bonus mouthful.'));}
+        }else if(longN.on){longN=null;level=Math.min(cap,level+.12);schedule(2.5);flash(tx('Đứt sợi! Rơi lại vào tô.','Noodle broke! It fell back in.'),true);}
       }
       if(slurping){
         holdT+=dt;
-        if(d.hot&&elapsed<d.hot&&holdT>.8){block('choke',1.5,'Bỏng lưỡi! Còn nóng mà húp dài.');slurping=false;}
+        if(d.hot&&elapsed<d.hot&&holdT>.8){block('choke',1.5,tx('Bỏng lưỡi! Còn nóng mà húp dài.','Burnt tongue! Too hot for long slurps.'));slurping=false;}
         else{
           if(!(d.minSlurp&&holdT<d.minSlurp))level=Math.max(0,level-rate(d,holdT)*dt);
           breath=Math.max(0,breath-dt/d.breath);
           if(d.maxSlurp&&holdT>=d.maxSlurp&&level>0){lock=true;slurping=false;holdT=0;}
-          else if(breath<=0&&level>0){block('gasp',2,'Hết hơi! Thở hai giây đã.');slurping=false;}
+          else if(breath<=0&&level>0){block('gasp',2,tx('Hết hơi! Thở hai giây đã.','Out of air! Breathe for two seconds.'));slurping=false;}
         }
       }
       if(!slurping){
-        if(was&&d.oneBreath&&level>0&&level<cap){level=cap;flash('Nhả ra rồi! Đầy lại từ đầu.',true);}
+        if(was&&d.oneBreath&&level>0&&level<cap){level=cap;flash(tx('Nhả ra rồi! Đầy lại từ đầu.','You let go! It refills from the top.'),true);}
         holdT=0;breath=Math.min(1,breath+dt/d.regen);
         if(d.leak&&elapsed>=blockUntil)level=Math.min(cap,level+d.leak*dt);
       }
       if(d.swell&&level>0)level=Math.min(cap,level+d.swell*dt);
-      if(pours>0&&level<.4&&level>0){level=Math.min(cap,level+.25);pours--;flash(d.pourText,true);}
+      if(pours>0&&level<.4&&level>0){level=Math.min(cap,level+.25);pours--;flash(W(d.pourText),true);}
       if(d.needTreats&&treats<d.needTreats&&level<.06)level=.06;
       was=slurping;
       bowl.classList.toggle('shake',elapsed<blockUntil&&blockKind==='choke');
-      if(level<=0&&bowls>1){bowls--;level=cap;flash('Xong tô khô. Còn tô nước!',true);}
+      if(level<=0&&bowls>1){bowls--;level=cap;flash(tx('Xong tô khô. Còn tô nước!','Dry bowl done. Now the soup!'),true);}
       if(level<=0){finish();slurping=false;}
       else if(elapsed<blockUntil)say(blockText,true);
-      else if(ev&&ev.type==='chili')say('Ớt nổi lên! Ngừng húp.',true);
-      else if(ev&&ev.type==='bone')say('Có '+d.boneName+'! Chạm vào tô để gắp ra.',true);
-      else if(ev&&ev.type==='mom')say('Mẹ đang nhìn! Ngừng húp.',true);
-      else if(ev&&ev.type==='lime')say('Chanh! Húp ngay kẻo chua.');
-      else if(ev&&ev.type==='treat')say(d.treatName+' kìa! Húp ngay.');
-      else if(longN)say(longN.on?'Giữ hơi! Đừng ngắt.':(longN.wait?'Sợi dài! Nhả ra, lấy hơi đã.':'Sợi dài! Húp một hơi không ngắt.'));
-      else if(lock)say('Nhả ra rồi gắp miếng mới.');
+      else if(ev&&ev.type==='chili')say(tx('Ớt nổi lên! Ngừng húp.','Chili! Stop slurping.'),true);
+      else if(ev&&ev.type==='bone')say(tx('Có '+W(d.boneName)+'! Chạm vào tô để gắp ra.','A '+W(d.boneName)+'! Tap the bowl to pick it out.'),true);
+      else if(ev&&ev.type==='mom')say(tx('Mẹ đang nhìn! Ngừng húp.','Mom is watching! Stop slurping.'),true);
+      else if(ev&&ev.type==='lime')say(tx('Chanh! Húp ngay kẻo chua.','Lime! Slurp it before it turns sour.'));
+      else if(ev&&ev.type==='treat')say(tx(W(d.treatName)+' kìa! Húp ngay.',W(d.treatName)+'! Slurp it now.'));
+      else if(longN)say(longN.on?tx('Giữ hơi! Đừng ngắt.','Keep going! Don’t stop.'):(longN.wait?tx('Sợi dài! Nhả ra, lấy hơi đã.','Long noodle! Stop and take a breath first.'):tx('Sợi dài! Húp một hơi không ngắt.','Long noodle! Slurp it in one go.')));
+      else if(lock)say(tx('Nhả ra rồi gắp miếng mới.','Let go, then take the next bite.'));
       else if(elapsed<flashUntil)say(flashText,flashHot);
-      else if(d.hot&&elapsed<d.hot)say('Còn nóng! Húp từng hơi ngắn thôi.',true);
-      else if(d.needTreats&&treats<d.needTreats&&level<=.07)say('Chờ '+d.treatName.toLowerCase()+' nổi lên rồi húp.');
-      else say(slurping?'Sụt sụt sụt…':'Thở xong chưa? Húp tiếp.');
+      else if(d.hot&&elapsed<d.hot)say(tx('Còn nóng! Húp từng hơi ngắn thôi.','Still hot! Short slurps only.'),true);
+      else if(d.needTreats&&treats<d.needTreats&&level<=.07)say(tx('Chờ '+W(d.treatName).toLowerCase()+' nổi lên rồi húp.','Wait for a '+W(d.treatName).toLowerCase()+' to float up, then slurp it.'));
+      else say(slurping?tx('Sụt sụt sụt…','Sluuurp…'):tx('Thở xong chưa? Húp tiếp.','Caught your breath? Keep slurping.'));
       hud();
     }
     var v=VES[d.ves||'bowl'], ys=v.top+(1-level)*v.depth, sc=Math.max(.05,Math.min(v.maxRx,v.hw(ys)-4)/116), dy=ys-98;
@@ -1330,7 +1396,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   });
   $('sndbtn').addEventListener('click',function(){muted=!muted;store.mute=muted;save();paintSound();audio();});
   paintSound();
-  function grab(){if(ev&&ev.type==='bone'&&!done){clearEv();flash('Gắp '+d.boneName+' ra rồi. Húp tiếp.');}}
+  function grab(){if(ev&&ev.type==='bone'&&!done){clearEv();flash(tx('Gắp '+W(d.boneName)+' ra rồi. Húp tiếp.','Picked out the '+W(d.boneName)+'. Keep slurping.'));}}
   svg.addEventListener('pointerdown',grab);
   window.addEventListener('keydown',function(e){if(!bookOpen&&(e.key==='x'||e.key==='X'))grab();});
   $('again').addEventListener('click',reset);
@@ -1342,7 +1408,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   $('howto').addEventListener('click',function(){Menu.open(0);});
   $('copy').addEventListener('click',function(){
     var b=$('copy');
-    try{navigator.clipboard.writeText(lastText).then(function(){b.textContent='Đã chép. Dán vào đâu cũng được.';},function(){b.textContent=lastText;});}
+    try{navigator.clipboard.writeText(lastText).then(function(){b.textContent=tx('Đã chép. Dán vào đâu cũng được.','Copied. Paste it anywhere.');},function(){b.textContent=lastText;});}
     catch(e){b.textContent=lastText;}
   });
 
@@ -1355,11 +1421,11 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     try{if(actx)actx.close();}catch(e){}
     stream=null;actx=null;analyser=null;
     $('microw').hidden=true;micBtn.hidden=true;paintStart();
-    say(text||(elapsed>0&&!done?'Mic đã tắt, tô đang chờ. Bấm "Bắt đầu húp" để ăn tiếp.':idleText()),!!text);
+    say(text||(elapsed>0&&!done?pausedText():idleText()),!!text);
   }
   function micStart(){
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){micOff('Trình duyệt này không cho dùng mic, nên chưa húp được. Hãy mở trang bằng Chrome hoặc Safari mới.');return;}
-    say('Cho phép dùng mic để bắt đầu húp.');
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){micOff(tx('Trình duyệt này không cho dùng mic, nên chưa húp được. Hãy mở trang bằng Chrome hoặc Safari mới.','This browser can’t use the mic, so you can’t play yet. Open the page in a recent Chrome or Safari.'));return;}
+    say(tx('Cho phép dùng mic để bắt đầu húp.','Allow the mic to start slurping.'));
     navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(function(s){
       stream=s;
       var AC=window.AudioContext||window.webkitAudioContext;actx=new AC();
@@ -1367,10 +1433,10 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
       buf=new Float32Array(analyser.frequencyBinCount);
       var hz=actx.sampleRate/analyser.fftSize;lo0=Math.ceil(250/hz);lo1=Math.floor(1000/hz);hi0=Math.ceil(2000/hz);hi1=Math.min(buf.length-1,Math.floor(8000/hz));
       calN=0;calSum=0;onFrames=0;calUntil=performance.now()+1000;micOn=true;calibrating=true;
-      $('microw').hidden=false;micBtn.hidden=false;$('mstate').textContent='đo tiếng ồn…';
-      paintStart();say('Im lặng một giây để đo tiếng ồn xung quanh.');
+      $('microw').hidden=false;micBtn.hidden=false;$('mstate').textContent=tx('đo tiếng ồn…','measuring noise…');
+      paintStart();say(tx('Im lặng một giây để đo tiếng ồn xung quanh.','Stay quiet for a second while we measure the room.'));
     }).catch(function(){
-      micOff('Chưa có mic thì chưa húp được. Cho phép mic trong trình duyệt rồi bấm "Bắt đầu húp" lại. Nếu trang không hỏi mic, hãy mở nó trên web riêng.');
+      micOff(tx('Chưa có mic thì chưa húp được. Cho phép mic trong trình duyệt rồi bấm "Bắt đầu húp" lại. Nếu trang không hỏi mic, hãy mở nó trên web riêng.','You need the mic to play. Allow it in your browser, then press "Start slurping" again. If the page never asks, open it on its own site.'));
     });
   }
   micBtn.addEventListener('click',function(){micOff();});
@@ -1402,10 +1468,28 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     }
     var j=micJudge(f,now);micSlurp=j.slurp;
     $('mlevel').style.width=Math.max(0,Math.min(100,(f.hi-floorDb)/20*100)).toFixed(0)+'%';
-    $('mstate').textContent=micSlurp?'nghe thấy húp':(j.loud&&!j.hissy?'có tiếng, nhưng không phải tiếng húp':'đang nghe');
+    $('mstate').textContent=micSlurp?tx('nghe thấy húp','slurp heard'):(j.loud&&!j.hissy?tx('có tiếng, nhưng không phải tiếng húp','sound, but not a slurp'):tx('đang nghe','listening'));
   }
 
+  function paintStatic(){
+    [].forEach.call(document.querySelectorAll('[data-en]'),function(el){if(el.dataset.vi===undefined)el.dataset.vi=el.textContent;el.textContent=lang==='en'?el.dataset.en:el.dataset.vi;});
+    [].forEach.call(document.querySelectorAll('[data-en-label]'),function(el){if(el.dataset.viLabel===undefined)el.dataset.viLabel=el.getAttribute('aria-label');el.setAttribute('aria-label',lang==='en'?el.dataset.enLabel:el.dataset.viLabel);});
+    [].forEach.call(document.querySelectorAll('.lang button'),function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-lang')===lang));});
+    document.documentElement.lang=lang;
+  }
+  /* switching language redraws every visible word in place; a bowl in progress keeps going */
+  function applyLang(l){
+    lang=l==='en'?'en':'vi';store.lang=lang;save();
+    paintStatic();paintSound();paintStart();paintDish();showBest();hud();
+    var ct=document.querySelector('#vessel text');if(ct)ct.textContent=tx('SẠCH!','CLEAN!');
+    if(!result.hidden)paintResult();
+    if(done)say(tx('Sạch tô!','Bowl cleaned!'));else if(!started)say(elapsed>0?pausedText():idleText());
+    if(micOn&&calibrating)$('mstate').textContent=tx('đo tiếng ồn…','measuring noise…');
+    Menu.relang();DISHES.forEach(function(q){paintBest(q);});markItems();
+  }
+  [].forEach.call(document.querySelectorAll('.lang button'),function(b){b.addEventListener('click',function(){applyLang(b.getAttribute('data-lang'));});});
   function start(data){
+    paintStatic();
     buildBoard();
     if(typeof data.cur==='number'&&data.cur>=0&&data.cur<DISHES.length)pick(data.cur,!!data.daily);else pick(dailyIdx,true);
     requestAnimationFrame(tick);
