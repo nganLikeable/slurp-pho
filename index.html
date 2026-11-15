@@ -52,7 +52,30 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 .sub{font-size:13px;color:var(--soft)}
 .rule{font-size:14px;margin-top:2px;text-wrap:balance}
 .clock{font-family:var(--display);font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
-.table{background:var(--steel);border-radius:14px;padding:8px 8px 14px}
+.table{position:relative;background:var(--steel);border-radius:14px;padding:8px 8px 14px}
+/* 1v1: the opponent's row above the bowl, and the shared 3-2-1 over it */
+.duelbtn{border-color:var(--sign);color:var(--sign)}
+.chip:disabled,.btn:disabled{opacity:.35;cursor:default}
+.duel{background:var(--card);border:1.5px solid var(--ink);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.duelhead{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.duelhead .me{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.duelhead b{font-weight:600}
+.opp{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:3px 10px;align-items:center}
+.opic{grid-row:1/4}
+.opic svg{display:block;width:46px;height:auto}
+.oname{font-weight:600;font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.otag{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--sign);margin-left:6px}
+.otime{font-family:var(--display);font-size:18px;line-height:1;font-variant-numeric:tabular-nums}
+.olevel{grid-column:2/4;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.olevel i{display:block;height:100%;width:100%;background:var(--sign);transition:width .12s linear}
+.ostat{grid-column:2/4;font-size:13px;color:var(--soft);min-height:18px}
+.dmsg{font-size:14px;font-weight:600;text-wrap:pretty}
+.dmsg:empty{display:none}
+.count{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none;font:400 88px/1 var(--display);color:var(--sign);text-shadow:0 3px 0 #FFFFFF,0 6px 14px #0004}
+.count span{animation:countpop .95s ease-out both}
+@keyframes countpop{from{transform:scale(1.8);opacity:0}30%{transform:scale(1);opacity:1}to{transform:scale(.92);opacity:.25}}
+.dres{font-family:var(--display);font-size:18px;line-height:1.2;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.count span{animation:none}}
 .table svg{display:block;width:100%;height:auto;max-width:400px;margin:0 auto;touch-action:manipulation}
 .shake{animation:shake .12s linear infinite}
 @keyframes shake{0%{transform:translateX(-4px)}50%{transform:translateX(4px)}100%{transform:translateX(-4px)}}
@@ -315,6 +338,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     <button class="chip" id="prev" type="button" aria-label="Tô trước" data-en-label="Previous bowl">‹</button>
     <button class="chip" id="next" type="button" aria-label="Tô sau" data-en-label="Next bowl">›</button>
     <button class="chip" id="tomenu" type="button" aria-haspopup="dialog" data-en="Menu: 30 bowls">Thực đơn 30 tô</button>
+    <button class="chip duelbtn" id="duelbtn" type="button" data-en="Find opponent">Tìm đối thủ</button>
     <button class="chip" id="sndbtn" type="button">Tiếng: bật</button>
   </nav>
 
@@ -330,7 +354,23 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     </div>
   </div>
 
+  <section class="duel" id="duel" hidden aria-live="polite">
+    <div class="duelhead">
+      <span class="me"><span data-en="You">Bạn</span>: <b id="dmyname"></b> <button class="linkbtn" id="dreroll" type="button" data-en="new name">đổi tên</button></span>
+      <button class="chip" id="dleave" type="button" data-en="Leave">Rời trận</button>
+    </div>
+    <div class="opp" id="opp" hidden>
+      <span class="opic" id="opic"></span>
+      <span class="oname"><span id="oname"></span><span class="otag" id="otag"></span></span>
+      <span class="otime" id="otime"></span>
+      <div class="olevel" aria-hidden="true"><i id="obar"></i></div>
+      <span class="ostat" id="ostat"></span>
+    </div>
+    <div class="dmsg" id="dmsg"></div>
+  </section>
+
   <div class="table">
+    <div class="count" id="count" hidden aria-live="assertive"></div>
     <svg viewBox="0 0 320 240" role="img" aria-label="Tô mì. Chạm vào tô để gắp xương." data-en-label="Bowl of noodles. Tap the bowl to pick out bones." id="svg">
       <defs><clipPath id="lvclip"><rect id="lvrect" x="0" y="98" width="320" height="150"/></clipPath></defs>
       <g id="bowl">
@@ -371,9 +411,12 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   <section class="result" id="result" hidden aria-live="polite">
     <h2 id="rtitle">Thánh Húp</h2>
     <p id="rtext"></p>
+    <p class="dres" id="dres" hidden></p>
     <div class="controls">
       <button class="btn" id="copy" type="button">Chép kết quả để khoe</button>
       <button class="btn" id="rnext" type="button" data-en="Next bowl ›">Tô tiếp theo ›</button>
+      <button class="btn" id="drematch" type="button" hidden>Đấu lại</button>
+      <button class="btn" id="dnew" type="button" hidden data-en="New opponent">Tìm đối thủ mới</button>
     </div>
   </section>
 
@@ -550,6 +593,11 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   var treats=0, pours=0, bowls=1, flashText='', flashHot=false, flashUntil=0, lastText='';
 
   function fmt(s){return lang==='en'?s.toFixed(2):s.toFixed(2).replace('.',',');}
+  /* hazard randomness: Math.random normally; in a 1v1 a generator seeded by the server, so both players
+     get the same chilies, dough sticks and long noodles in the same order with the same gaps */
+  var rnd=Math.random;
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  function seedRnd(s){rnd=s==null?Math.random:mulberry32(s);}
   function wave(x,y,amp,len,x1){var p='M'+x+' '+y+' q'+(len/2)+' '+(-amp)+' '+len+' 0';for(var c=x+len;c<x1;c+=len)p+=' t'+len+' 0';return p;}
   function rate(q,t){return (q.base+Math.min(t,2.5)*q.bonus)*q.speed;}
   function par(q){
@@ -1144,6 +1192,203 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   })();
   function buildBoard(){Menu.build();DISHES.forEach(function(q){paintBest(q);});}
 
+  /* ---------- 1v1: live races through the Húp Phở server (server/server.js) ----------
+     Both players get the same dish and hazard seed and see each other's bowl drain live.
+     With nobody else online the server sends a recorded run of an earlier real player (ghost), or a bot. */
+  var DUEL_SERVER='';   /* empty: the server that serves this page; or a full address such as 'wss://example.com/ws' */
+  var Duel=(function(){
+    var NICK=['Ớt Hiểm','Quẩy Giòn','Hành Phi','Chanh Leo','Rau Thơm','Sa Tế','Mắm Tôm','Nước Dùng','Bánh Phở','Tỏi Phi','Giá Sống','Bò Tái','Chả Lụa','Hến Xào','Bún Tươi','Trứng Lòng Đào'];
+    var EVT={choke:['Sặc!','Choked!'],gasp:['Hết hơi!','Out of air!'],scold:['Bị mẹ mắng!','Mom caught them!']};
+    var ws=null,state='off',kind='',opp=null,seed=0,dishI=0,run=null,botTime=0,res=null,oppDone=null,oppLeft=false,oppReady=false,rematchAsked=false;
+    var samples=[],lastSample=-1,lastSend=0,cdTimer=null,connTimer=null,dm=['',''];
+    function newNick(){return NICK[Math.floor(Math.random()*NICK.length)]+' '+(1+Math.floor(Math.random()*99));}
+    function nick(){if(!store.nick){store.nick=newNick();save();}return store.nick;}
+    function url(){
+      if(DUEL_SERVER)return DUEL_SERVER;
+      if(!/^https?:$/.test(location.protocol))return null;
+      return (location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws';
+    }
+    function out(m){if(ws&&ws.readyState===1)ws.send(JSON.stringify(m));}
+    function M(v,e){dm=[v,e];$('dmsg').textContent=tx(v,e);}
+    /* during a duel the dish can't change: arrows, daily bowl, menu and new bowl are locked */
+    function lock(on){['prev','next','dailybtn','tomenu','howto','again','rnext'].forEach(function(id){$(id).disabled=on;});}
+
+    function find(){
+      audio();
+      clearTimeout(cdTimer);$('count').hidden=true;
+      $('duel').hidden=false;opp=null;res=null;paint();
+      var u=url();
+      if(!u||!window.WebSocket){state='off';paint();
+        M('1v1 cần máy chủ Húp Phở. Mở game từ máy chủ đó (xem project.md); chơi một mình thì vẫn được.','1v1 needs the Húp Phở server. Open the game from that server (see project.md); solo play still works.');return;}
+      state='connecting';kind='';paint();M('Đang kết nối…','Connecting…');
+      if(ws&&ws.readyState===1){out({type:'find',name:nick()});return;}
+      try{ws=new WebSocket(u);}catch(e){fail();return;}
+      var sock=ws;
+      connTimer=setTimeout(function(){if(sock.readyState!==1){try{sock.close();}catch(e){}fail();}},4000);
+      sock.onopen=function(){clearTimeout(connTimer);out({type:'find',name:nick()});};
+      sock.onmessage=function(e){var m;try{m=JSON.parse(e.data);}catch(x){return;}on(m);};
+      sock.onclose=function(){
+        if(ws!==sock)return;ws=null;
+        if(state==='connecting'){fail();return;}
+        if(kind==='live'&&state!=='off'&&state!=='finished'){oppLeft=true;paint();M('Mất kết nối với máy chủ. Bạn vẫn húp tiếp được.','Lost connection to the server. You can still finish your bowl.');}
+      };
+    }
+    function fail(){clearTimeout(connTimer);state='off';kind='';paint();lock(false);
+      M('Không kết nối được máy chủ 1v1. Chơi một mình vẫn được.','Could not reach the 1v1 server. Solo play still works.');}
+
+    function on(m){
+      switch(m.type){
+        case 'searching':state='searching';paint();M('Đang tìm đối thủ… Chưa ai thì sau vài giây sẽ đua với lượt ghi của người chơi trước.','Finding an opponent… If nobody turns up, in a few seconds you race an earlier player’s recorded run.');break;
+        case 'match':setup('live',m.dish,m.seed,m.opp&&m.opp.name);break;
+        case 'ghost':run=m.run;setup('ghost',m.dish,m.seed,run.name);break;
+        case 'bot':run=null;setup('bot',m.dish,m.seed,'');break;
+        case 'oppready':oppReady=true;paint();break;
+        case 'go':countdown();break;
+        case 'p':if(opp&&kind==='live'){opp.lvl=m.lvl;opp.at=m.at;if(m.e){opp.e=m.e;opp.eAt=Date.now();}paintOpp();}break;
+        case 'oppdone':if(opp){oppDone=m.time;opp.lvl=0;paintOpp();}break;
+        case 'result':res={you:m.you,opp:m.opp,forfeit:!!m.forfeit};showResult();break;
+        case 'left':oppLeft=true;paint();
+          if(state==='matched'||state==='waiting'||state==='countdown'){clearTimeout(cdTimer);$('count').hidden=true;state='left';paint();paintStart();
+            M('Đối thủ đã rời trận trước khi bắt đầu. Tìm đối thủ mới nhé.','Your opponent left before the start. Find a new one.');}
+          else if(state==='racing')M('Đối thủ đã rời trận. Húp xong là bạn thắng.','Your opponent left. Finish your bowl to win.');
+          break;
+        case 'rematchasked':rematchAsked=true;paintRes();break;
+      }
+    }
+    function setup(k,dish,s,name){
+      kind=k;state='matched';dishI=dish;seed=s;
+      opp={name:k==='bot'?'':(name||'?'),lvl:1,at:0,e:'',eAt:0};
+      oppDone=null;oppLeft=false;oppReady=false;res=null;rematchAsked=false;samples=[];lastSample=-1;
+      botTime=k==='ghost'?run.time:k==='bot'?Math.round(par(DISHES[dish])*1.6*100)/100:0;
+      lock(true);seedRnd(seed);pick(dish,false);
+      $('opic').innerHTML=thumb(DISHES[dish]);
+      paint();
+      if(k==='live')M('Có đối thủ rồi! Cùng một món, cùng ớt và quẩy. Bấm "Bắt đầu húp" khi sẵn sàng.','Opponent found! Same dish, same chilies and dough sticks. Press "Start slurping" when ready.');
+      else if(k==='ghost')M('Chưa ai online. Đua với lượt ghi của '+opp.name+', cùng món và cùng ớt. Bấm "Bắt đầu húp".','Nobody online. Race '+opp.name+'’s recorded run, same dish and same chilies. Press "Start slurping".');
+      else M('Chưa ai online và món này chưa có lượt ghi, nên bạn đua với máy. Bấm "Bắt đầu húp".','Nobody online and no recorded runs for this dish yet, so you race the bot. Press "Start slurping".');
+    }
+    /* begin() asks first: in a duel the clock waits for the countdown */
+    function hold(){
+      if(state==='matched'){
+        pendingStart=false;
+        if(kind==='live'){state='waiting';out({type:'ready'});M('Bạn đã sẵn sàng. Chờ đối thủ…','You’re ready. Waiting for your opponent…');}
+        else countdown();
+        paintStart();return true;
+      }
+      return state==='waiting'||state==='countdown'||state==='left';
+    }
+    function countdown(){
+      state='countdown';M('','');paintStart();
+      var c=$('count');c.hidden=false;
+      function show(t){c.innerHTML='<span>'+t+'</span>';}
+      show(3);
+      cdTimer=setTimeout(function(){show(2);
+        cdTimer=setTimeout(function(){show(1);
+          cdTimer=setTimeout(function(){show(tx('Húp!','Go!'));state='racing';begin();paint();
+            cdTimer=setTimeout(function(){c.hidden=true;},700);},1000);},1000);},1000);
+    }
+    function ghostAt(t){
+      var s=run.s.concat([[run.time,0]]),i;
+      if(t<=s[0][0])return s[0][1];
+      for(i=1;i<s.length;i++)if(t<=s[i][0]){var a=s[i-1],b=s[i],k=(t-a[0])/Math.max(.001,b[0]-a[0]);return a[1]+(b[1]-a[1])*k;}
+      return 0;
+    }
+    /* every frame: send your progress, keep samples for the recording, and move a ghost or bot along your clock */
+    function frame(){
+      if(state!=='racing'&&state!=='finished')return;
+      var lv=Math.max(0,Math.min(1,level/Math.max(d.start,.01)));
+      if(state==='racing'&&started&&!done){
+        var now=performance.now();
+        if(kind==='live'&&now-lastSend>100){lastSend=now;out({type:'p',lvl:+lv.toFixed(3),at:+elapsed.toFixed(2)});}
+        if(elapsed-lastSample>=.25){lastSample=elapsed;samples.push([+elapsed.toFixed(2),+lv.toFixed(3)]);}
+      }
+      if(kind!=='live'&&opp&&oppDone==null){
+        opp.lvl=kind==='bot'?Math.max(0,1-elapsed/botTime):ghostAt(elapsed);
+        opp.at=elapsed;
+        if(elapsed>=botTime){opp.lvl=0;oppDone=botTime;}
+        paintOpp();
+      }
+    }
+    function event(k){if(kind==='live'&&state==='racing')out({type:'p',lvl:+Math.max(0,level/Math.max(d.start,.01)).toFixed(3),at:+elapsed.toFixed(2),e:k});}
+    function thin(a,max){if(a.length<=max)return a;var o=[],i;for(i=0;i<max-1;i++)o.push(a[Math.round(i*(a.length-1)/(max-1))]);o.push(a[a.length-1]);return o;}
+    function finish(t){
+      if(state!=='racing')return;
+      state='finished';
+      out({type:'done',time:+t.toFixed(2),samples:thin(samples.concat([[+t.toFixed(2),0]]),60)});
+      if(kind!=='live'){res={you:t,opp:botTime,forfeit:false};oppDone=botTime;}   /* show the ghost's or bot's own final time */
+      else if(oppLeft)res={you:t,opp:null,forfeit:true};
+      paintStart();showResult();
+    }
+    function showResult(){paintResult();paint();}
+
+    function paintOpp(){
+      var box=$('opp');
+      if(!opp){box.hidden=true;return;}
+      box.hidden=false;
+      $('oname').textContent=kind==='bot'?tx('Máy','Bot'):opp.name;
+      $('otag').textContent=kind==='live'?tx('Trực tiếp','Live'):kind==='ghost'?tx('Lượt ghi','Recorded'):'';
+      $('obar').style.width=Math.round(opp.lvl*100)+'%';
+      $('otime').textContent=oppDone!=null?fmt(oppDone):(state==='racing'||state==='finished')&&opp.at?fmt(opp.at):'';
+      var st='';
+      if(oppLeft)st=tx('Đã rời trận','Left the race');
+      else if(oppDone!=null)st=tx('Sạch tô!','Bowl cleaned!');
+      else if(opp.e&&Date.now()-opp.eAt<1600&&EVT[opp.e])st=tx(EVT[opp.e][0],EVT[opp.e][1]);
+      else if(state==='matched'||state==='waiting')st=kind==='live'?(oppReady?tx('Sẵn sàng','Ready'):tx('Đang chuẩn bị mic…','Getting their mic ready…')):tx('Chờ bạn','Waiting for you');
+      else if(state==='racing'||state==='finished')st=tx('Đang húp…','Slurping…');
+      $('ostat').textContent=st;
+    }
+    function paintRes(){
+      var el=$('dres'),rm=$('drematch'),nw=$('dnew');
+      if(state!=='finished'){el.hidden=true;rm.hidden=true;nw.hidden=true;return;}
+      el.hidden=false;nw.hidden=false;rm.hidden=!(kind==='live'&&!oppLeft);
+      rm.textContent=rematchAsked?tx('Đối thủ muốn đấu lại!','They want a rematch!'):tx('Đấu lại','Rematch');
+      var who=kind==='bot'?tx('máy','the bot'):opp.name;
+      if(!res){el.textContent=tx('Chờ '+who+' húp xong…','Waiting for '+who+' to finish…');return;}
+      if(res.forfeit||res.opp==null)el.textContent=tx('Bạn thắng! Đối thủ đã rời trận.','You win! Your opponent left.');
+      else if(res.you<res.opp)el.textContent=tx('Bạn thắng! ','You win! ')+fmt(res.you)+' s · '+who+' '+fmt(res.opp)+' s';
+      else if(res.you>res.opp)el.textContent=tx('Thua rồi! ','You lost! ')+fmt(res.you)+' s · '+who+' '+fmt(res.opp)+' s';
+      else el.textContent=tx('Hòa! Cả hai ','A tie! Both ')+fmt(res.you)+' s';
+    }
+    function paint(){
+      $('dmyname').textContent=nick();
+      $('dreroll').disabled=!(state==='off'||state==='searching');
+      $('duelbtn').disabled=state!=='off';
+      if(dm[0])$('dmsg').textContent=tx(dm[0],dm[1]);
+      paintOpp();paintRes();
+    }
+    function leave(){
+      out({type:'cancel'});
+      if(ws){var s=ws;ws=null;try{s.close();}catch(e){}}
+      clearTimeout(cdTimer);clearTimeout(connTimer);$('count').hidden=true;
+      var was=state;state='off';kind='';opp=null;res=null;run=null;dm=['',''];$('dmsg').textContent='';
+      seedRnd(null);lock(false);$('duel').hidden=true;paint();
+      if(was!=='off'&&was!=='connecting'&&was!=='searching')reset();else paintStart();
+    }
+    function label(){
+      if(state==='connecting'||state==='searching')return tx('Đang tìm đối thủ…','Finding opponent…');
+      if(state==='waiting')return tx('Chờ đối thủ…','Waiting…');
+      if(state==='countdown')return tx('Sắp bắt đầu…','Get ready…');
+      if(state==='finished')return tx('Xong trận','Race over');
+      if(state==='left')return tx('Trận đã hủy','Race cancelled');
+      return '';
+    }
+    $('duelbtn').addEventListener('click',find);
+    $('dleave').addEventListener('click',leave);
+    $('dnew').addEventListener('click',find);
+    $('dreroll').addEventListener('click',function(){store.nick=newNick();save();paint();if(state==='searching')out({type:'find',name:nick()});});
+    $('drematch').addEventListener('click',function(){out({type:'rematch'});M('Đã mời đấu lại. Chờ đối thủ đồng ý…','Rematch requested. Waiting for your opponent…');});
+    return {
+      hold:hold,frame:frame,event:event,finish:finish,paint:paint,label:label,
+      blocks:function(){return state==='connecting'||state==='searching'||state==='finished'||state==='left';},
+      shareSuffix:function(){
+        if(state!=='finished'||!res||!opp)return '';
+        var who=kind==='bot'?tx('máy','the bot'):opp.name;
+        if(res.forfeit||res.opp==null||res.you<res.opp)return tx(' Thắng '+who+' trong 1v1.',' Beat '+who+' in 1v1.');
+        return res.you>res.opp?tx(' Thua '+who+' trong 1v1.',' Lost to '+who+' in 1v1.'):tx(' Hòa với '+who+'.',' Tied with '+who+'.');
+      }
+    };
+  })();
+
   function paintBest(q){var el=$('best-'+q.id);if(el)el.textContent=store.best[q.id]?fmt(store.best[q.id])+' s':'';}
 
   function pick(i,daily){
@@ -1185,8 +1430,8 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   }
   function say(t,hot){if(msg.textContent!==t)msg.textContent=t;msg.classList.toggle('hot',!!hot);}
   function flash(t,hot){flashText=t;flashHot=!!hot;flashUntil=elapsed+1.3;}
-  function schedule(base){nextEv=elapsed+(base+Math.random()*2.5)/d.evRate;}
-  function block(kind,dur,text){blockKind=kind;blockUntil=elapsed+dur;blockText=text;beep(150,.3,'sawtooth',.12);}
+  function schedule(base){nextEv=elapsed+(base+rnd()*2.5)/d.evRate;}
+  function block(kind,dur,text){blockKind=kind;blockUntil=elapsed+dur;blockText=text;beep(150,.3,'sawtooth',.12);Duel.event(kind);}
 
   /* sound: looped filtered noise while slurping plus short beeps. The hissing loop would trigger the mic's slurp detector,
      so it stays silent while the mic listens; beeps are short and tonal, which the detector ignores, so they still play. */
@@ -1227,17 +1472,19 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
   function pausedText(){return tx('Mic đã tắt, tô đang chờ. Bấm "Bắt đầu húp" để ăn tiếp.','Mic off, your bowl is waiting. Press "Start slurping" to carry on.');}
   /* the start button says where the run is: idle, opening the mic, measuring the room, eating, or finished */
   function paintStart(){
-    slurpBtn.textContent=done?tx('Húp lại','Again'):started?tx('Đang húp…','Slurping…'):pendingStart?(calibrating?tx('Im lặng một giây…','Quiet for a second…'):tx('Đang mở mic…','Opening mic…')):tx('Bắt đầu húp','Start slurping');
+    var dl=Duel?Duel.label():'';
+    slurpBtn.textContent=dl?dl:done?tx('Húp lại','Again'):started?tx('Đang húp…','Slurping…'):pendingStart?(calibrating?tx('Im lặng một giây…','Quiet for a second…'):tx('Đang mở mic…','Opening mic…')):tx('Bắt đầu húp','Start slurping');
     bowl.classList.toggle('eating',started&&!done);
   }
   function begin(){
     if(done)reset();
+    if(Duel.hold())return;   /* in a 1v1 the clock waits for the shared 3-2-1 */
     pendingStart=false;started=true;paintStart();say(idleText());
   }
   function reset(){
     level=d.start;breath=1;holdT=0;elapsed=0;started=false;done=false;lock=false;was=false;
     ev=null;longN=null;longCount=0;blockUntil=0;flashUntil=0;treats=0;pours=d.pour;bowls=d.bowls;
-    nextEv=(2+Math.random()*2)/d.evRate;
+    nextEv=(2+rnd()*2)/d.evRate;
     bowl.classList.remove('shake');slurpBtn.classList.remove('on');result.hidden=true;
     paintStart();say(idleText());showBest();hud();
   }
@@ -1249,6 +1496,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     $('rtext').textContent=tx('Húp sạch '+d.n+' trong '+fmt(lastRun.el)+' giây.','Finished '+d.n+' in '+fmt(lastRun.el)+' seconds.')+n;
     lastText=tx('Húp Phở · '+d.n+' · '+fmt(lastRun.el)+' giây · '+t+'. Húp nhanh hơn tôi đi.','Húp Phở · '+d.n+' · '+fmt(lastRun.el)+' s · '+t+'. Beat my time.');
     $('copy').textContent=tx('Chép kết quả để khoe','Copy result to share');
+    if(Duel)lastText+=Duel.shareSuffix();
   }
   function finish(){
     done=true;ev=null;longN=null;slurpBtn.classList.remove('on');bowl.classList.remove('shake');paintStart();
@@ -1263,11 +1511,12 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     lastRun={el:elapsed,note:note};paintResult();
     result.hidden=false;say(tx('Sạch tô!','Bowl cleaned!'));showBest();
     beep(660,.12,'triangle',.18);beep(880,.12,'triangle',.18,.12);beep(1320,.3,'triangle',.18,.24);
+    Duel.finish(elapsed);
   }
   function spawn(){
     var m=d.mix,keys=Object.keys(m),tot=0,k,i;
     for(i=0;i<keys.length;i++)tot+=m[keys[i]];
-    var r=Math.random()*tot,type=keys[0];
+    var r=rnd()*tot,type=keys[0];
     for(i=0;i<keys.length;i++){r-=m[keys[i]];if(r<=0){type=keys[i];break;}}
     if(d.needTreats&&treats<d.needTreats&&level<=.07)type='treat';
     if(type==='long'){
@@ -1275,7 +1524,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
       else schedule(.8);
       return;
     }
-    ev={type:type,t0:elapsed,x:70+Math.random()*150};
+    ev={type:type,t0:elapsed,x:70+rnd()*150};
     var el=$('ev');
     if(el&&type!=='mom'){el.innerHTML=ART[type==='bone'?d.boneArt:type];el.setAttribute('transform','translate('+ev.x.toFixed(0)+',94)');}
   }
@@ -1382,12 +1631,14 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     steam.setAttribute('opacity',(.15+level*.75).toFixed(2));
     clock.textContent=fmt(elapsed);
     if(micOn)readMic();
+    Duel.frame();
     requestAnimationFrame(tick);
   }
 
   /* "Bắt đầu húp": ask for the mic if it is off, measure the room for a second, then the run starts. Only real slurps drain the bowl. */
   slurpBtn.addEventListener('click',function(){
     audio();
+    if(Duel.blocks())return;
     if(started&&!done)return;
     if(done)reset();
     if(micOn&&!calibrating){begin();return;}
@@ -1486,6 +1737,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     if(done)say(tx('Sạch tô!','Bowl cleaned!'));else if(!started)say(elapsed>0?pausedText():idleText());
     if(micOn&&calibrating)$('mstate').textContent=tx('đo tiếng ồn…','measuring noise…');
     Menu.relang();DISHES.forEach(function(q){paintBest(q);});markItems();
+    Duel.paint();
   }
   [].forEach.call(document.querySelectorAll('.lang button'),function(b){b.addEventListener('click',function(){applyLang(b.getAttribute('data-lang'));});});
   function start(data){

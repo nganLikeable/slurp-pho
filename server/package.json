@@ -1,0 +1,16 @@
+{
+  "name": "huppho-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serves Húp Phở and pairs players for 1v1 races over WebSocket",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "8.18.0"
+  }
+}

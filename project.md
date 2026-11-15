@@ -103,24 +103,37 @@ Expect a spike of a week or two, as with any joke game. The aim is a daily reaso
 
 ## 1v1 random matching
 
-Not built yet. The design needs no sign-up, but matching strangers needs a small always-on server, and that decision is still open.
+Built as live matchmaking through a small Node.js server in `server/`, which you host yourself. Without the server, solo play works as before and "Tìm đối thủ" explains that 1v1 needs the server.
 
-**Design**
+**How a race goes**
 
-- Tap "Tìm đối thủ" and get a random nickname. No account.
-- Both players get the same dish with the same hazard timing, and see each other's bowl drain live.
-- When nobody is online, you race a recorded run from an earlier real player, so there is never a wait. This matters most in the first weeks.
+1. Tap "Tìm đối thủ". You get a random nickname such as "Ớt Hiểm 42" (tap "đổi tên" to reroll), with no account.
+2. The server pairs the first two players waiting and picks one dish for both, plus a shared hazard seed. Both players get the same chilies, dough sticks and long noodles, in the same order and with the same gaps.
+3. Both press "Bắt đầu húp". The mic opens and measures the room. When both are ready, both screens count down 3-2-1 together.
+4. A row above your bowl shows the opponent's bowl draining live, about 10 updates a second, with their big moments ("Sặc!", "Hết hơi!").
+5. When both bowls are clean: "Bạn thắng!", "Thua rồi!" or "Hòa!", with both times. The share line names the opponent. Buttons: "Đấu lại" and "Tìm đối thủ mới".
 
-**Open decision: which to build first**
+**When nobody is online:** after 6 seconds alone you race a recorded run of an earlier real player on the same dish and seed, labelled "Lượt ghi". If that dish has no recordings yet, you race a labelled bot ("Máy") at 1.6 times the dish's par time. Every finished race is saved as a future recording; the server keeps the last 20 per dish.
 
-| Option | What you get | Limit |
-| --- | --- | --- |
-| Friends-only duel on the current page | A playable 1v1 to test whether the duel is fun | Only connects people the page is shared with; no mic |
-| Full version with a matchmaking server | Random matching for anyone, and the mic works | You deploy and host it yourself |
+**Other rules**
+- If your opponent leaves, you win by forfeit once you finish.
+- The dish can't be changed during a duel: arrows, daily bowl, menu and "Múc tô mới" are locked until you finish or press "Rời trận".
+- A duel time counts as your personal best for that dish, never as the daily bowl.
+
+**Running it**
+- Locally: `cd server`, `npm install`, `npm start`, then open `http://localhost:8080`. The server serves the game and the WebSocket (`/ws`) on the same port. It serves only `index.html` and `photos/`; nothing else in the folder is exposed.
+- Hosting: any Node host with WebSockets, such as Render, Fly.io or Railway. Use start command `npm start` from `server/`; the port comes from `PORT`. HTTPS from the host is needed for the mic on phones.
+- Page and server on different hosts: set `DUEL_SERVER` near the top of the 1v1 code in `index.html` to the server's `wss://…/ws` address.
+- Recordings live in `server/runs.json` (git-ignored). On free hosts that reset, they refill as people play.
+
+**Limits of this version**
+- The server trusts the times players report, so a determined cheater could fake a win. Fine for a fun prototype; it needs server-side checks before any public leaderboard.
+- Hazards come in the same order with the same gaps for both players, but their exact seconds can drift a little, because a hazard waits for the previous one to clear.
+- Tested with two headless browsers and a fake microphone on one machine, not yet between two real phones over the internet.
 
 ## How it is built
 
-The whole game is one `index.html` file with no libraries and no backend.
+The game itself is one `index.html` file with no libraries. Only 1v1 uses a backend: the Node.js server in `server/` (one dependency, `ws`).
 
 - **Drawing:** inline SVG, generated from each dish's data (broth palette, noodle style, toppings, vessel).
 - **Dishes:** a data table of 30 entries. A new dish is one line: colours, toppings, speeds and rule flags.
@@ -142,7 +155,8 @@ The whole game is one `index.html` file with no libraries and no backend.
 
 - [ ] Play every dish once and tune the numbers that feel wrong
 - [ ] Put `index.html` on an HTTPS host and test slurp detection on a real phone
-- [ ] Decide the 1v1 route: friends-only duel first, or the full matchmaking server
+- [x] Decide the 1v1 route: built the matchmaking server
+- [ ] Host the 1v1 server and test a race between two real phones
 - [ ] Add a slurp sound effect and the topping-by-topping milestones
 - [ ] Give more dishes their own vessel, such as a plate for bún đậu
 - [ ] Build challenge links and the city scoreboard once there is a backend
