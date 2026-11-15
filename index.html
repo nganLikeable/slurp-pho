@@ -12,7 +12,7 @@
   /* layout: one phone-width column; a hand-painted street sign on a mint stall wall, bowl on a steel table; the 30-dish menu is a flip-through menu book in an overlay */
   --wall:#E1F0E6; --card:#F6FBF7; --ink:#10312A; --soft:#4B6B62;
   --sign:#D7262B; --gold:#F9BE1A; --steel:#C5D2CC; --line:#10312A22;
-  --paper:#FFF8E6; --paper-ink:#10312A; --paper-soft:#4B6B62;
+  --paper:#FFF8E6; --paper-ink:#10312A; --paper-soft:#4B6B62; --ricon:#D7262B;
   --display:"Bungee","Arial Black",sans-serif;
   --body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
@@ -20,23 +20,68 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --wall:#0D201C; --card:#142B26; --ink:#E4F1EA; --soft:#9DB8AF;
-    --sign:#E9383D; --gold:#F9BE1A; --steel:#1D3832; --line:#E4F1EA26;
+    --sign:#E9383D; --gold:#F9BE1A; --steel:#1D3832; --line:#E4F1EA26; --ricon:#F9BE1A;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --wall:#0D201C; --card:#142B26; --ink:#E4F1EA; --soft:#9DB8AF;
-  --sign:#E9383D; --gold:#F9BE1A; --steel:#1D3832; --line:#E4F1EA26;
+  --sign:#E9383D; --gold:#F9BE1A; --steel:#1D3832; --line:#E4F1EA26; --ricon:#F9BE1A;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--wall);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
-main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-direction:column;align-items:stretch;gap:12px}
 .sign{background:var(--sign);padding:12px 16px 10px;border-radius:6px;transform:rotate(-1.2deg);align-self:flex-start;border:3px solid var(--gold)}
-.sign h1{font-family:var(--display);font-weight:400;font-size:38px;line-height:1;margin:0;color:var(--gold);letter-spacing:1px}
+.sign h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,11vw,42px);line-height:1;margin:0;color:var(--gold);letter-spacing:1px}
 .sign p{margin:4px 0 0;font-size:13px;font-weight:600;color:#fff}
-.nav{display:flex;flex-wrap:wrap;gap:6px}
+/* the tool row: the daily bowl on the left, menu, sound and language on the right */
+.tools{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:2px}
+.tright{display:flex;gap:6px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 11px;border-radius:999px;font:600 12px var(--body);cursor:pointer;border:1.5px solid var(--gold);background:transparent;color:var(--ink)}
+.pill.daily[aria-pressed="true"]{background:var(--gold);color:#412402}
+.pill.ghost{border-color:var(--soft)}
+.pill svg,.round svg,.arrow svg,.quiet svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.round{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--soft);background:transparent;color:var(--ink);display:inline-grid;place-items:center;padding:0;font:600 11px var(--body);cursor:pointer}
+/* the dish: its name between two arrows, then its rule in a chip */
+.dishhead{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.dishrow{display:flex;align-items:center;justify-content:center;gap:10px;width:100%}
+.dish{margin:0;font:400 clamp(18px,6vw,22px)/1.15 var(--display);color:var(--ink);text-wrap:balance;min-width:0}
+.arrow{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:transparent;color:var(--soft);display:grid;place-items:center;padding:0;cursor:pointer}
+.arrow svg{width:22px;height:22px}
+.arrow:hover{color:var(--ink)}
+.rule{display:inline-flex;align-items:flex-start;gap:7px;margin:0;background:var(--steel);color:var(--ink);font-size:13px;line-height:1.35;padding:6px 13px;border-radius:16px;text-align:left;text-wrap:pretty;max-width:100%}
+.ricon{flex:none;display:inline-flex;margin-top:1px;color:var(--ricon)}
+.ricon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dishhead .sub span+span:not(:empty)::before{content:" · "}
+.pill:focus-visible,.round:focus-visible,.arrow:focus-visible,.quiet:focus-visible,.hup:focus-visible{outline:3px solid var(--sign);outline-offset:2px}
+.pill:disabled,.round:disabled,.arrow:disabled,.quiet:disabled{opacity:.35;cursor:default}
+/* the round button and its two rings */
+.hupwrap{position:relative;width:140px;height:140px;align-self:center;display:grid;place-items:center}
+.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none}
+.rtrack{stroke:var(--steel);stroke-width:7}
+.rtrack.thin{stroke-width:3}
+.rbowl{stroke:var(--ink);stroke-width:7;stroke-linecap:round;stroke-dasharray:100 100;transition:stroke-dashoffset .15s linear}
+.rair{stroke:var(--soft);stroke-width:3;stroke-linecap:round;stroke-dasharray:100 100}
+.rair.low{stroke:var(--sign)}
+.hup{position:relative;width:100px;height:100px;border-radius:50%;border:0;background:var(--gold);color:#10312A;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0 8px;
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;box-shadow:0 4px 0 #0003;transition:transform .12s,background .15s}
+.hup:active{transform:scale(.96)}
+.hup.on{background:var(--sign);color:#fff;animation:throb .5s ease-in-out infinite alternate}
+@keyframes throb{to{transform:scale(1.04)}}
+.hword{font:400 28px/1 var(--display);letter-spacing:1px}
+.hup .clock{display:none;font:400 26px/1 var(--display);font-variant-numeric:tabular-nums}
+.hup.run .hword{display:none}
+.hup.run .clock{display:block}
+.hlabel{font:600 10px/1.2 var(--body);max-width:86px;text-wrap:balance}
+@media (prefers-reduced-motion:reduce){.hup.on{animation:none}}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px}
+.quiet{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--soft);font:600 13px var(--body);padding:6px 4px;cursor:pointer}
+.quiet:hover{color:var(--ink)}
+.quiet.duelbtn{color:var(--sign)}
+.gauges{display:none}
 .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .lang{display:flex;flex:none;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;margin-top:4px}
 .lang button{font:600 12px var(--body);padding:6px 10px;border:0;background:transparent;color:var(--ink);cursor:pointer}
@@ -47,12 +92,8 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 .chip{font:600 13px var(--body);padding:7px 11px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
 .chip.daily{border-color:var(--sign);color:var(--sign)}
 .chip.daily[aria-pressed="true"]{background:var(--sign);color:#fff}
-.info{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.dish{font-weight:600;font-size:18px}
-.sub{font-size:13px;color:var(--soft)}
-.rule{font-size:14px;margin-top:2px;text-wrap:balance}
-.clock{font-family:var(--display);font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
-.table{position:relative;background:var(--steel);border-radius:14px;padding:8px 8px 14px}
+.sub{margin:0;font-size:12px;color:var(--soft)}
+.table{position:relative;padding:0 8px}
 /* 1v1: the opponent's row above the bowl, and the shared 3-2-1 over it */
 .duelbtn{border-color:var(--sign);color:var(--sign)}
 .chip:disabled,.btn:disabled{opacity:.35;cursor:default}
@@ -76,7 +117,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 @keyframes countpop{from{transform:scale(1.8);opacity:0}30%{transform:scale(1);opacity:1}to{transform:scale(.92);opacity:.25}}
 .dres{font-family:var(--display);font-size:18px;line-height:1.2;color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.count span{animation:none}}
-.table svg{display:block;width:100%;height:auto;max-width:400px;margin:0 auto;touch-action:manipulation}
+.table svg{display:block;width:100%;height:auto;max-width:310px;margin:0 auto;touch-action:manipulation}
 .shake{animation:shake .12s linear infinite}
 @keyframes shake{0%{transform:translateX(-4px)}50%{transform:translateX(4px)}100%{transform:translateX(-4px)}}
 /* once the run starts the steam over the bowl rises and drifts; the bowl's own level still sets how much steam there is */
@@ -85,13 +126,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 #bowl.eating #steam path:nth-child(2){animation-delay:.7s}
 #bowl.eating #steam path:nth-child(3){animation-delay:1.4s}
 @media (prefers-reduced-motion:reduce){.shake,#bowl.eating #steam path{animation:none}}
-.gauge{display:flex;align-items:center;gap:8px;margin:6px 8px 0;font-size:12px;font-weight:600;color:var(--ink)}
-.gauge span{width:26px}
-.level{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
-.level i{display:block;height:100%;width:100%;background:var(--gold)}
-#breath{background:var(--ink)}
-#breath.low{background:var(--sign)}
-.msg{min-height:48px;font-weight:600;text-wrap:balance}
+.msg{min-height:42px;font-weight:600;font-size:15px;text-align:center;text-wrap:balance}
 .msg.hot{color:var(--sign)}
 .controls{display:flex;gap:8px;flex-wrap:wrap}
 .btn{font:600 15px var(--body);padding:13px 16px;border-radius:10px;border:1.5px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;user-select:none;-webkit-user-select:none}
@@ -145,7 +180,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 .duel.alert{border-color:var(--sign);box-shadow:0 0 0 3px #D7262B33}
 @media (min-width:641px){.result{bottom:20px;padding:22px 22px 16px}}
 @media (prefers-reduced-motion:reduce){.result,.rstamp.thump,.toast,.result .bit{animation:none}}
-.foot{font-size:12px;color:var(--soft)}
+.foot{font-size:12px;color:var(--soft);text-align:center;margin:4px 0 0}
 .linkbtn{font:inherit;color:var(--ink);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
 /* menu book, mobile first: a phone sees one half page at a time; from 641px wide the book opens to two pages around a spine */
 .menuwrap{position:fixed;inset:0;z-index:20;background:var(--wall);overflow-y:auto}
@@ -365,33 +400,29 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
 </head>
 <body>
 <main id="top">
-  <div class="topbar">
-    <header class="sign">
-      <h1>Húp Phở</h1>
-      <p data-en="30 bowls, one rule each. First to empty the bowl wins.">30 tô, mỗi tô một luật. Ai sạch tô trước thì thắng.</p>
-    </header>
-    <div class="lang" role="group" aria-label="Ngôn ngữ / Language"><button type="button" data-lang="vi">VI</button><button type="button" data-lang="en">EN</button></div>
-  </div>
+  <!-- one centred column: the sign, a row of small tools, the dish and its rule, the bowl, then one round button -->
+  <header class="sign">
+    <h1>Húp Phở</h1>
+    <p data-en="30 bowls, one rule each. First to empty the bowl wins.">30 tô, mỗi tô một luật. Ai sạch tô trước thì thắng.</p>
+  </header>
 
-  <nav class="nav" aria-label="Chọn tô" data-en-label="Choose a bowl">
-    <button class="chip daily" id="dailybtn" type="button" data-en="Daily bowl">Tô hôm nay</button>
-    <button class="chip" id="prev" type="button" aria-label="Tô trước" data-en-label="Previous bowl">‹</button>
-    <button class="chip" id="next" type="button" aria-label="Tô sau" data-en-label="Next bowl">›</button>
-    <button class="chip" id="tomenu" type="button" aria-haspopup="dialog" data-en="Menu: 30 bowls">Thực đơn 30 tô</button>
-    <button class="chip duelbtn" id="duelbtn" type="button" data-en="Find opponent">Tìm đối thủ</button>
-    <button class="chip" id="sndbtn" type="button">Tiếng: bật</button>
+  <nav class="tools" aria-label="Chọn tô" data-en-label="Choose a bowl">
+    <button class="pill daily" id="dailybtn" type="button" data-en="Daily bowl">Tô hôm nay</button>
+    <span class="tright">
+      <button class="pill ghost" id="tomenu" type="button" aria-haspopup="dialog" aria-label="Thực đơn 30 tô" data-en-label="Menu: 30 bowls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.3 9.2 4.3 12 6c2.8-1.7 5.5-1.7 8-.5V19c-2.5-1.2-5.2-1.2-8 .5-2.8-1.7-5.5-1.7-8-.5zM12 6v13.5"/></svg><span data-en="30 bowls">30 tô</span></button>
+      <button class="round" id="sndbtn" type="button" aria-label="Tiếng"></button>
+      <button class="round" id="langbtn" type="button" aria-label="Switch to English">VI</button>
+    </span>
   </nav>
 
-  <div class="info">
-    <div>
-      <div class="dish" id="dish">Phở bò</div>
-      <div class="rule" id="rule"></div>
-      <div class="sub" id="hud"></div>
+  <div class="dishhead">
+    <div class="dishrow">
+      <button class="arrow" id="prev" type="button" aria-label="Tô trước" data-en-label="Previous bowl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2 class="dish" id="dish" aria-live="polite">Phở bò</h2>
+      <button class="arrow" id="next" type="button" aria-label="Tô sau" data-en-label="Next bowl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
-    <div style="text-align:right">
-      <div class="clock" id="clock">0,00</div>
-      <div class="sub" id="best">Chưa có kỷ lục</div>
-    </div>
+    <p class="rule"><span class="ricon" id="ricon" aria-hidden="true"></span><span id="rule"></span></p>
+    <p class="sub"><span id="best">Chưa có kỷ lục</span><span id="hud"></span></p>
   </div>
 
   <section class="duel" id="duel" hidden aria-live="polite">
@@ -430,16 +461,25 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
         </g>
       </g>
     </svg>
-    <div class="gauge" aria-hidden="true"><span data-en="Bowl">Tô</span><div class="level"><i id="bar"></i></div></div>
-    <div class="gauge" aria-hidden="true"><span data-en="Air">Hơi</span><div class="level"><i id="breath"></i></div></div>
+    <!-- the old bars, kept off screen: the ring around the button now shows the bowl and the air -->
+    <div class="gauges" aria-hidden="true"><i id="bar"></i><i id="breath"></i></div>
   </div>
 
   <div class="msg" id="msg" role="status"></div>
 
-  <div class="controls">
-    <button class="btn main" id="slurp" type="button">Bắt đầu húp</button>
-    <button class="btn" id="micbtn" type="button" hidden data-en="Mic off">Tắt mic</button>
-    <button class="btn" id="again" type="button" data-en="New bowl">Múc tô mới</button>
+  <!-- the round button: "HÚP" before a run, the clock during one. The outer ring is what is left in the bowl, the inner ring your air -->
+  <div class="hupwrap">
+    <svg class="ring" viewBox="0 0 132 132" aria-hidden="true">
+      <circle class="rtrack" cx="66" cy="66" r="61"/><circle class="rbowl" id="rbowl" cx="66" cy="66" r="61" pathLength="100"/>
+      <circle class="rtrack thin" cx="66" cy="66" r="53"/><circle class="rair" id="rair" cx="66" cy="66" r="53" pathLength="100"/>
+    </svg>
+    <button class="hup" id="slurp" type="button"><span class="hword">HÚP</span><span class="clock" id="clock">0,00</span><span class="hlabel" id="slabel">Bắt đầu húp</span></button>
+  </div>
+
+  <div class="links">
+    <button class="quiet duelbtn" id="duelbtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M13 13l-2.5 2.5M13 13l2.5-2.5M20 4l-9 9M11 13l2.5 2.5M11 13l-2.5-2.5M6 18l-2 2M18 18l2 2"/></svg><span data-en="Find opponent">Tìm đối thủ</span></button>
+    <button class="quiet" id="again" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg><span data-en="New bowl">Múc tô mới</span></button>
+    <button class="quiet" id="micbtn" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V7a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v3M4 4l16 16"/></svg><span data-en="Mic off">Tắt mic</span></button>
   </div>
 
   <div class="mic" id="microw" hidden>
@@ -1483,7 +1523,25 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     markItems();
     reset();
   }
-  function paintDish(){$('dish').textContent=isDaily?(tx('Tô hôm nay: ','Daily bowl: ')+d.n):d.n;$('rule').textContent=RULE(d);}
+  function paintDish(){$('dish').textContent=d.n;$('rule').textContent=RULE(d);$('ricon').innerHTML='<svg viewBox="0 0 24 24">'+ruleIcon(d)+'</svg>';}
+  /* one small picture for the rule chip, from the rule's main twist */
+  function ruleIcon(q){
+    var m=q.mix||{};
+    if(q.hot)return '<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-3.5 2-5.5 1 1 1.5 2 1.5 3C12.5 8 12 5.5 12 3z"/>';
+    if(m.mom)return '<path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/>';
+    if((m.bone||0)>=.3)return '<path d="M8 8l8 8M6.5 4.5a2 2 0 0 0-2 3 2 2 0 0 0 3 2l1.5-1.5M17.5 19.5a2 2 0 0 0 2-3 2 2 0 0 0-3-2L15 16"/>';
+    if(m.lime)return '<circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16M6.5 6.5l11 11M17.5 6.5l-11 11"/>';
+    if(q.needTreats)return '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/>';
+    if(q.oneBreath||q.maxSlurp||q.minSlurp)return '<circle cx="12" cy="13" r="7.5"/><path d="M12 13V9.5M10 3h4M12 3v2.5"/>';
+    if(q.bowls>1)return '<path d="M3 11h8a4 4 0 0 1-8 0zM13 11h8a4 4 0 0 1-8 0zM5 18h14"/>';
+    if(q.leak||q.swell||q.pour)return '<path d="M12 3.5S6.5 10 6.5 14a5.5 5.5 0 0 0 11 0C17.5 10 12 3.5 12 3.5z"/>';
+    if((m.long||0)>=.5)return '<path d="M3 8c3-3 5 3 8 0s5 3 8 0M3 13c3-3 5 3 8 0s5 3 8 0M3 18c3-3 5 3 8 0s5 3 8 0"/>';
+    if(m.fake)return '<path d="M5 19L17 7a2.5 2.5 0 0 1 3.5 3.5L8.5 22.5zM17 7l1-3M20.5 10.5l3-1"/>';
+    if((m.chili||0)>=.5)return '<path d="M7 20c-1.5-1 0-3 2-5s5-6 7-8c1.5-1.5 3 0 2 1.5-2 3.5-4 7.5-6.5 10C9.5 20.5 8 21 7 20zM16 7c0-2 1-3 2.5-3.5"/>';
+    if(q.noEv)return '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>';
+    if(q.breath<3||q.regen>1.5)return '<path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h7"/>';
+    return '<path d="M3.5 11h17a8.5 8.5 0 0 1-17 0zM8 7c0-1.5 1-1.5 1-3M12 7c0-1.5 1-1.5 1-3M16 7c0-1.5 1-1.5 1-3"/>';
+  }
   function markItems(){DISHES.forEach(function(q){var b=$('item-'+q.id);if(b)b.setAttribute('aria-pressed',String(q===d&&!isDaily));});}
   function showBest(){
     var el=$('best');
@@ -1539,14 +1597,20 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     snd.gain.gain.setTargetAtTime(on&&!quiet()?.2:0,t,.04);
     if(on)snd.filt.frequency.setTargetAtTime(1300+Math.min(holdT,2.5)*900+Math.sin(now/45)*250,t,.03);
   }
-  function paintSound(){$('sndbtn').textContent=muted?tx('Tiếng: tắt','Sound: off'):tx('Tiếng: bật','Sound: on');}
+  function paintSound(){
+    var b=$('sndbtn');
+    b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>'+(muted?'<path d="M16 9.5l5 5M21 9.5l-5 5"/>':'<path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>')+'</svg>';
+    b.setAttribute('aria-label',muted?tx('Tiếng: tắt. Bấm để bật','Sound off. Tap to turn on'):tx('Tiếng: bật. Bấm để tắt','Sound on. Tap to turn off'));
+    b.setAttribute('aria-pressed',String(!muted));
+  }
   function clearEv(base){ev=null;schedule(base||2.2);}
   function idleText(){return started&&!done?tx('Húp thật vào điện thoại đi.','Slurp into your phone for real.'):tx('Bấm "Bắt đầu húp", cho phép mic, rồi húp thật vào điện thoại.','Press "Start slurping", allow the mic, then slurp into your phone for real.');}
   function pausedText(){return tx('Mic đã tắt, tô đang chờ. Bấm "Bắt đầu húp" để ăn tiếp.','Mic off, your bowl is waiting. Press "Start slurping" to carry on.');}
   /* the start button says where the run is: idle, opening the mic, measuring the room, eating, or finished */
   function paintStart(){
     var dl=Duel?Duel.label():'';
-    slurpBtn.textContent=dl?dl:done?tx('Húp lại','Again'):started?tx('Đang húp…','Slurping…'):pendingStart?(calibrating?tx('Im lặng một giây…','Quiet for a second…'):tx('Đang mở mic…','Opening mic…')):tx('Bắt đầu húp','Start slurping');
+    $('slabel').textContent=dl?dl:done?tx('Húp lại','Again'):started?tx('Đang húp…','Slurping…'):pendingStart?(calibrating?tx('Im lặng một giây…','Quiet for a second…'):tx('Đang mở mic…','Opening mic…')):tx('Bắt đầu húp','Start slurping');
+    slurpBtn.classList.toggle('run',started||done||elapsed>0);
     bowl.classList.toggle('eating',started&&!done);
   }
   function begin(){
@@ -1561,7 +1625,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     bowl.classList.remove('shake');slurpBtn.classList.remove('on');result.hidden=true;
     paintStart();say(idleText());showBest();hud();
   }
-  var lastRun=null;
+  var lastRun=null,ringPct=-1,airPct=-1;
   function paintResult(){
     if(!lastRun)return;
     var t=title(lastRun.el),n=lastRun.note==='daily'?tx(' Đã ghi kết quả hôm nay.',' Today’s result is saved.'):lastRun.note==='best'?tx(' Kỷ lục mới.',' New record.'):'';
@@ -1719,8 +1783,10 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     }
     slurpSound(slurping,now);
     $('lvrect').setAttribute('y',ys.toFixed(1));
-    bar.style.width=Math.round(level/Math.max(d.start,.01)*100)+'%';
-    var br=$('breath');br.style.width=Math.round(breath*100)+'%';br.classList.toggle('low',breath<.25);
+    var pct=Math.round(level/Math.max(d.start,.01)*100);
+    if(pct!==ringPct){ringPct=pct;bar.style.width=pct+'%';$('rbowl').style.strokeDashoffset=String(100-pct);}
+    var ap=Math.round(breath*100);
+    if(ap!==airPct){airPct=ap;$('breath').style.width=ap+'%';var ra=$('rair');ra.style.strokeDashoffset=String(100-ap);ra.classList.toggle('low',breath<.25);}
     steam.setAttribute('opacity',(.15+level*.75).toFixed(2));
     clock.textContent=fmt(elapsed);
     if(micOn)readMic();
@@ -1816,6 +1882,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     [].forEach.call(document.querySelectorAll('[data-en-label]'),function(el){if(el.dataset.viLabel===undefined)el.dataset.viLabel=el.getAttribute('aria-label');el.setAttribute('aria-label',lang==='en'?el.dataset.enLabel:el.dataset.viLabel);});
     [].forEach.call(document.querySelectorAll('.lang button'),function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-lang')===lang));});
     document.documentElement.lang=lang;
+    var lb=$('langbtn');lb.textContent=lang.toUpperCase();lb.setAttribute('aria-label',lang==='en'?'Tiếng Việt':'English');
   }
   /* switching language redraws every visible word in place; a bowl in progress keeps going */
   function applyLang(l){
@@ -1829,6 +1896,7 @@ main{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:colu
     Duel.paint();
   }
   [].forEach.call(document.querySelectorAll('.lang button'),function(b){b.addEventListener('click',function(){applyLang(b.getAttribute('data-lang'));});});
+  $('langbtn').addEventListener('click',function(){applyLang(lang==='en'?'vi':'en');});
   function start(data){
     paintStatic();
     buildBoard();

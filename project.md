@@ -31,6 +31,14 @@ Every dish shares these mechanics, and each adds one rule of its own.
 
 **Controls:** press "Bắt đầu húp". If the mic is off it asks for permission, measures the room's background noise for one second, then the run starts and the clock runs; only real slurps into the mic drain the bowl. "Tắt mic" pauses the run. There is no hold-to-slurp button or keyboard slurp any more, so the game needs a working mic. Tap the bowl (or press X) to pick out bones and shells. Steam rises from the bowl while you eat.
 
+**Screen layout** (one centred column):
+- the big red sign;
+- a row with "Tô hôm nay" on the left and the menu ("30 tô"), sound and language (VI/EN) buttons on the right;
+- the dish name between ‹ › arrows, with its rule in a chip that has a small icon;
+- the bowl;
+- one round yellow "HÚP" button. During a run it shows the clock and turns red while you slurp. Its outer ring shows what is left in the bowl, and its thin inner ring shows your air, turning red when it runs low;
+- "Tìm đối thủ", "Múc tô mới" and, while the mic is on, "Tắt mic" as quiet links underneath.
+
 **Titles:** Thánh Húp, Húp như bố, Tạm được, or Ăn như mèo, set by how close your time is to a simulated ideal run of that dish.
 
 ## The 30 dishes
