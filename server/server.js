@@ -23,7 +23,7 @@ const MAX_MSG = 8192;           // bytes per message
 const MAX_RATE = 30;            // messages per second per connection
 const RUNS_PER_DISH = 20;
 const MAX_SAMPLES = 80;
-const EVENTS = new Set(['choke', 'gasp', 'scold', 'treat', 'broke', 'long']);
+const EVENTS = new Set(['choke', 'gasp', 'scold', 'treat', 'broke', 'long', 'cay', 'hoc', 'cough', 'hot', 'cool', 'burn']);
 
 /* ---------- static files: the game page, and photos/ ---------- */
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',

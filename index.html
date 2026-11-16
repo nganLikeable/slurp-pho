@@ -76,7 +76,23 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
 .hup.run .hword{display:none}
 .hup.run .clock{display:block}
 .hlabel{font:600 10px/1.2 var(--body);max-width:86px;text-wrap:balance}
-@media (prefers-reduced-motion:reduce){.hup.on{animation:none}}
+/* the sound the bowl wants: PHÙ (blow, orange) or KHỤ (cough, red) replaces the clock while it lasts */
+.hup.say .hword{display:block}
+.hup.say .clock{display:none}
+.hup.m-blow{background:#F0884A;color:#3A1405}
+.hup.m-blow.on{background:#F06A1E;color:#fff}
+.hup.m-cough{background:var(--sign);color:#fff}
+.hup.puff{animation:puff .3s cubic-bezier(.3,1.8,.5,1)}
+@keyframes puff{40%{transform:scale(1.16)}}
+.rair.heat{stroke:#F0884A}
+.rair.spice{stroke:var(--sign)}
+/* a hot bowl glows and steams hard until it is blown cool */
+.table.hot svg{filter:drop-shadow(0 0 16px #FF6A2A99)}
+.table.hot #steam path{animation:hot 1s ease-in-out infinite;stroke-width:6}
+.table.hot #steam path:nth-child(2){animation-delay:.33s}
+.table.hot #steam path:nth-child(3){animation-delay:.66s}
+.debug{position:fixed;left:8px;bottom:8px;z-index:30;margin:0;padding:8px 10px;border-radius:8px;background:#000C;color:#9FF;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;pointer-events:none;white-space:pre}
+@media (prefers-reduced-motion:reduce){.hup.on,.hup.puff,.table.hot #steam path{animation:none}}
 .links{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px}
 .quiet{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--soft);font:600 13px var(--body);padding:6px 4px;cursor:pointer}
 .quiet:hover{color:var(--ink)}
@@ -576,14 +592,13 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
   var SLOTS=[[112,92],[210,96],[160,84],[244,104],[78,104],[160,110]];
   var ART={
     chili:'<path d="M0 0 q14 -16 30 -4" stroke="#C81E1E" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M0 0 l-6 -6" stroke="#3B6D11" stroke-width="4" stroke-linecap="round"/>',
-    fake:'<path d="M0 0 q14 -16 30 -4" stroke="#F08A24" stroke-width="9" fill="none" stroke-linecap="round"/>',
     treat:'<g fill="none" stroke-linecap="round"><path d="M0 0 l26 -8 M4 9 l26 -8" stroke="#10312A" stroke-width="12"/><path d="M0 0 l26 -8 M4 9 l26 -8" stroke="#FFD966" stroke-width="8"/></g>',
     lime:'<circle cx="12" cy="-2" r="12" fill="#97C459" stroke="#27500A" stroke-width="2"/><circle cx="12" cy="-2" r="7" fill="#EAF3DE"/><path d="M12 -9 v14 M5 -2 h14" stroke="#97C459" stroke-width="1.5"/>',
     bone:'<path d="M0 0 l26 -6" stroke="#10312A" stroke-width="10" stroke-linecap="round"/><path d="M0 0 l26 -6" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/><g fill="#FFFFFF" stroke="#10312A" stroke-width="1.5"><circle cx="-3" cy="-3" r="4"/><circle cx="-1" cy="5" r="4"/><circle cx="27" cy="-11" r="4"/><circle cx="29" cy="-3" r="4"/></g>',
     shell:'<circle cx="12" cy="-2" r="12" fill="#888780" stroke="#10312A" stroke-width="2"/><circle cx="14" cy="-3" r="6" fill="none" stroke="#10312A" stroke-width="2"/><circle cx="15" cy="-3" r="2" fill="#10312A"/>'
   };
   var DEF={pal:'amber',nd:'#FAEEDA',w:5,amp:12,len:50,tops:['beef','herb'],base:.07,bonus:.07,start:1,speed:1,breath:3.2,regen:1.2,leak:0,swell:0,
-    evRate:1,mix:{chili:.5,treat:.3,long:.2},longMax:2,longLen:1.6,grace:.5,hot:0,maxSlurp:0,minSlurp:0,oneBreath:false,needTreats:0,treatBonus:.07,
+    evRate:1,mix:{chili:.5,treat:.3,long:.2},longMax:2,longLen:1.6,hot:false,reheat:[],pourHot:false,coughs:2,maxSlurp:0,minSlurp:0,oneBreath:false,needTreats:0,treatBonus:.07,
     treatName:'Quẩy',boneName:'xương',boneArt:'bone',pour:0,pourText:'Cô chủ chan thêm nước!',bowls:1,noEv:false};
   function D(o){var d={},k;for(k in DEF)d[k]=DEF[k];for(k in o)d[k]=o[k];return d;}
   var REG={B:'Miền Bắc',T:'Miền Trung',N:'Miền Nam',V:'Mì gói và món mới'};
@@ -594,12 +609,12 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     D({id:'bunrieu',n:'Bún riêu',r:'B',rule:'Phải húp đủ 3 miếng topping mới được sạch tô.',pal:'tomato',nd:'#FFFFFF',w:4,tops:['tomato','tofu','crab','herb'],needTreats:3,treatName:'Topping',mix:{treat:.6,chili:.3,long:.1},evRate:1.5}),
     D({id:'bundau',ves:'plate',n:'Bún đậu mắm tôm',r:'B',rule:'Mắm tôm nồng: hồi hơi chậm gấp đôi.',pal:'salad',nd:'#FFFFFF',w:6,tops:['tofu','pork','tofu','herb'],regen:2.4}),
     D({id:'bunthang',n:'Bún thang',r:'B',rule:'Toàn sợi dài. Gần như hơi nào cũng phải trọn.',pal:'clear',nd:'#FFFFFF',w:3,len:36,tops:['egg','cha','chive'],mix:{long:.7,chili:.2,treat:.1},longMax:5,longLen:1.2,evRate:1.5}),
-    D({id:'bunoc',n:'Bún ốc',r:'B',rule:'Vỏ ốc lẫn trong tô: chạm vào tô để gắp ra, húp phải là hóc.',pal:'tomato',nd:'#FFFFFF',w:4,tops:['snail','tomato','snail','herb'],mix:{bone:.7,treat:.3},boneName:'vỏ ốc',boneArt:'shell',evRate:1.3}),
+    D({id:'bunoc',n:'Bún ốc',r:'B',rule:'Vỏ ốc lẫn trong tô: chạm vào tô để gắp ra, húp phải là hóc, ho ra mới ăn tiếp được.',pal:'tomato',nd:'#FFFFFF',w:4,tops:['snail','tomato','snail','herb'],mix:{bone:.7,treat:.3},boneName:'vỏ ốc',boneArt:'shell',evRate:1.3}),
     D({id:'mienluon',n:'Miến lươn',r:'B',rule:'Miến trơn: ngừng húp là tuột lại vào tô.',pal:'clear',nd:'#E8E6DC',w:3,len:40,tops:['eel','herb','eel','chive'],leak:.1}),
     D({id:'banhdacua',n:'Bánh đa cua',r:'B',rule:'Sợi bản to: nửa giây đầu của mỗi hơi chưa ăn thua.',nd:'#B5793A',w:11,amp:8,len:80,tops:['crab','fish','herb'],base:.06,bonus:.1,minSlurp:.5}),
-    D({id:'vanthan',n:'Mì vằn thắn',r:'B',rule:'Cà rốt màu cam trông như ớt nhưng vô hại. Đừng dừng nhầm.',pal:'clear',nd:'#FAC775',w:4,amp:9,len:22,tops:['wonton','pork','wonton','chive'],mix:{fake:.45,chili:.3,treat:.25},evRate:1.3}),
+    D({id:'vanthan',n:'Mì vằn thắn',r:'B',rule:'Nước dùng sôi sùng sục: thổi cho nguội, và cô chủ còn chan nước nóng thêm hai lần.',pal:'clear',nd:'#FAC775',w:4,amp:9,len:22,tops:['wonton','pork','wonton','chive'],mix:{chili:.4,treat:.6},evRate:1.1,hot:true,reheat:[.65,.3]}),
 
-    D({id:'bbh',n:'Bún bò Huế',r:'T',rule:'Ớt gấp đôi. Sợi to, húp dài mới đã.',pal:'red',nd:'#FFFFFF',w:9,amp:10,len:70,tops:['cha','beef','herb'],base:.04,bonus:.1,evRate:2,mix:{chili:.7,treat:.2,long:.1}}),
+    D({id:'bbh',n:'Bún bò Huế',r:'T',rule:'Bưng ra còn nóng, giữa tô chủ quán chan thêm nước sôi. Ớt cay gấp đôi: ho ba lần mới hết.',pal:'red',nd:'#FFFFFF',w:9,amp:10,len:70,tops:['cha','beef','herb'],base:.04,bonus:.1,evRate:1.6,mix:{chili:.7,treat:.2,long:.1},hot:true,reheat:[.5],coughs:3}),
     D({id:'miquang',n:'Mì Quảng',r:'T',rule:'Ít nước, tô chỉ đầy 70%, nhưng hụt hơi rất nhanh.',nd:'#FAC775',w:11,amp:8,len:80,tops:['cracker','shrimp','peanut','herb'],start:.7,base:.1,bonus:.04,breath:2.2}),
     D({id:'caolau',n:'Cao lầu',r:'T',rule:'Sợi dai: hơi ngắn gần như vô ích, càng húp dài càng nhanh.',pal:'salad',nd:'#E0B46A',w:9,amp:9,len:60,tops:['pork','cracker','herb'],base:.02,bonus:.14}),
     D({id:'bunchaca',n:'Bún chả cá',r:'T',rule:'Có xương cá: chạm vào tô để gắp ra. Ớt vẫn nổi như thường.',pal:'clear',nd:'#FFFFFF',w:4,tops:['fish','tomato','fish','chive'],mix:{bone:.4,chili:.4,treat:.2},boneName:'xương cá',evRate:1.2}),
@@ -607,20 +622,20 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     D({id:'bunhen',n:'Bún hến',r:'T',rule:'Phải húp đủ 5 con hến mới được sạch tô.',pal:'salad',nd:'#FFFFFF',w:4,tops:['peanut','cracker','herb','peanut'],needTreats:5,treatBonus:.04,treatName:'Hến',mix:{treat:.8,chili:.2},evRate:2.2}),
     D({id:'phokho',n:'Phở khô Gia Lai',r:'T',rule:'Phở hai tô: sạch tô khô rồi còn tô nước.',pal:'dry',nd:'#FFFFFF',w:4,tops:['beef','ball','herb'],start:.6,base:.09,bowls:2}),
 
-    D({id:'hutieunv',n:'Hủ tiếu Nam Vang',r:'N',rule:'Ớt hiểm: nổi lên là cay ngay, phản xạ phải thật nhanh.',pal:'clear',nd:'#FFFFFF',w:3,len:36,tops:['shrimp','pork','quail','chive'],base:.09,bonus:.06,grace:.2,mix:{chili:.7,treat:.3},evRate:1.3}),
+    D({id:'hutieunv',n:'Hủ tiếu Nam Vang',r:'N',rule:'Ớt hiểm: cay hơn hẳn, phải ho ba lần mới hết cay.',pal:'clear',nd:'#FFFFFF',w:3,len:36,tops:['shrimp','pork','quail','chive'],base:.09,bonus:.06,coughs:3,mix:{chili:.7,treat:.3},evRate:1.3}),
     D({id:'hutieugo',n:'Hủ tiếu gõ',r:'N',rule:'Tô nhỏ giá sinh viên, không ớt. Đua tốc độ thuần.',pal:'clear',nd:'#FFFFFF',w:3,len:36,tops:['ball','pork','chive'],start:.5,base:.1,bonus:.06,noEv:true}),
-    D({id:'bunmam',n:'Bún mắm',r:'N',rule:'Cô chủ thương, chan thêm nước hai lần.',pal:'brown',nd:'#FFFFFF',w:6,tops:['shrimp','fish','pork','chive'],pour:2}),
+    D({id:'bunmam',n:'Bún mắm',r:'N',rule:'Cô chủ thương, chan thêm nước nóng hai lần: mỗi lần lại phải thổi.',pal:'brown',nd:'#FFFFFF',w:6,tops:['shrimp','fish','pork','chive'],pour:2,pourHot:true}),
     D({id:'phoxelua',n:'Phở xe lửa',r:'N',rule:'Tô khổng lồ, to gần gấp đôi. Giữ sức mà húp.',tops:['beef','beef','ball','herb','beef'],speed:.6}),
     D({id:'bunthitnuong',n:'Bún thịt nướng',r:'N',rule:'Chanh nổi lên là phải húp ngay, không thì chua và tô đầy lại.',pal:'salad',nd:'#FFFFFF',w:5,tops:['pork','roll','peanut','herb'],mix:{lime:.6,chili:.25,treat:.15},evRate:1.4}),
-    D({id:'bokho',n:'Hủ tiếu bò kho',r:'N',rule:'Nóng hổi: 4 giây đầu chỉ được húp hơi ngắn, không là bỏng lưỡi.',pal:'brown',nd:'#FFFFFF',w:4,tops:['beef','tomato','beef','herb'],hot:4}),
+    D({id:'bokho',n:'Hủ tiếu bò kho',r:'N',rule:'Nóng hổi: thổi phù phù cho nguội rồi mới húp được.',pal:'brown',nd:'#FFFFFF',w:4,tops:['beef','tomato','beef','herb'],hot:true}),
     D({id:'bunsuong',n:'Bún suông',r:'N',rule:'Sợi vừa dài vừa trơn: nhiều sợi dài, và ngừng húp là tuột.',pal:'clear',nd:'#FFFFFF',w:5,tops:['shrimp','cha','herb'],leak:.07,mix:{long:.6,chili:.3,treat:.1},longMax:4}),
 
-    D({id:'mitom',n:'Mì tôm',r:'V',rule:'Mẹ ngó sang là phải ngừng, không là bị mắng.',pal:'orange',nd:'#FAC775',w:4,amp:9,len:18,tops:['egg','herb'],base:.2,bonus:.02,mix:{mom:.6,chili:.2,treat:.2},evRate:1.6}),
+    D({id:'mitom',n:'Mì tôm',r:'V',rule:'Mẹ ngó sang thì ho khụ khụ giả ốm. Húp tiếp trước mặt mẹ là bị mắng.',pal:'orange',nd:'#FAC775',w:4,amp:9,len:18,tops:['egg','herb'],base:.2,bonus:.02,mix:{mom:.6,chili:.2,treat:.2},evRate:1.6}),
     D({id:'mily',ves:'cup',n:'Mì ly',r:'V',rule:'Húp thẳng từ ly, một hơi: nhả ra giữa chừng là đầy lại từ đầu.',pal:'orange',nd:'#FAC775',w:4,amp:9,len:18,tops:['quail','chive'],base:.24,bonus:.16,oneBreath:true,noEv:true}),
-    D({id:'micay',n:'Mì cay 7 cấp',r:'V',rule:'Ớt dày đặc và cay đến hụt hơi.',pal:'red',nd:'#FAC775',w:5,amp:10,len:24,tops:['ball','egg','shrimp'],evRate:2.5,breath:2.4,mix:{chili:.8,treat:.2}}),
+    D({id:'micay',n:'Mì cay 7 cấp',r:'V',rule:'Ớt dày đặc, cay đến hụt hơi: ho ba lần mới hết.',pal:'red',nd:'#FAC775',w:5,amp:10,len:24,tops:['ball','egg','shrimp'],evRate:2.5,breath:2.4,mix:{chili:.8,treat:.2},coughs:3}),
     D({id:'mitron',n:'Mì trộn',r:'V',rule:'Húp vừa phải: mỗi hơi chỉ ăn được từ nửa giây đến 1,5 giây.',pal:'dry',nd:'#EF9F27',w:4,amp:9,len:20,tops:['egg','ball','chive'],base:.32,bonus:0,minSlurp:.5,maxSlurp:1.5}),
-    D({id:'laumi',ves:'pot',n:'Lẩu mì',r:'V',rule:'Ăn thẳng trong nồi. Bạn bè gắp thêm mì vào ba lần. Ớt cũng nhiều hơn.',pal:'red',nd:'#FAC775',w:4,amp:9,len:20,tops:['shrimp','ball','tofu','herb'],pour:3,pourText:'Bạn gắp thêm mì vào nồi!',evRate:1.5}),
-    D({id:'thapcam',n:'Tô thập cẩm đặc biệt',r:'V',rule:'Trùm cuối: ớt, cà rốt, chanh, xương, sợi dài và cả mẹ.',tops:['beef','shrimp','egg','ball','herb','cha'],speed:.8,evRate:1.6,mix:{chili:.2,treat:.15,long:.1,lime:.15,fake:.15,bone:.15,mom:.1}})
+    D({id:'laumi',ves:'pot',n:'Lẩu mì',r:'V',rule:'Ăn thẳng trong nồi đang sôi. Bạn bè gắp thêm mì vào ba lần, lần nào cũng phải thổi lại.',pal:'red',nd:'#FAC775',w:4,amp:9,len:20,tops:['shrimp','ball','tofu','herb'],pour:3,pourHot:true,hot:true,pourText:'Bạn gắp thêm mì vào nồi!',evRate:1.5}),
+    D({id:'thapcam',n:'Tô thập cẩm đặc biệt',r:'V',rule:'Trùm cuối: nóng, ớt, chanh, xương, sợi dài và cả mẹ.',tops:['beef','shrimp','egg','ball','herb','cha'],speed:.8,evRate:1.6,mix:{chili:.25,treat:.15,long:.1,lime:.15,bone:.2,mom:.15},hot:true,reheat:[.5]})
   ];
 
   var $=function(id){return document.getElementById(id);};
@@ -640,30 +655,30 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     bunrieu:'Eat 3 toppings before the bowl can be finished.',
     bundau:'Pungent shrimp paste: your breath comes back at half speed.',
     bunthang:'All long noodles. Nearly every slurp has to go unbroken.',
-    bunoc:'Snail shells in the bowl: tap the bowl to pick them out, or you choke.',
+    bunoc:'Snail shells in the bowl: tap the bowl to pick them out. Slurp one and it sticks until you cough it up.',
     mienluon:'Slippery glass noodles: stop slurping and they slide back in.',
     banhdacua:'Wide flat noodles: the first half second of each slurp does nothing.',
-    vanthan:'The orange carrot looks like chili but is harmless. Don’t stop for it.',
-    bbh:'Double chili. Thick noodles: long slurps pay off.',
+    vanthan:'Boiling broth: blow to cool it, and the owner adds hot broth twice more.',
+    bbh:'Served hot, and halfway the vendor adds boiling broth. Double-hot chili: three coughs to clear it.',
     miquang:'Little broth, so the bowl starts 70% full, but you run out of breath fast.',
     caolau:'Chewy noodles: short slurps barely help, long ones go faster and faster.',
     bunchaca:'Fish bones: tap the bowl to pick them out. Chili still floats up too.',
     banhcanh:'The noodles swell: the longer you wait, the fuller the bowl gets.',
     bunhen:'Eat 5 clams before the bowl can be finished.',
     phokho:'Two bowls: finish the dry one, then the soup.',
-    hutieunv:'Bird’s eye chili: hot the moment it floats up, so react fast.',
+    hutieunv:'Bird’s eye chili: extra hot, three coughs to clear it.',
     hutieugo:'A small student-priced bowl with no chili. Pure speed.',
-    bunmam:'The kind owner tops up your broth twice.',
+    bunmam:'The kind owner tops up your broth twice with hot broth: blow again each time.',
     phoxelua:'A giant bowl, nearly twice the size. Pace yourself.',
     bunthitnuong:'Slurp the lime as soon as it floats up, or it turns sour and the bowl refills.',
-    bokho:'Piping hot: short slurps only for the first 4 seconds, or you burn your tongue.',
+    bokho:'Piping hot: blow on it until it cools, then slurp.',
     bunsuong:'Long and slippery: lots of long noodles, and they slide back if you stop.',
-    mitom:'When Mom looks over, stop, or you get scolded.',
+    mitom:'When Mom looks over, cough to fake being sick. Keep slurping in front of her and you get scolded.',
     mily:'Straight from the cup in one breath: let go halfway and it refills.',
-    micay:'Chili everywhere, hot enough to leave you breathless.',
+    micay:'Chili everywhere, hot enough to leave you breathless: three coughs to clear it.',
     mitron:'Steady slurps: each one only counts between half a second and 1.5 seconds.',
-    laumi:'Eat straight from the pot. Friends add noodles three times. More chili too.',
-    thapcam:'Final boss: chili, carrot, lime, bones, long noodles and Mom.'
+    laumi:'Eat straight from the boiling pot. Friends add noodles three times, and each time you blow again.',
+    thapcam:'Final boss: heat, chili, lime, bones, long noodles and Mom.'
   };
   var WORD_EN={'Quẩy':'Dough stick','Topping':'Topping','Hến':'Clam','xương':'bone','vỏ ốc':'snail shell','xương cá':'fish bone',
     'Cô chủ chan thêm nước!':'The owner tops up your broth!','Bạn gắp thêm mì vào nồi!':'A friend adds more noodles!'};
@@ -678,8 +693,10 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
 
   var cur=0, isDaily=true, d=DISHES[0];
   var level=1, breath=1, holdT=0, elapsed=0, started=false, done=false, last=null;
-  var micOn=false, micSlurp=false, pendingStart=false, calibrating=false, lock=false, was=false;
+  var micOn=false, micSlurp=false, micBlow=false, micYoung=false, micWindish=false, micCoughs=0, pendingStart=false, calibrating=false, lock=false, was=false;
   var ev=null, longN=null, longCount=0, nextEv=0, blockUntil=0, blockKind='', blockText='';
+  /* heat: 1 = just served, 0 = cool enough to slurp. stuck: chili or a bone that must be coughed out ({kind,need,got,until}) */
+  var heat=0, reheatI=0, stuck=null, mode='', burnT=0;
   var treats=0, pours=0, bowls=1, flashText='', flashHot=false, flashUntil=0;
 
   function fmt(s){return lang==='en'?s.toFixed(2):s.toFixed(2).replace('.',',');}
@@ -696,18 +713,19 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
       if(resting){
         b=Math.min(1,b+.02/q.regen);h=0;rest+=.02;
         if(q.leak)l=Math.min(q.start,l+q.leak*.02);
-        var quick=(q.maxSlurp||(q.hot&&t<q.hot))&&b>.4;
+        var quick=q.maxSlurp&&b>.4;
         if(quick?rest>=.25:b>=.95){resting=false;rest=0;}
       }else{
         h+=.02;if(!(q.minSlurp&&h<q.minSlurp))l-=rate(q,h)*.02;b-=.02/q.breath;
-        if(b<=.08||(q.maxSlurp&&h>=q.maxSlurp)||(q.hot&&t<q.hot&&h>=.7))resting=true;
+        if(b<=.08||(q.maxSlurp&&h>=q.maxSlurp))resting=true;
       }
       if(q.swell)l=Math.min(q.start,l+q.swell*.02);
       if(po>0&&l<.4&&l>0){l+=.25;po--;}
       if(l<=0){if(bw>1){bw--;l=q.start;}else break;}
       t+=.02;
     }
-    return t+q.needTreats*1.2;
+    /* blowing: 1.5 s from hot, about 1 s after each reheat */
+    return t+q.needTreats*1.2+(q.hot?1.5:0)+q.reheat.length*1.05+(q.pourHot?q.pour*1.05:0);
   }
   function title(s){var r=s/par(d);return r<1.3?tx('Thánh Húp','Slurp Saint'):r<1.9?tx('Húp như bố','Slurp Boss'):r<2.7?tx('Tạm được','Not Bad'):tx('Ăn như mèo','Eats Like a Cat');}
 
@@ -1063,10 +1081,11 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
   var HOW=[
     ['<rect x="-8" y="-12" width="40" height="22" rx="6" fill="#F9BE1A" stroke="#10312A" stroke-width="2"/>','Bấm "Bắt đầu húp", cho phép mic, rồi húp thật vào điện thoại.','Press "Start slurping", allow the mic, then slurp into your phone for real.'],
     ['<rect x="-8" y="-6" width="40" height="10" rx="5" fill="none" stroke="#10312A" stroke-width="2"/><rect x="-8" y="-6" width="12" height="10" rx="5" fill="#D7262B"/>','Húp lâu là cạn hơi. Nhả ra để thở, hết hơi là nghỉ 2 giây.','Long slurps use up your air. Pause to breathe; run out and you rest for 2 seconds.'],
-    [ART.chili,'Ớt nổi lên: ngừng húp ngay, không là sặc.','Chili floats up: stop slurping right away, or you choke.'],
+    ['<path d="M2 -2 q-6 -8 0 -14 M12 -2 q-6 -8 0 -14 M22 -2 q-6 -8 0 -14" stroke="#F06A1E" stroke-width="3.5" fill="none" stroke-linecap="round"/><rect x="-8" y="1" width="40" height="13" rx="6.5" fill="#F0884A" stroke="#10312A" stroke-width="2"/><text x="12" y="11.5" text-anchor="middle" font-family="Bungee,Arial Black,sans-serif" font-size="9" fill="#3A1405">PHÙ</text>','Tô bốc khói đỏ rực là còn nóng: thổi phù phù vào điện thoại cho nguội. Húp lúc nóng là bỏng lưỡi.','A red, steaming bowl is still hot: blow into your phone to cool it. Slurp it hot and you burn your tongue.'],
+    [ART.chili+'<rect x="-8" y="3" width="40" height="13" rx="6.5" fill="#D7262B" stroke="#10312A" stroke-width="2"/><text x="12" y="13.5" text-anchor="middle" font-family="Bungee,Arial Black,sans-serif" font-size="9" fill="#FFFFFF">KHỤ</text>','Húp phải ớt là cay: không ho khụ khụ vào điện thoại thì không hết cay.','Slurp a chili and it burns: it won’t clear until you cough into your phone.'],
     [ART.treat,'Quẩy nổi lên: húp ngay, tô vơi thêm một miếng.','A dough stick floats up: slurp it now for an extra bite.'],
     ['<path d="M-6 -4 q8 -14 16 0 t16 0" stroke="#10312A" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M-6 -4 q8 -14 16 0 t16 0" stroke="#FAEEDA" stroke-width="4" fill="none" stroke-linecap="round"/>','Sợi dài: lấy hơi, rồi húp một hơi không ngắt.','Long noodle: take a breath, then slurp it in one go.'],
-    [ART.bone,'Xương, vỏ ốc: chạm vào tô (hoặc bấm X) để gắp ra.','Bones and shells: tap the bowl (or press X) to pick them out.']
+    [ART.bone,'Xương, vỏ ốc: chạm vào tô (hoặc bấm X) để gắp ra. Lỡ húp phải thì ho ra.','Bones and shells: tap the bowl (or press X) to pick them out. Slurp one and cough it up.']
   ];
   var SPREADS=[
     {t:'cover',tab:'Cách chơi',tc:'#F9BE1A',title:'HÚP PHỞ',sub:'30 tô, mỗi tô một luật',mark:'Cách chơi',small:'chili',land:'bigbowl',mL:['chili','quay','bone'],mR:['quay','lime','chili'],
@@ -1101,7 +1120,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
       half=Math.ceil(ids.length/2);
       body=(L?ids.slice(0,half):ids.slice(half)).map(cardHtml).join('');
     }else{
-      body=HOW.slice(L?0:3,L?3:6).map(function(h){return '<div class="how"><svg viewBox="-12 -22 50 38" aria-hidden="true">'+h[0]+'</svg><span>'+tx(h[1],h[2])+'</span></div>';}).join('');
+      body=HOW.slice(L?0:4,L?4:7).map(function(h){return '<div class="how"><svg viewBox="-12 -22 50 38" aria-hidden="true">'+h[0]+'</svg><span>'+tx(h[1],h[2])+'</span></div>';}).join('');
     }
     var tl=SPT(sp.title),rg=/^(MIỀN|THE) (.+)$/.exec(tl),ttl=rg?'<small>'+rg[1]+'</small><span class="big">'+rg[2]+'</span>':tl;
     var band=L?'<div class="tt"><h2 class="ttl'+(rg?' rg':'')+'">'+ttl+'</h2>'+(sp.sub?'<span class="psub">'+SPT(sp.sub)+'</span>':'')+'</div>'+(sp.edge?inn(A[sp.edge](),'edge',1):inn(A[sp.small](),'small',1))
@@ -1288,7 +1307,8 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
   var DUEL_SERVER='';   /* empty: the server that serves this page; or a full address such as 'wss://example.com/ws' */
   var Duel=(function(){
     var NICK=['Ớt Hiểm','Quẩy Giòn','Hành Phi','Chanh Leo','Rau Thơm','Sa Tế','Mắm Tôm','Nước Dùng','Bánh Phở','Tỏi Phi','Giá Sống','Bò Tái','Chả Lụa','Hến Xào','Bún Tươi','Trứng Lòng Đào'];
-    var EVT={choke:['Sặc!','Choked!'],gasp:['Hết hơi!','Out of air!'],scold:['Bị mẹ mắng!','Mom caught them!']};
+    var EVT={choke:['Sặc!','Choked!'],gasp:['Hết hơi!','Out of air!'],scold:['Bị mẹ mắng!','Mom caught them!'],
+      cay:['Cay xé lưỡi!','Too spicy!'],hoc:['Hóc xương!','Bone stuck!'],cough:['Khụ khụ!','Cough cough!'],burn:['Bỏng lưỡi!','Burnt tongue!'],hot:['Nước sôi! Đang thổi…','Boiling! Blowing…'],cool:['Nguội rồi!','Cooled down!']};
     var ws=null,state='off',kind='',opp=null,seed=0,dishI=0,run=null,botTime=0,res=null,oppDone=null,oppLeft=false,oppReady=false,rematchAsked=false;
     var samples=[],lastSample=-1,lastSend=0,cdTimer=null,connTimer=null,dm=['',''],myT=0;
     function newNick(){return NICK[Math.floor(Math.random()*NICK.length)]+' '+(1+Math.floor(Math.random()*99));}
@@ -1536,7 +1556,6 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     if(q.bowls>1)return '<path d="M3 11h8a4 4 0 0 1-8 0zM13 11h8a4 4 0 0 1-8 0zM5 18h14"/>';
     if(q.leak||q.swell||q.pour)return '<path d="M12 3.5S6.5 10 6.5 14a5.5 5.5 0 0 0 11 0C17.5 10 12 3.5 12 3.5z"/>';
     if((m.long||0)>=.5)return '<path d="M3 8c3-3 5 3 8 0s5 3 8 0M3 13c3-3 5 3 8 0s5 3 8 0M3 18c3-3 5 3 8 0s5 3 8 0"/>';
-    if(m.fake)return '<path d="M5 19L17 7a2.5 2.5 0 0 1 3.5 3.5L8.5 22.5zM17 7l1-3M20.5 10.5l3-1"/>';
     if((m.chili||0)>=.5)return '<path d="M7 20c-1.5-1 0-3 2-5s5-6 7-8c1.5-1.5 3 0 2 1.5-2 3.5-4 7.5-6.5 10C9.5 20.5 8 21 7 20zM16 7c0-2 1-3 2.5-3.5"/>';
     if(q.noEv)return '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>';
     if(q.breath<3||q.regen>1.5)return '<path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h7"/>';
@@ -1586,6 +1605,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     if(muted||!snd)return;
     try{
       var c=snd.ctx,t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();
+      beepAt=performance.now()+(delay||0)*1000;
       o.type=type||'sine';o.frequency.value=f;
       g.gain.setValueAtTime(vol||.15,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
       o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.02);
@@ -1612,7 +1632,30 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     $('slabel').textContent=dl?dl:done?tx('Húp lại','Again'):started?tx('Đang húp…','Slurping…'):pendingStart?(calibrating?tx('Im lặng một giây…','Quiet for a second…'):tx('Đang mở mic…','Opening mic…')):tx('Bắt đầu húp','Start slurping');
     slurpBtn.classList.toggle('run',started||done||elapsed>0);
     bowl.classList.toggle('eating',started&&!done);
+    if(mode&&started&&!done){modeKey='';paintMode();}
   }
+  /* the sound the bowl wants right now, as one word on the round button; the label under it says how */
+  var modeKey='';
+  function paintMode(){
+    var live=started&&!done,m=!live?'':stuck||(ev&&ev.type==='mom'&&elapsed>=blockUntil)?'cough':heat>0?'blow':'';
+    var left=stuck?stuck.need-stuck.got:1,key=m+left+lang;
+    $('svg').parentNode.classList.toggle('hot',heat>0);
+    if(key===modeKey)return;
+    var first=m&&m!==mode;modeKey=key;mode=m;
+    slurpBtn.classList.toggle('say',!!m);slurpBtn.classList.toggle('m-blow',m==='blow');slurpBtn.classList.toggle('m-cough',m==='cough');
+    slurpBtn.querySelector('.hword').textContent=m==='blow'?'PHÙ':m==='cough'?'KHỤ':'HÚP';
+    if(m==='blow')$('slabel').textContent=tx('Thổi cho nguội','Blow to cool it');
+    else if(m==='cough')$('slabel').textContent=stuck&&stuck.need>1?tx('Ho '+left+' lần','Cough ×'+left):tx('Ho một cái','Cough once');
+    else paintStart();
+    if(first&&!(store.seen||{})[m]){
+      store.seen=store.seen||{};store.seen[m]=1;save();
+      if(m==='blow')toast(tx('Tô còn nóng!','The bowl is hot!'),tx(' Thổi phù phù vào điện thoại cho nguội. Húp lúc nóng là bỏng lưỡi.',' Blow into your phone to cool it. Slurp it hot and you burn your tongue.'));
+      else toast(tx('Ho đi!','Cough!'),tx(' Ho khụ khụ vào điện thoại. Không ho thì không hết cay, không hết hóc, và mẹ không đi.',' Cough into your phone. Until you do, the spice stays, the bone stays stuck and Mom keeps watching.'));
+    }
+  }
+  /* every cough the mic hears makes the button jump */
+  function puff(){slurpBtn.classList.remove('puff');void slurpBtn.offsetWidth;slurpBtn.classList.add('puff');}
+  function reheat(){heat=Math.max(heat,.7);Duel.event('hot');}
   function begin(){
     if(done)reset();
     if(Duel.hold())return;   /* in a 1v1 the clock waits for the shared 3-2-1 */
@@ -1621,6 +1664,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
   function reset(){
     level=d.start;breath=1;holdT=0;elapsed=0;started=false;done=false;lock=false;was=false;
     ev=null;longN=null;longCount=0;blockUntil=0;flashUntil=0;treats=0;pours=d.pour;bowls=d.bowls;
+    heat=d.hot?1:0;reheatI=0;stuck=null;micCoughs=0;mode='';paintMode();
     nextEv=(2+rnd()*2)/d.evRate;
     bowl.classList.remove('shake');slurpBtn.classList.remove('on');result.hidden=true;
     paintStart();say(idleText());showBest();hud();
@@ -1690,20 +1734,31 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     if(bookOpen){last=null;requestAnimationFrame(tick);return;}
     if(last===null)last=now;var dt=Math.min((now-last)/1000,.05);last=now;
     var want=micSlurp&&started&&!done, slurping=false, cap=d.start;
-    slurpBtn.classList.toggle('on',want);
+    slurpBtn.classList.toggle('on',mode==='blow'?micBlow&&started&&!done:mode==='cough'?false:want);
     if(started&&!done){
       elapsed+=dt;
-      var blocked=elapsed<blockUntil;
+      var blocked=elapsed<blockUntil,coughs=micCoughs;micCoughs=0;
+      if(coughs)puff();
+      /* cough: clears spice or a stuck bone one cough at a time, and sends Mom away */
+      if(stuck){
+        stuck.got+=coughs;
+        if(stuck.got>=stuck.need){stuck=null;schedule(2.2);flash(tx('Khụ khụ! Hết rồi, húp tiếp.','Cough cough! All clear, keep slurping.'));Duel.event('cough');}
+      }else if(coughs&&ev&&ev.type==='mom'){clearEv(3);flash(tx('Mẹ: "Ốm à con? Thôi ăn đi."','Mom: "Are you sick? Go on, eat."'));Duel.event('cough');}
+      /* blow: only blowing cools a hot bowl; slurping it burns your tongue */
+      if(heat>0&&micSlurp&&!micBlow&&!micWindish&&!blocked){burnT+=dt;if(burnT>.3){burnT=0;block('burn',1.5,tx('Bỏng lưỡi! Còn nóng mà húp. Thổi đi!','Burnt tongue! Too hot to slurp. Blow on it!'));}}else burnT=0;
+      if(heat>0&&micBlow){
+        heat=Math.max(0,heat-dt/1.5);
+        if(heat<=0){schedule(1.2);flash(tx('Nguội rồi! Húp thôi.','Cool enough! Slurp away.'));beep(740,.12,'sine',.14);Duel.event('cool');}
+      }
       if(!want)lock=false;
-      slurping=want&&!blocked&&!lock;
-      if(!ev&&!longN&&!blocked&&!d.noEv&&elapsed>=nextEv&&(level>.12||(d.needTreats&&treats<d.needTreats)))spawn();
+      slurping=want&&!blocked&&!lock&&heat<=0&&!stuck;
+      /* hazards only punish a slurp once it can no longer be the start of a cough */
+      var gulp=slurping&&!micYoung;
+      if(!ev&&!longN&&!blocked&&!stuck&&heat<=0&&!d.noEv&&elapsed>=nextEv&&(level>.12||(d.needTreats&&treats<d.needTreats)))spawn();
       if(ev){
         var age=elapsed-ev.t0;
         if(ev.type==='chili'){
-          if(age>1.5)clearEv();
-          else if(age>d.grace&&slurping){block('choke',1.5,tx('Sặc ớt! Ho một giây rưỡi.','Chili choke! Coughing for a second and a half.'));slurping=false;clearEv(3);}
-        }else if(ev.type==='fake'){
-          if(age>1.3)clearEv(1.8);
+          if(age>.3&&gulp){stuck={kind:'cay',need:d.coughs,got:0,t0:elapsed};slurping=false;clearEv(3);Duel.event('cay');}
         }else if(ev.type==='treat'){
           if(slurping&&age>.25){treats++;level=Math.max(0,level-d.treatBonus);clearEv();flash(tx('Trúng '+W(d.treatName).toLowerCase()+'! Tô vơi thêm một miếng.','Got the '+W(d.treatName).toLowerCase()+'! The bowl drops a bite.'));beep(990,.14,'sine',.16);}
           else if(age>1.3){clearEv();flash(tx(W(d.treatName)+' chìm mất rồi.','The '+W(d.treatName).toLowerCase()+' sank.'));}
@@ -1711,11 +1766,9 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
           if(slurping&&age>.25){level=Math.max(0,level-.03);clearEv();flash(tx('Vắt chanh xong, ngon.','Lime squeezed. Tasty.'));}
           else if(age>1.4){level=Math.min(cap,level+.1);clearEv();flash(tx('Chua quá! Tô đầy lại.','Too sour! The bowl refills.'),true);}
         }else if(ev.type==='bone'){
-          if(age>6)clearEv();
-          else if(age>.6&&slurping){block('choke',2,tx('Hóc '+W(d.boneName)+'! Nghỉ hai giây.','A '+W(d.boneName)+' got stuck! Two seconds to recover.'));slurping=false;clearEv(3);}
+          if(age>.6&&gulp){stuck={kind:'hoc',need:1,got:0,t0:elapsed};slurping=false;clearEv(3);Duel.event('hoc');}
         }else if(ev.type==='mom'){
-          if(age>2)clearEv();
-          else if(age>.6&&slurping){block('scold',2,tx('Mẹ mắng: lại ăn mì tôm! Đứng hình hai giây.','Mom: instant noodles again?! Frozen for two seconds.'));slurping=false;clearEv(3);}
+          if(age>.6&&gulp){block('scold',2,tx('Mẹ mắng: lại ăn mì tôm! Ho giả ốm đi.','Mom: instant noodles again?! Fake a cough.'));slurping=false;ev.t0=elapsed+2;}
         }
       }
       if(longN){
@@ -1727,13 +1780,10 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
       }
       if(slurping){
         holdT+=dt;
-        if(d.hot&&elapsed<d.hot&&holdT>.8){block('choke',1.5,tx('Bỏng lưỡi! Còn nóng mà húp dài.','Burnt tongue! Too hot for long slurps.'));slurping=false;}
-        else{
-          if(!(d.minSlurp&&holdT<d.minSlurp))level=Math.max(0,level-rate(d,holdT)*dt);
-          breath=Math.max(0,breath-dt/d.breath);
-          if(d.maxSlurp&&holdT>=d.maxSlurp&&level>0){lock=true;slurping=false;holdT=0;}
-          else if(breath<=0&&level>0){block('gasp',2,tx('Hết hơi! Thở hai giây đã.','Out of air! Breathe for two seconds.'));slurping=false;}
-        }
+        if(!(d.minSlurp&&holdT<d.minSlurp))level=Math.max(0,level-rate(d,holdT)*dt);
+        breath=Math.max(0,breath-dt/d.breath);
+        if(d.maxSlurp&&holdT>=d.maxSlurp&&level>0){lock=true;slurping=false;holdT=0;}
+        else if(breath<=0&&level>0){block('gasp',2,tx('Hết hơi! Thở hai giây đã.','Out of air! Breathe for two seconds.'));slurping=false;}
       }
       if(!slurping){
         if(was&&d.oneBreath&&level>0&&level<cap){level=cap;flash(tx('Nhả ra rồi! Đầy lại từ đầu.','You let go! It refills from the top.'),true);}
@@ -1741,26 +1791,31 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
         if(d.leak&&elapsed>=blockUntil)level=Math.min(cap,level+d.leak*dt);
       }
       if(d.swell&&level>0)level=Math.min(cap,level+d.swell*dt);
-      if(pours>0&&level<.4&&level>0){level=Math.min(cap,level+.25);pours--;flash(W(d.pourText),true);}
+      if(pours>0&&level<.4&&level>0){level=Math.min(cap,level+.25);pours--;flash(W(d.pourText),true);if(d.pourHot)reheat();}
+      if(reheatI<d.reheat.length&&level>0&&level/Math.max(d.start,.01)<=d.reheat[reheatI]){reheatI++;reheat();flash(tx('Chủ quán chan thêm nước sôi! Thổi tiếp.','The vendor adds boiling broth! Blow again.'),true);}
       if(d.needTreats&&treats<d.needTreats&&level<.06)level=.06;
       was=slurping;
-      bowl.classList.toggle('shake',elapsed<blockUntil&&blockKind==='choke');
+      bowl.classList.toggle('shake',!!stuck&&elapsed-stuck.t0<.5);
       if(level<=0&&bowls>1){bowls--;level=cap;flash(tx('Xong tô khô. Còn tô nước!','Dry bowl done. Now the soup!'),true);}
       if(level<=0){finish();slurping=false;}
       else if(elapsed<blockUntil)say(blockText,true);
-      else if(ev&&ev.type==='chili')say(tx('Ớt nổi lên! Ngừng húp.','Chili! Stop slurping.'),true);
+      else if(stuck&&stuck.kind==='cay')say(tx('Cay xé lưỡi! Ho khụ khụ cho hết cay.','So spicy! Cough it out.'),true);
+      else if(stuck)say(tx('Hóc '+W(d.boneName)+'! Ho một cái cho ra.','A '+W(d.boneName)+' is stuck! Cough it up.'),true);
+      else if(heat>0)say(tx('Nóng quá! Thổi phù phù cho nguội, húp là bỏng lưỡi.','Too hot! Blow on it. Slurp now and you burn your tongue.'),true);
+      else if(elapsed<flashUntil&&flashHot)say(flashText,true);
+      else if(ev&&ev.type==='chili')say(tx('Ớt kìa! Húp phải là cay.','Chili! Slurp it and it burns.'),true);
       else if(ev&&ev.type==='bone')say(tx('Có '+W(d.boneName)+'! Chạm vào tô để gắp ra.','A '+W(d.boneName)+'! Tap the bowl to pick it out.'),true);
-      else if(ev&&ev.type==='mom')say(tx('Mẹ đang nhìn! Ngừng húp.','Mom is watching! Stop slurping.'),true);
+      else if(ev&&ev.type==='mom')say(tx('Mẹ đang nhìn! Ho khụ khụ giả ốm.','Mom is watching! Fake a cough.'),true);
       else if(ev&&ev.type==='lime')say(tx('Chanh! Húp ngay kẻo chua.','Lime! Slurp it before it turns sour.'));
       else if(ev&&ev.type==='treat')say(tx(W(d.treatName)+' kìa! Húp ngay.',W(d.treatName)+'! Slurp it now.'));
       else if(longN)say(longN.on?tx('Giữ hơi! Đừng ngắt.','Keep going! Don’t stop.'):(longN.wait?tx('Sợi dài! Nhả ra, lấy hơi đã.','Long noodle! Stop and take a breath first.'):tx('Sợi dài! Húp một hơi không ngắt.','Long noodle! Slurp it in one go.')));
       else if(lock)say(tx('Nhả ra rồi gắp miếng mới.','Let go, then take the next bite.'));
       else if(elapsed<flashUntil)say(flashText,flashHot);
-      else if(d.hot&&elapsed<d.hot)say(tx('Còn nóng! Húp từng hơi ngắn thôi.','Still hot! Short slurps only.'),true);
       else if(d.needTreats&&treats<d.needTreats&&level<=.07)say(tx('Chờ '+W(d.treatName).toLowerCase()+' nổi lên rồi húp.','Wait for a '+W(d.treatName).toLowerCase()+' to float up, then slurp it.'));
       else say(slurping?tx('Sụt sụt sụt…','Sluuurp…'):tx('Thở xong chưa? Húp tiếp.','Caught your breath? Keep slurping.'));
       hud();
     }
+    paintMode();
     var v=VES[d.ves||'bowl'], ys=v.top+(1-level)*v.depth, sc=Math.max(.05,Math.min(v.maxRx,v.hw(ys)-4)/116), dy=ys-98;
     strand.setAttribute('opacity',slurping&&!longN?'1':'0');
     strand.setAttribute('transform','translate('+(Math.sin(now/40)*3).toFixed(1)+','+(dy-((now/6)%20)).toFixed(1)+')');
@@ -1769,8 +1824,8 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
       ln.setAttribute('stroke-dashoffset',(-(longN.got/d.longLen)*100).toFixed(1));
       ln.setAttribute('transform','translate('+(Math.sin(now/(longN.on?40:160))*3).toFixed(1)+','+((v.top-98)+(ys-v.top)*.5).toFixed(1)+')');
     }
-    var el=$('ev'),show=ev&&ev.type!=='mom',warn=ev&&(ev.type==='chili'||ev.type==='bone'||ev.type==='fake')&&(elapsed-ev.t0)<d.grace&&Math.floor(now/90)%2;
-    if(el)el.setAttribute('opacity',show?(warn?'.35':'1'):'0');
+    var el=$('ev'),show=ev&&ev.type!=='mom';
+    if(el)el.setAttribute('opacity',show?'1':'0');
     $('mom').setAttribute('opacity',ev&&ev.type==='mom'?'1':'0');
     fill.setAttribute('transform','translate(160,'+ys.toFixed(1)+') scale('+sc.toFixed(3)+') translate(-160,-98)');
     fill.setAttribute('opacity',Math.min(1,level/.05).toFixed(2));
@@ -1785,9 +1840,9 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     $('lvrect').setAttribute('y',ys.toFixed(1));
     var pct=Math.round(level/Math.max(d.start,.01)*100);
     if(pct!==ringPct){ringPct=pct;bar.style.width=pct+'%';$('rbowl').style.strokeDashoffset=String(100-pct);}
-    var ap=Math.round(breath*100);
-    if(ap!==airPct){airPct=ap;$('breath').style.width=ap+'%';var ra=$('rair');ra.style.strokeDashoffset=String(100-ap);ra.classList.toggle('low',breath<.25);}
-    steam.setAttribute('opacity',(.15+level*.75).toFixed(2));
+    var ring=stuck?['spice',(stuck.need-stuck.got)/stuck.need]:heat>0?['heat',heat]:[breath<.25?'low':'',breath],ap=ring[0]+Math.round(ring[1]*100);
+    if(ap!==airPct){airPct=ap;$('breath').style.width=Math.round(breath*100)+'%';var ra=$('rair');ra.style.strokeDashoffset=String(100-Math.round(ring[1]*100));ra.setAttribute('class','rair'+(ring[0]?' '+ring[0]:''));}
+    steam.setAttribute('opacity',heat>0?'1':(.15+level*.75).toFixed(2));
     clock.textContent=fmt(elapsed);
     if(micOn)readMic();
     Duel.frame();
@@ -1818,10 +1873,10 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
   $('howto').addEventListener('click',function(){Menu.open(0);});
   $('rclose').addEventListener('click',function(){result.hidden=true;});
 
-  var actx=null,analyser=null,stream=null,buf=null,lo0=0,lo1=0,hi0=0,hi1=0,floorDb=-90,calN=0,calSum=0,calUntil=0,onFrames=0,offAt=0;
+  var actx=null,analyser=null,stream=null,buf=null,lo0=0,lo1=0,hi0=0,hi1=0,calN=0,calSum=0,calLo=0,calUntil=0,beepAt=null;
   /* turning the mic off mid-bowl pauses the run; "Bắt đầu húp" picks it up again */
   function micOff(text){
-    micOn=false;micSlurp=false;calibrating=false;pendingStart=false;
+    micOn=false;micSlurp=false;micBlow=false;micCoughs=0;calibrating=false;pendingStart=false;
     if(started&&!done)started=false;
     try{if(stream)stream.getTracks().forEach(function(t){t.stop();});}catch(e){}
     try{if(actx)actx.close();}catch(e){}
@@ -1838,7 +1893,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
       var src=actx.createMediaStreamSource(s);analyser=actx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.3;src.connect(analyser);if(actx.state==='suspended')actx.resume();
       buf=new Float32Array(analyser.frequencyBinCount);
       var hz=actx.sampleRate/analyser.fftSize;lo0=Math.ceil(250/hz);lo1=Math.floor(1000/hz);hi0=Math.ceil(2000/hz);hi1=Math.min(buf.length-1,Math.floor(8000/hz));
-      calN=0;calSum=0;onFrames=0;calUntil=performance.now()+1000;micOn=true;calibrating=true;
+      calN=0;calSum=0;calLo=0;calUntil=performance.now()+1000;micOn=true;calibrating=true;
       $('microw').hidden=false;micBtn.hidden=false;$('mstate').textContent=tx('đo tiếng ồn…','measuring noise…');
       paintStart();say(tx('Im lặng một giây để đo tiếng ồn xung quanh.','Stay quiet for a second while we measure the room.'));
     }).catch(function(){
@@ -1846,35 +1901,78 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     });
   }
   micBtn.addEventListener('click',function(){micOff();});
-  /* A slurp is hiss: loud above 2 kHz, noisy rather than tonal, weak in the voice band, and it lasts.
-     Speech and music are strong below 1 kHz, whistles are tonal, claps and taps are too short. */
+  /* Three sounds, all read from the same two bands (250 Hz–1 kHz and 2–8 kHz):
+     - slurp: hiss. Loud above 2 kHz, noisy rather than tonal, not dominated by the voice band, and it lasts.
+     - blow: wind on the mic. Loud and noisy, strongest below 1 kHz, and it lasts.
+     - cough: a short noisy burst. Sharp start, back to quiet 110–480 ms later, not mostly hiss.
+     Speech and music are tonal, whistles are tonal, claps and taps are too short, and the game's own beeps are tonal and ignored.
+     The bowl's state decides which sound matters, so a sound that sits between two classes rarely costs anything. */
   /*SLURP-DETECT*/
+  var det={hiF:-90,loF:-90,on:0,off:0,bl:0,blOff:0,burst:null,hush:0,lastLen:0,recent:[]};
   function micFeatures(db,l0,l1,h0,h1){
-    var i,p,lo=0,hi=0,lg=0,n=h1-h0+1;
-    for(i=l0;i<=l1;i++)lo+=Math.pow(10,Math.max(-140,db[i])/10);
+    var i,p,lo=0,hi=0,lg=0,llg=0,n=h1-h0+1,m=l1-l0+1;
+    for(i=l0;i<=l1;i++){p=Math.pow(10,Math.max(-140,db[i])/10);lo+=p;llg+=Math.log(p);}
     for(i=h0;i<=h1;i++){p=Math.pow(10,Math.max(-140,db[i])/10);hi+=p;lg+=Math.log(p);}
-    lo/=(l1-l0+1);hi/=n;
-    return {hi:10*Math.log10(hi),lo:10*Math.log10(lo),flat:Math.exp(lg/n)/hi};
+    lo/=m;hi/=n;
+    return {hi:10*Math.log10(hi),lo:10*Math.log10(lo),flat:Math.exp(lg/n)/hi,flatLo:Math.exp(llg/m)/lo};
   }
-  function micJudge(f,now){
-    var loud=f.hi>floorDb+10,hissy=f.hi>f.lo-10&&f.flat>.2;
-    if(loud&&hissy){onFrames++;offAt=now+160;}else if(now>offAt)onFrames=0;
-    if(!loud)floorDb+=(f.hi-floorDb)*.01;
-    return {loud:loud,hissy:hissy,slurp:onFrames>=8};
+  function micCalibrate(hiF,loF){det.hiF=hiF;det.loF=loF;det.on=0;det.bl=0;det.burst=null;det.hush=0;det.recent=[];}
+  function micJudge(f,now,beepAt){
+    var exHi=f.hi-det.hiF,exLo=f.lo-det.loF,ex=Math.max(exHi,exLo),noisy=f.flat>.2||f.flatLo>.2;
+    var loud=exHi>10,hissy=f.hi>f.lo-10&&f.flat>.2;
+    /* wind on the mic is far stronger in the low band; 6 dB keeps a flat, slurp-like hiss from counting as a blow */
+    var windy=exLo>12&&f.lo>=f.hi+6&&f.flatLo>.2;
+    /* wind-ish: even loosely low-heavy within the last 0.3 s; a hot bowl only burns you for a clear, hiss-only slurp */
+    if(exLo>12&&f.lo>=f.hi-3)det.wOff=now+300;
+    var cough=false,b=det.burst;
+    /* bursts: start with a jump of 12 dB or more within about 70 ms, and end once the sound falls 22 dB below
+       its own peak (or to near quiet), so two quick coughs in a row still count as two */
+    var low=Infinity;for(var k=0;k<det.recent.length;k++)low=Math.min(low,det.recent[k]);
+    if(b){
+      b.peak=Math.max(b.peak,ex);
+      if(ex<Math.max(6,b.peak-22)){
+        var len=now-b.t,nearBeep=beepAt!=null&&b.t>=beepAt-40&&b.t-beepAt<250;
+        det.lastLen=len;
+        if(len>=120&&len<=480&&b.noisy*2>=b.n&&b.tilt/b.n>-6&&!nearBeep)cough=true;
+        det.burst=null;
+      }else if(now-b.t>480)b.long=true;
+      if(det.burst){b.n++;if(noisy)b.noisy++;b.tilt+=f.lo-f.hi;}
+    }else if(ex>15&&ex-low>=12)det.burst={t:now,n:1,noisy:noisy?1:0,tilt:f.lo-f.hi,peak:ex};
+    det.recent.push(ex);if(det.recent.length>4)det.recent.shift();
+    /* a cough's breathy tail must not count as a slurp or a blow */
+    if(cough)det.hush=now+300;
+    var hush=now<det.hush;
+    if(loud&&hissy&&!hush){det.on++;det.off=now+160;}else if(hush||now>det.off)det.on=0;
+    if(windy&&!hush){det.bl++;det.blOff=now+160;}else if(hush||now>det.blOff)det.bl=0;
+    if(ex<6){det.hiF+=(f.hi-det.hiF)*.01;det.loF+=(f.lo-det.loF)*.01;}
+    /* young: a burst under 480 ms old that may still turn out to be a cough; hazards wait for it before counting a slurp */
+    var young=!!det.burst&&now-det.burst.t<=480;
+    return {loud:loud||exLo>12,hissy:hissy,windy:windy,slurp:det.on>=8,blow:det.bl>=8,cough:cough,young:young,windish:now<(det.wOff||0),exHi:exHi,exLo:exLo};
   }
   /*END-SLURP-DETECT*/
   function readMic(){
     if(!analyser)return;
     analyser.getFloatFrequencyData(buf);
     var f=micFeatures(buf,lo0,lo1,hi0,hi1),now=performance.now();
-    if(now<calUntil){calSum+=f.hi;calN++;micSlurp=false;return;}
+    if(now<calUntil){calSum+=f.hi;calLo+=f.lo;calN++;micSlurp=false;micBlow=false;return;}
     if(calibrating){
-      if(calN)floorDb=calSum/calN;calN=0;calibrating=false;
+      if(calN)micCalibrate(calSum/calN,calLo/calN);calN=0;calibrating=false;
       if(pendingStart)begin();else paintStart();
     }
-    var j=micJudge(f,now);micSlurp=j.slurp;
-    $('mlevel').style.width=Math.max(0,Math.min(100,(f.hi-floorDb)/20*100)).toFixed(0)+'%';
-    $('mstate').textContent=micSlurp?tx('nghe thấy húp','slurp heard'):(j.loud&&!j.hissy?tx('có tiếng, nhưng không phải tiếng húp','sound, but not a slurp'):tx('đang nghe','listening'));
+    var j=micJudge(f,now,beepAt);micSlurp=j.slurp;micBlow=j.blow;micYoung=j.young;micWindish=j.windish;if(j.cough)micCoughs++;
+    $('mlevel').style.width=Math.max(0,Math.min(100,Math.max(j.exHi,j.exLo)/20*100)).toFixed(0)+'%';
+    $('mstate').textContent=j.cough?tx('nghe thấy ho','cough heard'):micSlurp?tx('nghe thấy húp','slurp heard'):micBlow?tx('nghe thấy thổi','blow heard'):(j.loud&&!j.hissy&&!j.windy?tx('có tiếng, nhưng không phải húp, thổi hay ho','sound, but not a slurp, blow or cough'):tx('đang nghe','listening'));
+    if(debugEl)paintDebug(f,j,now);
+  }
+  /* ?debug: live numbers for tuning the detector on a real phone */
+  var debugEl=/[?&]debug\b/.test(location.search)?document.createElement('pre'):null,dbgCoughs=0,dbgLast='';
+  if(debugEl){debugEl.className='debug';document.body.appendChild(debugEl);}
+  function paintDebug(f,j,now){
+    if(j.cough){dbgCoughs++;dbgLast='cough '+Math.round(det.lastLen)+' ms';}
+    else if(!det.burst&&det.lastLen&&dbgLast.indexOf(Math.round(det.lastLen)+' ms')<0)dbgLast='burst '+Math.round(det.lastLen)+' ms (not a cough)';
+    debugEl.textContent='hi +'+j.exHi.toFixed(0)+' dB  lo +'+j.exLo.toFixed(0)+' dB  lo-hi '+(f.lo-f.hi).toFixed(0)+' dB\n'+
+      'flat hi '+f.flat.toFixed(2)+'  flat lo '+f.flatLo.toFixed(2)+'\n'+
+      'now: '+(j.slurp?'SLURP':j.blow?'BLOW':det.burst?'burst…':j.loud?'sound':'quiet')+'   coughs: '+dbgCoughs+'\n'+(dbgLast||'');
   }
 
   function paintStatic(){

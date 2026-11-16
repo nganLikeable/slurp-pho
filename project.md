@@ -25,11 +25,20 @@ Every dish shares these mechanics, and each adds one rule of its own.
 | Mechanic | What happens | Cost or reward |
 | --- | --- | --- |
 | Breath (Hơi) | Drains in about 3.2 seconds of slurping, refills in about 1.2 seconds of rest | Run it dry and you gasp for 2 seconds |
-| Chili (Ớt) | Blinks for half a second, then floats for a second | Slurp while it floats and you choke for 1.5 seconds |
+| Chili (Ớt) | Floats until you slurp it; there is no dodging it | Spicy (cay): the bowl stops draining until you cough twice (three times on the hottest dishes). It never clears on its own |
+| Heat (Nóng) | Hot dishes arrive hot, and some reheat when the vendor adds broth | Nothing drains until you blow for about 1.5 seconds. Only blowing cools it; a clear slurp while it is hot burns your tongue (1.5 seconds frozen) |
+| Bone or shell | Floats until you tap the bowl to pick it out | Slurp it and it sticks until you cough once |
 | Quẩy | Floats for about 1.3 seconds | Slurp while it floats and the bowl drops 7% |
 | Long noodle (Sợi dài) | Up to twice per bowl; release, then slurp unbroken for 1.6 seconds | Finish it for an 8% bonus; break it and 12% falls back in |
 
 **Controls:** press "Bắt đầu húp". If the mic is off it asks for permission, measures the room's background noise for one second, then the run starts and the clock runs; only real slurps into the mic drain the bowl. "Tắt mic" pauses the run. There is no hold-to-slurp button or keyboard slurp any more, so the game needs a working mic. Tap the bowl (or press X) to pick out bones and shells. Steam rises from the bowl while you eat.
+
+**Three sounds, no silence, no way around them:** the round button always shows the sound the bowl wants. No hazard is answered by going quiet, and nothing clears on its own: a hot bowl waits for a blow, and spice, a stuck bone and Mom wait for a cough.
+- **HÚP** (yellow): slurp.
+- **PHÙ** (orange): blow. A hot bowl glows, steams hard and fills the inner ring with orange heat.
+- **KHỤ** (red): cough. It clears a swallowed chili (the inner ring turns into a red spice meter), a stuck bone, or Mom (cough to fake being sick).
+
+The first time each of PHÙ and KHỤ appears, a banner explains it once.
 
 **Screen layout** (one centred column):
 - the big red sign;
@@ -56,26 +65,26 @@ There are 30 dishes in four groups, and each adds one rule on top of the shared 
 | 7 | Bún ốc | North | Snail shells appear; tap the bowl to pick them out |
 | 8 | Miến lươn | North | Slippery: the bowl refills while you rest |
 | 9 | Bánh đa cua | North | The first half second of every slurp does nothing |
-| 10 | Mì vằn thắn | North | Harmless orange carrot that looks like chili |
-| 11 | Bún bò Huế | Central | Double chili; thick noodles reward long slurps |
+| 10 | Mì vằn thắn | North | Boiling broth: arrives hot and reheats twice |
+| 11 | Bún bò Huế | Central | Arrives hot, reheats once halfway; chili takes three coughs |
 | 12 | Mì Quảng | Central | Starts 70% full, but breath is short |
 | 13 | Cao lầu | Central | Chewy: short slurps do almost nothing |
 | 14 | Bún chả cá | Central | Fish bones to tap out, plus normal chili |
 | 15 | Bánh canh | Central | Noodles swell: the bowl slowly refills over time |
 | 16 | Bún hến | Central | Must eat 5 clams before the bowl can finish |
 | 17 | Phở khô Gia Lai | Central | Two bowls: the dry one, then the soup |
-| 18 | Hủ tiếu Nam Vang | South | Chili gives almost no warning |
+| 18 | Hủ tiếu Nam Vang | South | Bird's eye chili takes three coughs |
 | 19 | Hủ tiếu gõ | South | Half-size bowl, nothing floats up; pure speed |
-| 20 | Bún mắm | South | The vendor tops the bowl up twice |
+| 20 | Bún mắm | South | The vendor tops the bowl up twice with hot broth; blow again each time |
 | 21 | Phở xe lửa | South | Giant bowl, drains at 60% speed |
 | 22 | Bún thịt nướng | South | Lime floats up and must be slurped, or the bowl refills |
-| 23 | Hủ tiếu bò kho | South | Too hot for long slurps in the first 4 seconds |
+| 23 | Hủ tiếu bò kho | South | Arrives hot; blow before slurping |
 | 24 | Bún suông | South | Long noodles and a slippery bowl together |
-| 25 | Mì tôm | Instant and modern | Mom looks over; stop or get scolded for 2 seconds |
+| 25 | Mì tôm | Instant and modern | Mom looks over and stays until you cough to fake being sick; slurp in front of her and you get scolded for 2 seconds |
 | 26 | Mì ly | Instant and modern | One breath: release midway and the cup refills |
-| 27 | Mì cay 7 cấp | Instant and modern | Chili 2.5 times as often, and short breath |
+| 27 | Mì cay 7 cấp | Instant and modern | Chili 2.5 times as often, three coughs each, and short breath |
 | 28 | Mì trộn | Instant and modern | Only the part of each slurp between 0.5 and 1.5 seconds counts |
-| 29 | Lẩu mì | Instant and modern | Friends add noodles to the pot three times; more chili |
+| 29 | Lẩu mì | Instant and modern | A boiling pot; friends add noodles three times, and each top-up reheats it |
 | 30 | Tô thập cẩm đặc biệt | Instant and modern | Final boss: every hazard at once |
 
 ## Look and feel
@@ -146,7 +155,13 @@ The game itself is one `index.html` file with no libraries. Only 1v1 uses a back
 
 - **Drawing:** inline SVG, generated from each dish's data (broth palette, noodle style, toppings, vessel).
 - **Dishes:** a data table of 30 entries. A new dish is one line: colours, toppings, speeds and rule flags.
-- **Slurp detection:** the mic's loudness between 1.5 and 8 kHz, compared with a noise floor measured for one second. No speech recognition, so accent does not matter. Saying "shhh" or blowing probably also counts.
+- **Sound detection:** two bands (250 Hz–1 kHz and 2–8 kHz), each compared with a noise floor measured for one second before play. No speech recognition, so accent does not matter.
+  - **Slurp:** loud, noisy hiss above 2 kHz, lasting at least 8 frames (about 0.13 s).
+  - **Blow:** loud, noisy wind strongest below 1 kHz, lasting at least 8 frames.
+  - **Cough:** a burst that jumps 12 dB or more, lasts 120–480 ms and is mostly noisy, not hiss-dominated. Bursts that start just after one of the game's beeps are ignored, and for 0.3 s after a cough nothing counts as a slurp.
+  - **Rejected in synthetic tests:** claps, knocks, beeps, whistles, a held voice and a short "ơi".
+  - **Known leaks:** a short sip can pass as a cough. A blow needs the low band at least 6 dB above the high band; a sound that is only loosely low-heavy neither cools a hot bowl nor burns you. If a phone can't produce a clear blow, hot dishes can't be finished, so tune with `?debug` first.
+  - **Tuning:** open the page with `?debug` to see the live numbers on a real phone. None of this has been tested on real phones yet.
 - **Saved data:** best times, daily result and streak, in the browser's local storage on that device only.
 - **Fonts:** Bungee for the sign and timer, Be Vietnam Pro for text.
 
