@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Be+Vietnam+Pro:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* layout: one phone-width column; a hand-painted street sign on a mint stall wall, bowl on a steel table; the 30-dish menu is a flip-through menu book in an overlay */
+  /* layout: one phone-width column; a hand-painted street sign on a mint stall wall, bowl on a steel table; the 31-dish menu is a flip-through menu book in an overlay */
   --wall:#E1F0E6; --card:#F6FBF7; --ink:#10312A; --soft:#4B6B62;
   --sign:#D7262B; --gold:#F9BE1A; --steel:#C5D2CC; --line:#10312A22;
   --paper:#FFF8E6; --paper-ink:#10312A; --paper-soft:#4B6B62; --ricon:#D7262B;
@@ -420,13 +420,13 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   <!-- one centred column: the sign, a row of small tools, the dish and its rule, the bowl, then one round button -->
   <header class="sign">
     <h1>Húp Phở</h1>
-    <p data-en="30 bowls, one rule each. First to empty the bowl wins.">30 tô, mỗi tô một luật. Ai sạch tô trước thì thắng.</p>
+    <p data-en="31 bowls, one rule each. First to empty the bowl wins.">31 tô, mỗi tô một luật. Ai sạch tô trước thì thắng.</p>
   </header>
 
   <nav class="tools" aria-label="Chọn tô" data-en-label="Choose a bowl">
     <button class="pill daily" id="dailybtn" type="button" data-en="Daily bowl">Tô hôm nay</button>
     <span class="tright">
-      <button class="pill ghost" id="tomenu" type="button" aria-haspopup="dialog" aria-label="Thực đơn 30 tô" data-en-label="Menu: 30 bowls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.3 9.2 4.3 12 6c2.8-1.7 5.5-1.7 8-.5V19c-2.5-1.2-5.2-1.2-8 .5-2.8-1.7-5.5-1.7-8-.5zM12 6v13.5"/></svg><span data-en="30 bowls">30 tô</span></button>
+      <button class="pill ghost" id="tomenu" type="button" aria-haspopup="dialog" aria-label="Thực đơn 31 tô" data-en-label="Menu: 31 bowls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.3 9.2 4.3 12 6c2.8-1.7 5.5-1.7 8-.5V19c-2.5-1.2-5.2-1.2-8 .5-2.8-1.7-5.5-1.7-8-.5zM12 6v13.5"/></svg><span data-en="31 bowls">31 tô</span></button>
       <button class="round" id="sndbtn" type="button" aria-label="Tiếng"></button>
       <button class="round" id="langbtn" type="button" aria-label="Switch to English">VI</button>
     </span>
@@ -535,7 +535,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     <div class="menubar">
       <header class="sign msign">
         <h2>Húp Phở</h2>
-        <p data-en="A menu of 30 bowls. Turn the pages from North to South.">Thực đơn 30 tô. Lật trang để đi từ Bắc vào Nam.</p>
+        <p data-en="A menu of 31 bowls. Turn the pages from North to South.">Thực đơn 31 tô. Lật trang để đi từ Bắc vào Nam.</p>
       </header>
       <div class="mtools"><div class="lang" role="group" aria-label="Ngôn ngữ / Language"><button type="button" data-lang="vi">VI</button><button type="button" data-lang="en">EN</button></div><button class="chip" id="bookclose" type="button" data-en="Close ✕">Đóng ✕</button></div>
     </div>
@@ -565,32 +565,175 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 
 <script>
 (function(){
-  var PAL={
-    amber:['#BA7517','#EF9F27'], red:['#A32D2D','#E24B4A'], clear:['#EF9F27','#FAC775'], orange:['#D85A30','#F0997B'],
-    brown:['#633806','#BA7517'], tomato:['#C2410C','#F0997B'], salad:['#639922','#C0DD97'], dry:['#B4B2A9','#E4E2D8']
-  };
+  var PAL={amber:['#BA7517','#EF9F27'],red:['#A32D2D','#E24B4A'],clear:['#EF9F27','#FAC775'],orange:['#D85A30','#F0997B'],
+    brown:['#633806','#BA7517'],tomato:['#C2410C','#F0997B'],salad:['#639922','#C0DD97'],dry:['#B4B2A9','#E4E2D8']};
+  /* toppings: each piece is drawn around 0,0, about 40 wide, flattened for the bowl's tilt.
+     Pieces without their own stroke pick up the thin ink outline from the group they sit in. */
+  var SLICE='M-19 1 q5 -9 19 -8 q14 0 19 6 q-5 8 -19 8 q-14 0 -19 -6z', EDGE='M-18 -1 q8 -7 18 -6 q11 0 17 4';
+  function tre(x,y,c){return '<g fill="'+c+'" stroke="#2F6B2A" stroke-width=".5"><circle cx="'+(x-2.4)+'" cy="'+(y+.8)+'" r="2.3"/><circle cx="'+(x+2.4)+'" cy="'+(y+.8)+'" r="2.3"/><circle cx="'+x+'" cy="'+(y-2)+'" r="2.5"/></g>';}
+  function strips(a,b){return '<g fill="none" stroke-linecap="round"><g stroke="'+b+'" stroke-width="3.6"><path d="M-12 -3 q6 5 12 0 t10 1"/><path d="M-10 2 q6 -5 12 0 t9 0"/><path d="M-6 6 q5 -4 10 0"/></g><g stroke="'+a+'" stroke-width="2.4"><path d="M-12 -3 q6 5 12 0 t10 1"/><path d="M-10 2 q6 -5 12 0 t9 0"/><path d="M-6 6 q5 -4 10 0"/></g></g>';}
+  function curls(a,b,c){return '<g fill="none" stroke-linecap="round" stroke-width="2"><path d="M-12 2 q4 -8 8 0 t8 0 t8 0" stroke="'+a+'"/><path d="M-10 -3 q5 6 10 0 t10 1" stroke="'+b+'"/><path d="M-6 6 q4 -5 10 -1" stroke="'+c+'"/></g>';}
   var TOP={
-    beef:'<ellipse rx="20" ry="7" fill="#993C1D"/>',
-    pork:'<ellipse rx="18" ry="7" fill="#F5C4B3" stroke="#993C1D"/>',
-    cha:'<ellipse rx="16" ry="8" fill="#F4C0D1" stroke="#D4537E"/>',
-    herb:'<circle cx="-8" cy="2" r="4" fill="#3B6D11"/><circle cx="2" cy="-3" r="4" fill="#639922"/><circle cx="10" cy="3" r="3" fill="#3B6D11"/>',
-    shrimp:'<path d="M-12 4 q12 -18 24 0" stroke="#D85A30" stroke-width="7" fill="none" stroke-linecap="round"/>',
-    peanut:'<circle cx="-7" cy="0" r="3" fill="#633806"/><circle cx="2" cy="4" r="3" fill="#633806"/><circle cx="8" cy="-3" r="3" fill="#633806"/>',
-    cracker:'<path d="M-18 4 l38 -6 l-10 16 z" fill="#F5C4B3" stroke="#993C1D"/>',
-    egg:'<ellipse rx="22" ry="10" fill="#FFFFFF" stroke="#B4B2A9"/><circle r="7" fill="#EF9F27"/>',
-    tofu:'<rect x="-11" y="-7" width="22" height="14" rx="2" fill="#FAEEDA" stroke="#BA7517"/>',
-    tomato:'<circle r="9" fill="#E24B4A" stroke="#A32D2D"/><circle r="3" fill="#F7C1C1"/>',
-    crab:'<ellipse rx="17" ry="8" fill="#D85A30" stroke="#712B13"/>',
-    ball:'<circle r="9" fill="#B4B2A9" stroke="#5F5E5A"/>',
-    fish:'<ellipse rx="17" ry="7" fill="#FAC775" stroke="#854F0B"/>',
-    snail:'<circle r="9" fill="#5F5E5A" stroke="#2C2C2A"/><circle cx="1" r="4" fill="none" stroke="#D3D1C7" stroke-width="1.5"/>',
-    wonton:'<path d="M-14 6 l14 -16 l14 16 z" fill="#FAEEDA" stroke="#BA7517"/>',
-    quail:'<ellipse rx="8" ry="6" fill="#FFFFFF" stroke="#B4B2A9"/>',
-    eel:'<path d="M-16 2 q8 -10 16 0 t16 0" stroke="#412402" stroke-width="6" fill="none" stroke-linecap="round"/>',
-    chive:'<path d="M-12 -3 l12 4 M2 5 l12 -4 M-4 6 l8 -10" stroke="#27500A" stroke-width="3" stroke-linecap="round"/>',
-    roll:'<path d="M-12 3 l24 -6" stroke="#854F0B" stroke-width="11" stroke-linecap="round"/><path d="M-12 3 l24 -6" stroke="#EF9F27" stroke-width="7" stroke-linecap="round"/>'
+    beefRare:'<path d="M-20 0 q4 -9 18 -8 q16 -2 22 5 q-2 9 -18 9 q-18 2 -22 -6z" fill="#C8574E"/><path d="M-12 -1 q10 -5 24 -1 M-8 4 q10 -3 20 0" stroke="#F0B3A6" stroke-width="1.6" fill="none"/>',
+    brisket:'<path d="'+SLICE+'" fill="#8E5234"/><path d="'+EDGE+'" stroke="#EAD7B4" stroke-width="3" fill="none"/><path d="M-10 2 h8 M2 4 h10" stroke="#6B3A22" stroke-width="1.2"/>',
+    beefBall:'<circle r="9" fill="#A79C92"/><path d="M-5 -3 a6 6 0 0 1 7 -3" stroke="#E4DDD6" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="3" cy="3" r="1" fill="#7A7068" stroke="none"/>',
+    chicken:'<path d="'+SLICE+'" fill="#F4E6C8"/><path d="'+EDGE+'" stroke="#E8B63C" stroke-width="3" fill="none"/><path d="M-8 3 l6 -3 M2 4 l8 -3" stroke="#D9C49A" stroke-width="1.2"/>',
+    cilantro:'<path d="M0 7 L-8 -1 M0 7 L2 -5 M0 7 L10 1" stroke="#4E8A2A" stroke-width="1.3" fill="none"/>'+tre(-8,-2,'#63AB36')+tre(2,-6,'#4F9A2C')+tre(10,0,'#63AB36'),
+    onion:'<g fill="none"><ellipse cx="-6" cy="0" rx="9.6" ry="4.6" stroke="#B88BB0" stroke-width="3.6"/><ellipse cx="-6" cy="0" rx="9.6" ry="4.6" stroke="#FBF2F8" stroke-width="2.2"/><ellipse cx="7" cy="2" rx="8.6" ry="4.1" stroke="#B88BB0" stroke-width="3.6"/><ellipse cx="7" cy="2" rx="8.6" ry="4.1" stroke="#FBF2F8" stroke-width="2.2"/></g>',
+    limeleaf:'<path d="M-10 -3 q6 4 14 0 M-12 3 q8 -5 16 0 M-4 6 q6 -4 14 -2" stroke="#2F6B2A" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+    lime:'<path d="M-11 4 q0 -11 11 -11 q11 0 11 11z" fill="#8CC63F"/><path d="M-8 3 q1 -7 8 -7 q7 0 8 7z" fill="#E6F2B8" stroke="none"/><path d="M0 -4 v7 M-5 -2 l5 5 M5 -2 l-5 5" stroke="#B9D46A" stroke-width=".9"/>',
+    chaVien:'<ellipse rx="13" ry="7" fill="#8A4A26"/><path d="M-8 -2 l5 5 M-2 -4 l6 7 M5 -3 l4 5" stroke="#4A2410" stroke-width="1.8"/><path d="M-9 -3 q6 -4 14 -2" stroke="#C98A4E" stroke-width="1.4" fill="none"/>',
+    grilledPork:'<path d="'+SLICE+'" fill="#B5622E"/><path d="M-12 -4 l4 9 M-3 -5 l4 10 M6 -5 l4 9" stroke="#5E2C12" stroke-width="2"/><path d="M-15 -2 q10 -5 28 -2" stroke="#E7A862" stroke-width="1.5" fill="none"/>',
+    pickle:'<g stroke-linecap="round" fill="none"><g stroke="#10312A" stroke-width="4.2"><path d="M-12 -3 l14 4 M-6 4 l16 -5 M-2 -5 l12 6 M-13 3 l10 2"/></g><g stroke-width="3"><path d="M-12 -3 l14 4" stroke="#F08A24"/><path d="M-6 4 l16 -5" stroke="#FFFFFF"/><path d="M-2 -5 l12 6" stroke="#F6A54A"/><path d="M-13 3 l10 2" stroke="#F4F1E6"/></g></g>',
+    lettuce:'<path d="M-18 4 q-4 -8 4 -9 q2 -6 10 -3 q6 -5 12 0 q8 -1 8 6 q4 6 -6 8 q-8 4 -14 0 q-10 3 -14 -2z" fill="#9BD06A"/><path d="M-10 2 q8 -6 20 -2 M-4 6 q6 -4 14 -1" stroke="#5E9A34" stroke-width="1.2" fill="none"/>',
+    crabCake:'<path d="M-16 2 q-3 -7 5 -8 q3 -4 9 -2 q6 -3 11 1 q7 1 6 7 q0 6 -9 7 q-8 3 -14 0 q-7 0 -8 -5z" fill="#D9893F"/><g fill="#B5622E" stroke="none"><circle cx="-7" cy="0" r="1.6"/><circle cx="2" cy="-3" r="1.4"/><circle cx="8" cy="2" r="1.6"/><circle cx="-1" cy="4" r="1.3"/></g><path d="M-10 -3 q6 -3 12 -2" stroke="#F3C07A" stroke-width="1.4" fill="none"/>',
+    tomato:'<path d="M-12 4 q0 -12 12 -12 q12 0 12 12 q-12 5 -24 0z" fill="#E2463C"/><path d="M-7 3 q1 -7 7 -7 q6 0 7 7 q-7 2 -14 0z" fill="#F4917F" stroke="none"/><g fill="#F9E3A8" stroke="none"><circle cx="-3" cy="1" r="1"/><circle cx="3" cy="1" r="1"/><circle cx="0" cy="-2" r="1"/></g>',
+    tofuFried:'<path d="M-11 -2 l11 -5 l11 5 v7 l-11 5 l-11 -5z" fill="#E2A548"/><path d="M-11 -2 l11 -5 l11 5 l-11 5z" fill="#F7DFA0"/><path d="M0 3 v7" stroke="#B87A28" stroke-width="1"/>',
+    glory:curls('#5FA533','#8CC63F','#3E8A34'),
+    porkBoiled:'<path d="'+SLICE+'" fill="#EFD3C4"/><path d="'+EDGE+'" stroke="#FBF3EC" stroke-width="3.5" fill="none"/><path d="M-12 3 q10 -3 22 0" stroke="#C99A86" stroke-width="1.2" fill="none"/>',
+    chaCom:'<ellipse rx="13" ry="7" fill="#C9B25A"/><g fill="#6FA83A" stroke="none"><circle cx="-6" cy="-1" r="1.6"/><circle cx="0" cy="2" r="1.6"/><circle cx="6" cy="-2" r="1.6"/><circle cx="3" cy="4" r="1.3"/><circle cx="-3" cy="-4" r="1.3"/></g>',
+    cucumber:'<ellipse cx="-7" cy="0" rx="8" ry="4.5" fill="#DDF0C2" stroke="#3E7D2A" stroke-width="1.6"/><ellipse cx="6" cy="2" rx="8" ry="4.5" fill="#DDF0C2" stroke="#3E7D2A" stroke-width="1.6"/><g fill="#B9D99A" stroke="none"><circle cx="-7" cy="0" r="1.6"/><circle cx="6" cy="2" r="1.6"/></g>',
+    perilla:'<path d="M-14 3 q6 -12 16 -4 q-6 8 -16 4z" fill="#4E8A2A"/><path d="M0 2 q8 -10 16 -2 q-6 8 -16 2z" fill="#7A3E78"/><path d="M-12 2 q7 -5 13 -3 M2 1 q7 -5 13 -1" stroke="#1F3B2C" stroke-width=".8" fill="none"/>',
+    mamtom:'<ellipse rx="12" ry="6" fill="#FFFFFF"/><ellipse rx="9" ry="4" fill="#8E6A8E" stroke="none"/><circle cx="2" cy="-1" r="1.5" fill="#D7262B" stroke="none"/>',
+    eggStrips:strips('#F4C534','#B8860B'),
+    chaLuaStrips:strips('#F6E3DA','#C9A090'),
+    chaLua:'<ellipse rx="14" ry="7.5" fill="#F6E7DF"/><ellipse rx="11.6" ry="5.6" fill="none" stroke="#E7C9BC" stroke-width="1.6"/><g fill="#E3C3B6" stroke="none"><circle cx="-4" cy="-1" r="1"/><circle cx="4" cy="2" r="1"/></g>',
+    shiitake:'<ellipse rx="10" ry="6.5" fill="#6B4A32"/><path d="M-6 0 h12 M0 -4 v8 M-4 -3 l8 6 M4 -3 l-8 6" stroke="#E9D9B8" stroke-width="1.6"/>',
+    ruocTom:'<path d="M-12 2 q-2 -6 4 -7 q4 -4 9 -1 q7 -2 9 4 q3 6 -5 7 q-6 3 -11 0 q-6 0 -6 -3z" fill="#F0A04A"/><path d="M-7 -1 l4 3 M0 -3 l3 4 M5 0 l3 3 M-3 3 l4 2" stroke="#C9762A" stroke-width=".9" fill="none"/>',
+    softEgg:'<ellipse rx="12" ry="8" fill="#FFFDF5"/><ellipse cx="1" cy="0" rx="6" ry="4.4" fill="#F59B1C" stroke="none"/><ellipse cx="-1" cy="-1.2" rx="2.2" ry="1.2" fill="#FFD27A" stroke="none"/>',
+    friedEgg:'<path d="M-17 1 q-2 -8 7 -8 q6 -4 12 0 q10 -1 10 6 q2 8 -8 8 q-8 4 -14 0 q-8 0 -7 -6z" fill="#FFFDF5"/><ellipse cx="1" cy="0" rx="6.5" ry="4.6" fill="#F7A823" stroke="#D98A12" stroke-width=".8"/><ellipse cx="-1" cy="-1.4" rx="2.2" ry="1.1" fill="#FFE09A" stroke="none"/><path d="M-13 4 q4 3 9 2" stroke="#E0B36A" stroke-width="1" fill="none"/>',
+    quailEgg:'<ellipse rx="7" ry="5.5" fill="#FFFDF5"/><path d="M-3.5 -2 a4 3 0 0 1 4 -1.6" stroke="#DCD6C4" stroke-width="1.4" fill="none"/>',
+    snail:'<ellipse rx="10" ry="7.5" fill="#6B5A3C"/><path d="M5 2 a5 4 0 1 1 -5 -4 a3 2.4 0 1 1 -3 2.4" stroke="#D9C49A" stroke-width="1.5" fill="none"/>',
+    eelFried:'<g fill="none" stroke-linecap="round"><path d="M-14 3 q7 -10 14 -2 t14 -3" stroke="#10312A" stroke-width="6.6"/><path d="M-14 3 q7 -10 14 -2 t14 -3" stroke="#9A5A1E" stroke-width="5"/><path d="M-12 2 q6 -8 12 -2" stroke="#D99A4A" stroke-width="1.4"/></g>',
+    sprouts:'<g fill="none" stroke-linecap="round"><g stroke="#8A8672" stroke-width="3.2"><path d="M-13 3 q6 -8 14 -4"/><path d="M-6 6 q8 -2 14 -8"/><path d="M-10 -4 q8 2 16 -1"/><path d="M0 5 q6 2 12 -2"/></g><g stroke="#FFFEF4" stroke-width="2.2"><path d="M-13 3 q6 -8 14 -4"/><path d="M-6 6 q8 -2 14 -8"/><path d="M-10 -4 q8 2 16 -1"/><path d="M0 5 q6 2 12 -2"/></g></g><g fill="#F2D24A" stroke="#8A8672" stroke-width=".6"><ellipse cx="-13" cy="3" rx="2.2" ry="1.6"/><ellipse cx="8" cy="-2" rx="2.2" ry="1.6"/><ellipse cx="-10" cy="-4" rx="2.2" ry="1.6"/><ellipse cx="12" cy="3" rx="2.2" ry="1.6"/></g>',
+    chaLaLot:'<g stroke-linecap="round"><path d="M-14 -2 l12 -4" stroke="#10312A" stroke-width="9"/><path d="M-14 -2 l12 -4" stroke="#2F5A22" stroke-width="7"/><path d="M0 5 l13 -4" stroke="#10312A" stroke-width="9"/><path d="M0 5 l13 -4" stroke="#3B6D2A" stroke-width="7"/><path d="M-12 -3 l8 -2.6 M2 4 l9 -2.6" stroke="#6FA04A" stroke-width="1.2"/></g>',
+    fishCake:'<ellipse rx="14" ry="7" fill="#E39A32"/><ellipse rx="10" ry="4.4" fill="#F6D9A0" stroke="none"/><g fill="#5FA533" stroke="none"><circle cx="-4" cy="0" r="1"/><circle cx="3" cy="-1" r="1"/><circle cx="1" cy="2" r=".9"/></g>',
+    prawn:'<path d="M10 3 l8 5 l-9 3z" fill="#E2552A"/><g fill="none" stroke-linecap="round"><path d="M-12 5 a12 10 0 1 1 22 -2" stroke="#10312A" stroke-width="9.6"/><path d="M-12 5 a12 10 0 1 1 22 -2" stroke="#F27B3A" stroke-width="8"/><path d="M-12 5 a12 10 0 1 1 22 -2" stroke="#FFD2B0" stroke-width="2.2" stroke-dasharray="3 4"/></g><circle cx="-12" cy="4" r="1.3" fill="#10312A" stroke="none"/>',
+    wonton:'<path d="M-14 4 q2 -10 14 -11 q12 1 14 11 q-14 5 -28 0z" fill="#F6E3A8"/><ellipse cy="2" rx="6" ry="3" fill="#F0B9A0" stroke="none" opacity=".7"/><path d="M-6 -5 q2 6 0 10 M0 -7 v12 M6 -5 q-2 6 0 10" stroke="#D9B45A" stroke-width="1.1" fill="none"/>',
+    xaXiu:'<path d="'+SLICE+'" fill="#F0C4B0"/><path d="M-19 1 q5 -9 19 -8 q14 0 19 6" stroke="#C4362E" stroke-width="3" fill="none"/><path d="M-10 3 q8 -3 20 0" stroke="#D99A86" stroke-width="1.2" fill="none"/>',
+    porkBraised:'<path d="'+SLICE+'" fill="#A8683A"/><path d="'+EDGE+'" stroke="#F0D9B8" stroke-width="2.6" fill="none"/><path d="M-10 3 q8 -3 20 0" stroke="#6B3A1E" stroke-width="1.2" fill="none"/>',
+    bokchoy:'<path d="M-14 4 q-2 -10 8 -10 q6 0 6 8 q0 4 -4 5 q-6 1 -10 -3z" fill="#5FA533"/><path d="M0 4 q0 -9 9 -9 q7 1 5 9 q-2 4 -8 4 q-5 0 -6 -4z" fill="#7BC043"/><path d="M-6 6 q6 -4 12 0" stroke="#F1F7E4" stroke-width="3.4" fill="none" stroke-linecap="round"/>',
+    pigTrotter:'<ellipse rx="13" ry="8.5" fill="#E9C9A6"/><ellipse rx="9" ry="5.4" fill="#D98C7A" stroke="none"/><ellipse rx="3.6" ry="2.4" fill="#FFFDF5" stroke="#B9A58C" stroke-width=".8"/>',
+    chaHue:'<circle r="8.5" fill="#E9944A"/><g fill="#C9662A" stroke="none"><circle cx="-3" cy="-2" r="1.3"/><circle cx="3" cy="1" r="1.3"/><circle cx="-1" cy="4" r="1.1"/></g>',
+    bloodCake:'<path d="M-10 -2 l10 -4 l10 4 v7 l-10 4 l-10 -4z" fill="#5E1F26"/><path d="M-10 -2 l10 -4 l10 4 l-10 4z" fill="#8A3038"/>',
+    banana:curls('#C98AB0','#EFD3E0','#A85E8E'),
+    cracker:'<path d="M-18 4 l10 -12 l26 4 l-8 14z" fill="#EBD3A0"/><g fill="#4A3A22" stroke="none"><circle cx="-6" cy="0" r="1"/><circle cx="2" cy="-2" r="1"/><circle cx="8" cy="3" r="1"/><circle cx="-1" cy="5" r="1"/><circle cx="-10" cy="3" r=".9"/></g>',
+    peanut:'<g fill="#D9A066" stroke="#8A5A2B" stroke-width=".8"><ellipse cx="-8" cy="0" rx="3.6" ry="2.6"/><ellipse cx="0" cy="3" rx="3.6" ry="2.6"/><ellipse cx="7" cy="-2" rx="3.6" ry="2.6"/><ellipse cx="-2" cy="-4" rx="3.2" ry="2.3"/><ellipse cx="9" cy="4" rx="3.2" ry="2.3"/></g>',
+    crouton:'<g fill="#E0A84A" stroke="#8A5A1E" stroke-width=".9"><path d="M-12 -3 l8 -2 l2 6 l-8 2z"/><path d="M0 1 l8 -3 l3 6 l-8 3z"/><path d="M-6 4 l6 -1 l1 5 l-6 1z"/></g>',
+    pineapple:'<path d="M-10 4 l4 -11 h12 l4 11z" fill="#F7D046"/><path d="M-5 -2 h10 M-7 2 h14 M-2 -6 l-3 10 M3 -6 l3 10" stroke="#D9A21A" stroke-width=".9"/>',
+    crabClaw:'<path d="M-14 4 q2 -10 12 -9 q8 0 12 6 l6 -4 l-2 8 q-8 6 -18 4 q-8 -1 -10 -5z" fill="#E8603A"/><path d="M-9 0 q6 -4 12 -1" stroke="#FFD2B0" stroke-width="1.6" fill="none"/>',
+    clams:'<path d="M-14 4 q0 -9 14 -9 q14 0 14 9 q-14 5 -28 0z" fill="#C9B48A"/><g fill="#8A7A5A" stroke="none"><ellipse cx="-7" cy="1" rx="2.4" ry="1.4"/><ellipse cx="0" cy="-2" rx="2.4" ry="1.4"/><ellipse cx="7" cy="1" rx="2.4" ry="1.4"/><ellipse cx="-2" cy="3" rx="2.2" ry="1.3"/><ellipse cx="4" cy="4" rx="2.2" ry="1.3"/></g>',
+    rind:'<g fill="#F2C766" stroke="#A8761E" stroke-width=".9"><path d="M-13 1 q2 -7 8 -4 q4 3 0 7 q-6 2 -8 -3z"/><path d="M-2 -3 q6 -5 10 0 q2 5 -4 6 q-6 0 -6 -6z"/><path d="M4 4 q5 -3 8 1 q0 4 -5 4 q-4 -1 -3 -5z"/></g>',
+    mint:'<g fill="#58A63C"><ellipse cx="-7" cy="1" rx="6" ry="4" transform="rotate(-20 -7 1)"/><ellipse cx="5" cy="-2" rx="6" ry="4" transform="rotate(15 5 -2)"/><ellipse cx="1" cy="5" rx="5" ry="3.4"/></g><path d="M-11 2 l8 -2 M1 -2 l8 0" stroke="#2F6B2A" stroke-width=".8"/>',
+    basil:'<path d="M0 7 L-2 -2" stroke="#6B3E6B" stroke-width="1.6"/><g fill="#3E8A34"><path d="M-2 0 q-12 -2 -14 -8 q10 -2 14 8z"/><path d="M-1 -1 q10 -4 14 -9 q-12 -2 -14 9z"/><path d="M-1 3 q10 2 15 -1 q-8 -6 -15 1z"/></g>',
+    minced:'<g fill="#B8785A" stroke="#7A4A32" stroke-width=".7"><circle cx="-8" cy="1" r="3"/><circle cx="-2" cy="-2" r="3.2"/><circle cx="4" cy="1" r="3"/><circle cx="-3" cy="4" r="2.8"/><circle cx="8" cy="-2" r="2.6"/><circle cx="3" cy="5" r="2.4"/></g>',
+    liver:'<path d="M-15 1 q4 -8 15 -7 q12 0 15 6 q-4 7 -15 7 q-12 0 -15 -6z" fill="#7A5A52"/><path d="M-9 0 q8 -4 18 -1" stroke="#A88A80" stroke-width="1.4" fill="none"/>',
+    chivesLong:'<g stroke-linecap="round" fill="none"><path d="M-16 4 L10 -6 M-12 6 L16 -3 M-8 -4 L14 4" stroke="#1F5A24" stroke-width="3.4"/><path d="M-16 4 L10 -6 M-12 6 L16 -3 M-8 -4 L14 4" stroke="#4FA63C" stroke-width="2"/></g>',
+    roastPork:'<path d="M-14 -2 l14 -5 l14 5 v6 l-14 5 l-14 -5z" fill="#E9C2A8"/><path d="M-14 -2 l14 -5 l14 5 l-14 5z" fill="#C9772A"/><path d="M-8 -2 l8 -3 M0 0 l8 -3" stroke="#8A4A12" stroke-width="1"/><path d="M-13 2 l13 4.6 l13 -4.6" stroke="#F6E7DF" stroke-width="1.4" fill="none"/>',
+    fishFillet:'<path d="'+SLICE+'" fill="#FBF6EC"/><path d="M-19 1 q5 -9 19 -8 q14 0 19 6" stroke="#6F7C82" stroke-width="2.6" fill="none"/><path d="M-8 2 l5 -4 M0 3 l5 -4 M7 3 l4 -3" stroke="#D9D2C0" stroke-width="1"/>',
+    eggplant:'<ellipse rx="12" ry="7" fill="#EDE6C8"/><ellipse rx="10.4" ry="5.6" fill="none" stroke="#6A4288" stroke-width="2.4"/><g fill="#C9BE96" stroke="none"><circle cx="-4" cy="0" r="1"/><circle cx="3" cy="-2" r="1"/><circle cx="2" cy="3" r="1"/></g>',
+    squid:'<g fill="none"><ellipse cx="-6" cy="0" rx="8" ry="5" stroke="#10312A" stroke-width="5.4"/><ellipse cx="-6" cy="0" rx="8" ry="5" stroke="#FFF7F0" stroke-width="4"/><ellipse cx="7" cy="2" rx="7" ry="4.4" stroke="#10312A" stroke-width="5.4"/><ellipse cx="7" cy="2" rx="7" ry="4.4" stroke="#FBE3DC" stroke-width="4"/></g>',
+    roll:'<g stroke-linecap="round"><path d="M-14 4 l22 -8" stroke="#10312A" stroke-width="11.5"/><path d="M-14 4 l22 -8" stroke="#D9922E" stroke-width="10"/><path d="M-12 1 l18 -6.5" stroke="#F3C877" stroke-width="2"/></g><ellipse cx="9" cy="-4.4" rx="3.6" ry="4.6" fill="#F6E3B8" stroke="#8A5A1E" stroke-width=".8" transform="rotate(20 9 -4.4)"/><circle cx="9" cy="-4.4" r="1.4" fill="#C9772A" stroke="none"/>',
+    stewBeef:'<path d="M-13 -1 q2 -7 12 -7 q12 0 14 7 q0 8 -13 8 q-12 0 -13 -8z" fill="#6B3420"/><path d="M-8 -3 q7 -4 15 -1" stroke="#B5704A" stroke-width="1.6" fill="none"/><path d="M-6 2 h10" stroke="#4A2012" stroke-width="1.2"/>',
+    carrot:'<path d="M-9 -3 q9 -6 18 0 v6 q-9 6 -18 0z" fill="#F08A24"/><ellipse cy="-3" rx="8" ry="3.4" fill="#F7A84A" stroke="none"/><circle cy="-3" r="1.6" fill="#F9C987" stroke="none"/>',
+    suong:'<g fill="none" stroke-linecap="round"><path d="M-15 2 q5 -8 10 0 t10 0 t9 -2" stroke="#10312A" stroke-width="7.4"/><path d="M-15 2 q5 -8 10 0 t10 0 t9 -2" stroke="#F2A486" stroke-width="6"/><path d="M-13 1 q4 -6 8 -1" stroke="#FCD9C8" stroke-width="1.4"/></g>',
+    sausage:'<ellipse cx="-7" cy="0" rx="8" ry="5" fill="#E86A5A"/><ellipse cx="-7" cy="0" rx="5.4" ry="3.2" fill="#F5A596" stroke="none"/><ellipse cx="7" cy="2" rx="8" ry="5" fill="#E86A5A"/><ellipse cx="7" cy="2" rx="5.4" ry="3.2" fill="#F5A596" stroke="none"/>',
+    kimchi:'<path d="M-15 3 q-2 -8 6 -8 q4 -4 9 0 q8 -2 10 4 q4 6 -5 7 q-8 4 -13 0 q-7 1 -7 -3z" fill="#E8603A"/><path d="M-9 0 q6 -4 16 0 M-6 4 q6 -3 12 0" stroke="#FBE3B0" stroke-width="1.6" fill="none"/><g fill="#C8231E" stroke="none"><circle cx="-4" cy="-2" r="1"/><circle cx="6" cy="2" r="1"/></g>',
+    enoki:'<g fill="none" stroke-linecap="round"><path d="M-10 6 L-12 -3 M-4 6 L-5 -5 M2 6 L3 -5 M8 6 L11 -3" stroke="#8A8672" stroke-width="2.8"/><path d="M-10 6 L-12 -3 M-4 6 L-5 -5 M2 6 L3 -5 M8 6 L11 -3" stroke="#FFFDF2" stroke-width="1.7"/></g><g fill="#F4E6C0" stroke="#8A8672" stroke-width=".6"><circle cx="-12" cy="-4" r="2.4"/><circle cx="-5" cy="-6" r="2.4"/><circle cx="3" cy="-6" r="2.4"/><circle cx="11" cy="-4" r="2.4"/></g>'
   };
-  var SLOTS=[[112,92],[210,96],[160,84],[244,104],[78,104],[160,110]];
+  TOP.bunLa='<path d="M-14 3 v-6 l14 5.4 v6z" fill="#E7E3D4"/><path d="M0 8.4 v-6 l14 -5.4 v6z" fill="#D8D3C0"/><path d="M-14 -3 l14 -5.4 l14 5.4 l-14 5.4z" fill="#FFFFFF"/>'+
+    '<g fill="none" stroke-linecap="round"><path d="M-10 -3.4 q2 -1.8 4 -.6 t4 -1.4 t4 -.4 t4 -1.4" stroke="#CFC9B5" stroke-width=".9"/><path d="M-7 -1 q2 -1.8 4 -.6 t4 -1.4 t4 -.4 t4 -1.4" stroke="#CFC9B5" stroke-width=".9"/><path d="M-4 1.4 q2 -1.8 4 -.6 t4 -1.4 t4 -.4" stroke="#CFC9B5" stroke-width=".9"/><path d="M-12 -5 q2 -1.4 4 -.4 t4 -1.2 t4 -.3" stroke="#CFC9B5" stroke-width=".9"/>'+
+    '<path d="M-13 0 l13 5 M-13 2.4 l13 5" stroke="#C9C3AE" stroke-width=".7"/><path d="M1 5 l12 -4.6 M1 7.4 l12 -4.6" stroke="#BFB8A2" stroke-width=".7"/></g>';
+  TOP.dipBowl='<path d="M-21 0 q2 14 21 14 q19 0 21 -14z" fill="#F1EEE2"/><ellipse rx="21" ry="10" fill="#FFFFFF"/><ellipse rx="17.6" ry="7.6" fill="#C8892E" stroke="#8A5A1E" stroke-width=".8"/>'+
+    '<ellipse cx="-7" cy="-1.6" rx="6.4" ry="3.2" fill="#7A3E1E" stroke="#10312A" stroke-width=".7"/><path d="M-10 -2.4 l3 2.4 M-6 -3.4 l3 2.6" stroke="#3E1C0C" stroke-width="1"/>'+
+    '<ellipse cx="6" cy="2" rx="6.4" ry="3.2" fill="#8A4A26" stroke="#10312A" stroke-width=".7"/><path d="M3 1 l3 2.4 M7 0 l3 2.6" stroke="#3E1C0C" stroke-width="1"/>'+
+    '<path d="M2 -5 q6 -2 11 1 q-4 3 -11 -1z" fill="#B5622E" stroke="#10312A" stroke-width=".7"/>'+
+    '<g stroke-linecap="round" stroke-width="2"><path d="M-12 3.4 l6 1.6" stroke="#F08A24"/><path d="M-3 5 l6 -1" stroke="#FFFDF2"/><path d="M10 -2 l4 2" stroke="#F6A54A"/></g>'+
+    '<g stroke="none"><ellipse cx="-1" cy="-4.6" rx="1.6" ry="1" fill="#E2362A"/><ellipse cx="13" cy="3" rx="1.6" ry="1" fill="#E2362A"/><rect x="-14" y="-2.6" width="2.4" height="1.8" rx=".6" fill="#FFFDF2"/></g>';
+  TOP.mamtom='<path d="M-14 0 q1 9 14 9 q13 0 14 -9z" fill="#F1EEE2"/><ellipse rx="14" ry="6.6" fill="#FFFFFF"/><ellipse rx="11" ry="4.6" fill="#8E6A8E" stroke="#5E3F5E" stroke-width=".7"/><ellipse cx="-3" cy="-1" rx="4" ry="1.6" fill="#B79AB7" stroke="none"/><ellipse cx="4" cy="1" rx="1.8" ry="1.1" fill="#E2362A" stroke="none"/><circle cx="16" cy="6" r="4.6" fill="#F5A21C"/><circle cx="16" cy="6" r="2.2" fill="#FBD27A" stroke="none"/>';
+  function nest(q,cx,cy,rx,ry){
+    var t=q.nest||['#FFFFFF','#C9C4B2','#FFFFFF'];
+    var s='<g transform="translate('+cx+','+cy+')"><ellipse cy="5" rx="'+(rx+3)+'" ry="'+(ry+2)+'" fill="#10312A" opacity=".16"/><ellipse rx="'+rx+'" ry="'+ry+'" fill="'+t[0]+'" stroke="#10312A" stroke-width="1"/><g fill="none" stroke-linecap="round">';
+    for(var k=-2;k<=2;k++){
+      var y=k*ry*.36,half=rx*Math.sqrt(1-(y/ry)*(y/ry))*.84,len=half/2.5;
+      s+='<path d="'+wave(-half,y,(k%2?5:-5),len,half-1)+'" stroke="'+t[1]+'" stroke-width="2.2"/><path d="'+wave(-half,y-1,(k%2?5:-5),len,half-1)+'" stroke="'+t[2]+'" stroke-width="1.2"/>';
+    }
+    return s+'</g></g>';
+  }
+  /* dry dishes: [piece, x, y, tilt, size], or ['NEST', x, y, rx, ry] for the pile of bun */
+  var DRYPUT={
+    buncha:[['lettuce',78,84,-10,1.35],['perilla',132,78,6,1.25],['mint',58,102,0,1.15],['NEST',116,101,54,17],['cilantro',104,86,0,1],['dipBowl',214,96,0,1.65],['lime',166,118,12,.9]],
+    bundau:[['perilla',80,86,-10,1.25],['mamtom',140,78,0,1.25],['tofuFried',198,80,0,1.2],['tofuFried',232,90,0,1.2],['bunLa',100,98,-4,1.55],['bunLa',152,96,4,1.55],['tofuFried',206,101,0,1.25],['chaCom',250,107,10,1.1],['porkBoiled',78,116,-8,1.1],['bunLa',128,114,0,1.55],['porkBoiled',176,118,4,1.1],['cucumber',214,119,0,1.1],['mint',244,121,0,.9]],
+    phokho:[['lettuce',72,94,-12,1.3],['sprouts',98,80,0,1],['NEST',160,100,80,20],['minced',150,88,0,1.35],['beefRare',196,92,8,1.05],['cilantro',236,96,0,1],['beefBall',122,104,0,1.05],['minced',190,110,0,1.1]],
+    hutieukho:[['lettuce',70,94,-12,1.3],['chivesLong',246,90,10,1.15],['sprouts',96,80,0,1],['NEST',160,100,80,20],['prawn',122,91,-8,1.2],['minced',162,87,0,1.25],['liver',202,93,8,1.05],['quailEgg',140,108,0,1.15],['prawn',190,109,10,1.15],['quailEgg',226,104,0,1.05]],
+    bunthitnuong:[['lettuce',68,96,-12,1.4],['lettuce',252,96,12,1.4],['mint',100,79,0,1.15],['cucumber',224,80,0,1.15],['sprouts',160,75,0,1.15],['NEST',160,101,82,20],['roll',160,85,0,1.2],['grilledPork',126,95,-8,1.3],['grilledPork',192,96,8,1.3],['pickle',114,113,0,1.2],['roll',206,113,-12,1.2],['grilledPork',160,111,0,1.25]]
+  };
+  function dryContents(q){
+    var met=q.ves==='met',seed=q.id.length*7+q.id.charCodeAt(0);
+    var base=met?'<ellipse cx="160" cy="98" rx="116" ry="31" fill="#4F8A3C"/><path d="M48 98 H272" stroke="#9BD06A" stroke-width="2.4"/><path d="M80 98 l-16 -14 M120 98 l-14 -22 M160 98 l-10 -28 M200 98 l-6 -26 M240 98 l-2 -18 M80 98 l-10 16 M120 98 l-8 24 M160 98 l-4 30 M200 98 l2 26 M240 98 l6 16" stroke="#3B7A2C" stroke-width="1.2" fill="none"/>'
+      :'<ellipse cx="160" cy="98" rx="116" ry="31" fill="#F7F4EA"/><ellipse cx="160" cy="99" rx="100" ry="25" fill="none" stroke="#E2DCCB" stroke-width="2"/>';
+    var pcs=DRYPUT[q.id].map(function(a){
+      if(a[0]==='NEST')return nest(q,a[1],a[2],a[3],a[4]);
+      return '<g class="tp" transform="translate('+a[1]+','+a[2]+') rotate('+a[3]+') scale('+a[4]+')"><ellipse cy="5" rx="15" ry="5" fill="#10312A" opacity=".16" stroke="none"/><g stroke="#10312A" stroke-width="1" stroke-linejoin="round">'+TOP[a[0]]+'</g></g>';
+    }).join('');
+    var bits=met?'':(q.g||[]).map(function(k,i){return scatter(k,8,seed+i*13);}).join('');
+    return base+pcs+bits;
+  }
+  /* small garnishes sprinkled over the whole surface */
+  var BIT={
+    scallion:function(i){return i%3?'<ellipse rx="2.7" ry="1.9" fill="none" stroke="#2F7D32" stroke-width="1.5"/>':'<path d="M-4 1 l8 -2" stroke="#4FA63C" stroke-width="2.4" stroke-linecap="round"/>';},
+    shallot:function(){return '<path d="M-2.6 .6 q2.6 -3.4 5.2 0" stroke="#8A4A12" stroke-width="1.7" fill="none" stroke-linecap="round"/>';},
+    chiliSl:function(){return '<ellipse rx="3.2" ry="2.1" fill="#E2362A" stroke="#8A1A14" stroke-width=".6"/><circle r=".8" fill="#FBE3B0"/>';},
+    chiliOil:function(){return '<ellipse rx="7" ry="2.8" fill="#D7262B" opacity=".4"/>';},
+    garlicChili:function(i){return i%2?'<rect x="-1.6" y="-1.2" width="3.2" height="2.4" rx=".8" fill="#FFFDF2" stroke="#B9A58C" stroke-width=".5"/>':'<ellipse rx="2.6" ry="1.7" fill="#E2362A" stroke="#8A1A14" stroke-width=".5"/>';},
+    raurom:function(){return '<path d="M-5 0 q5 -3.4 10 0 q-5 3.4 -10 0z" fill="#4E8A2A" stroke="#1F3B2C" stroke-width=".5"/>';},
+    peanutBits:function(){return '<ellipse rx="2.4" ry="1.7" fill="#D9A066" stroke="#8A5A2B" stroke-width=".5"/>';},
+    carrotBits:function(i){return i%2?'<rect x="-1.8" y="-1.4" width="3.6" height="2.8" fill="#F08A24" stroke="#A85A12" stroke-width=".4"/>':'<rect x="-1.8" y="-1.4" width="3.6" height="2.8" fill="#F7D046" stroke="#A8861A" stroke-width=".4"/>';}
+  };
+  function scatter(kind,n,seed){
+    var s='',a=seed*9301+49297;
+    function rnd(){a=(a*9301+49297)%233280;return a/233280;}
+    for(var i=0;i<n;i++){
+      var ang=rnd()*6.283,rad=Math.sqrt(rnd()),x=160+Math.cos(ang)*rad*98,y=98+Math.sin(ang)*rad*23;
+      s+='<g transform="translate('+x.toFixed(1)+','+y.toFixed(1)+') rotate('+Math.round(rnd()*160-80)+')">'+BIT[kind](i)+'</g>';
+    }
+    return s;
+  }
+  /* x, y, tilt, size: drawn back to front so nearer pieces overlap farther ones */
+  var SLOTS=[[104,90,-10,1.3],[214,92,8,1.3],[160,82,0,1.25],[136,108,6,1.3],[190,110,-6,1.3],[250,104,14,1.15],[70,104,-14,1.15],[160,97,0,1.2],[236,82,10,1]];
+  var RECIPE={
+    phobo:[['beefRare','brisket','beefRare','onion','beefBall','lime','cilantro'],['scallion']],
+    phoga:[['chicken','chicken','limeleaf','chicken','onion','lime','cilantro'],['scallion']],
+    buncha:[['chaVien','grilledPork','chaVien','grilledPork','pickle','lettuce','perilla'],[]],
+    bunrieu:[['crabCake','tomato','tofuFried','tomato','crabCake','glory','tofuFried'],['scallion']],
+    bundau:[['tofuFried','porkBoiled','chaCom','tofuFried','porkBoiled','cucumber','perilla','mamtom'],[]],
+    bunthang:[['eggStrips','chaLuaStrips','shiitake','chicken','ruocTom','softEgg'],['raurom']],
+    bunoc:[['snail','tomato','snail','tofuFried','snail','perilla','tomato'],['scallion']],
+    mienluon:[['eelFried','eelFried','cilantro','eelFried','sprouts','lime'],['shallot','scallion']],
+    banhdacua:[['crabCake','chaLaLot','fishCake','chaLaLot','prawn','glory'],['shallot']],
+    vanthan:[['wonton','xaXiu','softEgg','wonton','xaXiu','bokchoy','shiitake'],['scallion']],
+    bbh:[['brisket','pigTrotter','chaHue','bloodCake','brisket','banana','sprouts','lime'],['scallion','chiliOil']],
+    miquang:[['prawn','porkBraised','cracker','quailEgg','prawn','lettuce','peanut'],['scallion']],
+    caolau:[['xaXiu','xaXiu','crouton','sprouts','xaXiu','lettuce','crouton'],['scallion']],
+    bunchaca:[['fishCake','tomato','fishCake','pineapple','fishCake','cilantro'],['scallion']],
+    banhcanh:[['crabClaw','prawn','quailEgg','crabCake','quailEgg','cilantro'],['scallion','shallot']],
+    bunhen:[['clams','rind','cracker','clams','peanut','banana','mint'],['chiliSl']],
+    phokho:[['minced','beefBall','beefRare','sprouts','beefBall','lettuce'],['shallot','scallion']],
+    hutieunv:[['prawn','minced','liver','quailEgg','prawn','chivesLong','sprouts','quailEgg'],['shallot']],
+    hutieukho:[[],['shallot','scallion']],
+    hutieugo:[['porkBoiled','beefBall','porkBoiled','sprouts','chivesLong'],['shallot']],
+    bunmam:[['prawn','roastPork','fishFillet','eggplant','squid','glory','prawn'],['chiliSl']],
+    phoxelua:[['beefRare','brisket','beefBall','beefRare','brisket','onion','beefBall','cilantro','lime'],['scallion']],
+    bunthitnuong:[['grilledPork','roll','grilledPork','pickle','roll','cucumber','lettuce','grilledPork'],['peanutBits','scallion']],
+    bokho:[['stewBeef','carrot','stewBeef','carrot','stewBeef','basil','onion','lime'],['scallion']],
+    bunsuong:[['suong','prawn','suong','porkBoiled','sprouts','chivesLong','lettuce'],['shallot']],
+    mitom:[['softEgg','sausage','bokchoy','sausage'],['scallion']],
+    mily:[['sausage','softEgg'],['scallion','carrotBits']],
+    micay:[['prawn','kimchi','softEgg','squid','sausage','bokchoy','enoki'],['chiliSl','scallion']],
+    mitron:[['friedEgg','sausage','beefBall','cucumber','minced'],['shallot','scallion']],
+    laumi:[['prawn','beefRare','enoki','tofuFried','squid','bokchoy','beefBall','prawn'],['chiliSl']],
+    thapcam:[['beefRare','prawn','softEgg','pigTrotter','chaLua','sprouts','beefBall','cilantro','lime'],['scallion','shallot']]
+  };
   var ART={
     chili:'<path d="M0 0 q14 -16 30 -4" stroke="#C81E1E" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M0 0 l-6 -6" stroke="#3B6D11" stroke-width="4" stroke-linecap="round"/>',
     treat:'<g fill="none" stroke-linecap="round"><path d="M0 0 l26 -8 M4 9 l26 -8" stroke="#10312A" stroke-width="12"/><path d="M0 0 l26 -8 M4 9 l26 -8" stroke="#FFD966" stroke-width="8"/></g>',
@@ -606,9 +749,9 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   var DISHES=[
     D({id:'phobo',n:'Phở bò',r:'B',rule:'Luật cơ bản. Tô để làm quen.',tops:['beef','beef','herb']}),
     D({id:'phoga',n:'Phở gà',r:'B',rule:'Quẩy nổi liên tục. Húp trúng càng nhiều càng nhanh.',pal:'clear',tops:['pork','herb','chive'],mix:{chili:.25,treat:.6,long:.15},evRate:1.4}),
-    D({id:'buncha',n:'Bún chả',r:'B',rule:'Chấm từng gắp: mỗi hơi tối đa 1 giây, nhả ra rồi gắp tiếp.',nd:'#FFFFFF',w:4,tops:['pork','roll','herb'],base:.2,bonus:0,maxSlurp:1,mix:{chili:.6,treat:.4}}),
+    D({id:'buncha',ves:'plate',dry:true,n:'Bún chả',r:'B',rule:'Chấm từng gắp: mỗi hơi tối đa 1 giây, nhả ra rồi gắp tiếp.',nd:'#FFFFFF',w:4,tops:['pork','roll','herb'],base:.2,bonus:0,maxSlurp:1,mix:{chili:.6,treat:.4}}),
     D({id:'bunrieu',n:'Bún riêu',r:'B',rule:'Phải húp đủ 3 miếng đồ ăn kèm mới được sạch tô.',pal:'tomato',nd:'#FFFFFF',w:4,tops:['tomato','tofu','crab','herb'],needTreats:3,treatName:'Đồ ăn kèm',mix:{treat:.6,chili:.3,long:.1},evRate:1.5}),
-    D({id:'bundau',ves:'plate',n:'Bún đậu mắm tôm',r:'B',rule:'Mắm tôm nồng: hồi hơi chậm gấp đôi.',pal:'salad',nd:'#FFFFFF',w:6,tops:['tofu','pork','tofu','herb'],regen:2.4}),
+    D({id:'bundau',ves:'met',dry:true,n:'Bún đậu mắm tôm',r:'B',rule:'Mắm tôm nồng: hồi hơi chậm gấp đôi.',pal:'salad',nd:'#FFFFFF',w:6,tops:['tofu','pork','tofu','herb'],regen:2.4}),
     D({id:'bunthang',n:'Bún thang',r:'B',rule:'Toàn sợi dài. Gần như hơi nào cũng phải trọn.',pal:'clear',nd:'#FFFFFF',w:3,len:36,tops:['egg','cha','chive'],mix:{long:.7,chili:.2,treat:.1},longMax:5,longLen:1.2,evRate:1.5}),
     D({id:'bunoc',n:'Bún ốc',r:'B',rule:'Vỏ ốc lẫn trong tô: chạm vào tô để gắp ra, húp phải là hóc, ho ra mới ăn tiếp được.',pal:'tomato',nd:'#FFFFFF',w:4,tops:['snail','tomato','snail','herb'],mix:{bone:.7,treat:.3},boneName:'vỏ ốc',boneArt:'shell',evRate:1.3}),
     D({id:'mienluon',n:'Miến lươn',r:'B',rule:'Miến trơn: ngừng húp là tuột lại vào tô.',pal:'clear',nd:'#E8E6DC',w:3,len:40,tops:['eel','herb','eel','chive'],leak:.1}),
@@ -621,13 +764,16 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     D({id:'bunchaca',n:'Bún chả cá',r:'T',rule:'Có xương cá: chạm vào tô để gắp ra. Ớt vẫn nổi như thường.',pal:'clear',nd:'#FFFFFF',w:4,tops:['fish','tomato','fish','chive'],mix:{bone:.4,chili:.4,treat:.2},boneName:'xương cá',evRate:1.2}),
     D({id:'banhcanh',n:'Bánh canh',r:'T',rule:'Sợi nở dần: để càng lâu tô càng đầy lại.',nd:'#FFFFFF',w:10,amp:8,len:44,tops:['crab','quail','chive'],swell:.03}),
     D({id:'bunhen',n:'Bún hến',r:'T',rule:'Phải húp đủ 5 con hến mới được sạch tô.',pal:'salad',nd:'#FFFFFF',w:4,tops:['peanut','cracker','herb','peanut'],needTreats:5,treatBonus:.04,treatName:'Hến',mix:{treat:.8,chili:.2},evRate:2.2}),
-    D({id:'phokho',n:'Phở khô Gia Lai',r:'T',rule:'Phở hai tô: sạch tô khô rồi còn tô nước.',pal:'dry',nd:'#FFFFFF',w:4,tops:['beef','ball','herb'],start:.6,base:.09,bowls:2}),
+    D({id:'phokho',ves:'kho',dry:true,nest:['#FFFFFF','#CFC6B0','#FFFFFF'],n:'Phở khô Gia Lai',r:'T',rule:'Phở hai tô: sạch tô khô rồi còn tô nước.',pal:'amber',nd:'#FFFFFF',w:4,start:.6,base:.09,bowls:2,mix:{chili:.5,treat:.5},
+      cup:['#C98A3A','ball'],soup:{pal:'amber',plain:true,tops:['beefRare','beefBall','beefRare','onion','beefBall','cilantro'],g:['scallion']}}),
 
     D({id:'hutieunv',n:'Hủ tiếu Nam Vang',r:'N',rule:'Ớt hiểm: cay hơn hẳn, phải ho ba lần mới hết cay.',pal:'clear',nd:'#FFFFFF',w:3,len:36,tops:['shrimp','pork','quail','chive'],base:.09,bonus:.06,coughs:3,mix:{chili:.7,treat:.3},evRate:1.3}),
     D({id:'hutieugo',n:'Hủ tiếu gõ',r:'N',rule:'Tô nhỏ giá sinh viên, không ớt. Đua tốc độ thuần.',pal:'clear',nd:'#FFFFFF',w:3,len:36,tops:['ball','pork','chive'],start:.5,base:.1,bonus:.06,noEv:true}),
+    D({id:'hutieukho',ves:'kho',dry:true,nest:['#C9955A','#8A5A2B','#E8BF86'],n:'Hủ tiếu khô',r:'N',rule:'Hai tô: sợi trộn nước sốt nên trơn, mỗi hơi chỉ húp ngắn. Sạch tô khô rồi còn chén nước lèo.',nd:'#C9955A',w:4,base:.17,bonus:.02,maxSlurp:.8,mix:{chili:.5,lime:.5},evRate:.8,bowls:2,
+      cup:['#E9B04A','herb'],soup:{pal:'clear',plain:true,start:.5,tops:['minced','liver','quailEgg'],g:['scallion','shallot']}}),
     D({id:'bunmam',n:'Bún mắm',r:'N',rule:'Cô chủ thương, chan thêm nước nóng hai lần: mỗi lần lại phải thổi.',pal:'brown',nd:'#FFFFFF',w:6,tops:['shrimp','fish','pork','chive'],pour:2,pourHot:true}),
     D({id:'phoxelua',n:'Phở xe lửa',r:'N',rule:'Tô khổng lồ, to gần gấp đôi. Giữ sức mà húp.',tops:['beef','beef','ball','herb','beef'],speed:.6}),
-    D({id:'bunthitnuong',n:'Bún thịt nướng',r:'N',rule:'Chanh nổi lên là phải húp ngay, không thì chua và tô đầy lại.',pal:'salad',nd:'#FFFFFF',w:5,tops:['pork','roll','peanut','herb'],mix:{lime:.6,chili:.25,treat:.15},evRate:1.4}),
+    D({id:'bunthitnuong',dry:true,n:'Bún thịt nướng',r:'N',rule:'Chanh nổi lên là phải húp ngay, không thì chua và tô đầy lại.',pal:'salad',nd:'#FFFFFF',w:5,tops:['pork','roll','peanut','herb'],mix:{lime:.6,chili:.25,treat:.15},evRate:1.4}),
     D({id:'bokho',n:'Hủ tiếu bò kho',r:'N',rule:'Nóng hổi: thổi phù phù cho nguội rồi mới húp được.',pal:'brown',nd:'#FFFFFF',w:4,tops:['beef','tomato','beef','herb'],hot:true}),
     D({id:'bunsuong',n:'Bún suông',r:'N',rule:'Sợi vừa dài vừa trơn: nhiều sợi dài, và ngừng húp là tuột.',pal:'clear',nd:'#FFFFFF',w:5,tops:['shrimp','cha','herb'],leak:.07,mix:{long:.6,chili:.3,treat:.1},longMax:4}),
 
@@ -638,6 +784,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     D({id:'laumi',ves:'pot',n:'Lẩu mì',r:'V',rule:'Ăn thẳng trong nồi đang sôi. Bạn bè gắp thêm mì vào ba lần, lần nào cũng phải thổi lại.',pal:'red',nd:'#FAC775',w:4,amp:9,len:20,tops:['shrimp','ball','tofu','herb'],pour:3,pourHot:true,hot:true,pourText:'Bạn gắp thêm mì vào nồi!',evRate:1.5}),
     D({id:'thapcam',n:'Tô thập cẩm đặc biệt',r:'V',rule:'Trùm cuối: nóng, ớt, chanh, xương, sợi dài và cả mẹ.',tops:['beef','shrimp','egg','ball','herb','cha'],speed:.8,evRate:1.6,mix:{chili:.25,treat:.15,long:.1,lime:.15,bone:.2,mom:.15},hot:true,reheat:[.5]})
   ];
+  /* the menu's drawings: each dish's own toppings and garnishes */
+  DISHES.forEach(function(q){var r=RECIPE[q.id];if(r){q.tops=r[0];q.g=r[1];}else q.g=[];});
 
   var $=function(id){return document.getElementById(id);};
   var fill=$('fill'),strand=$('strand'),steam=$('steam'),bowl=$('bowl'),bar=$('bar'),clock=$('clock'),msg=$('msg'),
@@ -669,6 +817,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     phokho:'Two bowls: finish the dry one, then the soup.',
     hutieunv:'Bird’s eye chili: extra hot, three coughs to clear it.',
     hutieugo:'A small student-priced bowl with no chili. Pure speed.',
+    hutieukho:'Two bowls: sauce-coated noodles are slippery, so keep each slurp short. Finish the dry bowl, then the cup of broth.',
     bunmam:'The kind owner tops up your broth twice with hot broth: blow again each time.',
     phoxelua:'A giant bowl, nearly twice the size. Pace yourself.',
     bunthitnuong:'Slurp the lime as soon as it floats up, or it turns sour and the bowl refills.',
@@ -722,7 +871,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       }
       if(q.swell)l=Math.min(q.start,l+q.swell*.02);
       if(po>0&&l<.4&&l>0){l+=.25;po--;}
-      if(l<=0){if(bw>1){bw--;l=q.start;}else break;}
+      if(l<=0){if(bw>1){bw--;l=(q.soup&&q.soup.start)||q.start;}else break;}
       t+=.02;
     }
     /* blowing: 1.5 s from hot, about 1 s after each reheat */
@@ -732,27 +881,33 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 
   var calm=false;try{calm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
   function contents(q,live){
+    if(q.dry)return dryContents(q);
     var p=PAL[q.pal],anim=live&&!calm;
     var broth='<ellipse cx="160" cy="98" rx="116" ry="31" fill="'+p[0]+'"/><ellipse cx="160" cy="98" rx="116" ry="31" fill="'+p[1]+'">'+
       (anim?'<animate attributeName="opacity" values="1;.72;1" dur="3.8s" repeatCount="indefinite"/>':'')+'</ellipse>';
-    if(anim)broth+=
-      '<ellipse cx="110" cy="90" rx="46" ry="9" fill="#FFFFFF" opacity=".1"><animate attributeName="opacity" values=".04;.22;.04" dur="3.1s" repeatCount="indefinite"/><animate attributeName="cx" values="100;130;100" dur="6s" repeatCount="indefinite"/></ellipse>'+
-      '<ellipse cx="210" cy="108" rx="38" ry="7" fill="#FFFFFF" opacity=".1"><animate attributeName="opacity" values=".2;.05;.2" dur="4.3s" repeatCount="indefinite"/><animate attributeName="cx" values="220;190;220" dur="7s" repeatCount="indefinite"/></ellipse>'+
-      '<ellipse cx="160" cy="98" rx="70" ry="14" fill="'+p[0]+'" opacity=".15"><animate attributeName="opacity" values=".05;.28;.05" dur="5.2s" repeatCount="indefinite"/><animate attributeName="rx" values="60;86;60" dur="5.2s" repeatCount="indefinite"/></ellipse>';
-    var n='<g stroke="'+q.nd+'" stroke-width="'+q.w+'" fill="none" stroke-linecap="round"><path d="'+wave(84,84,-q.amp*.6,q.len,236)+'"/><path d="'+wave(62,94,q.amp*.8,q.len,256)+'"/><path d="'+wave(66,104,-q.amp*.7,q.len,254)+'"/><path d="'+wave(88,114,q.amp*.6,q.len,232)+'"/></g>';
-    var tp=q.tops.map(function(k,j){var s=SLOTS[j%SLOTS.length];return '<g class="tp" transform="translate('+s[0]+','+s[1]+') scale(1.4)" stroke="#10312A" stroke-width="1.1">'+TOP[k]+'</g>';}).join('');
-    return broth+n+tp;
+    if(anim)broth+='<ellipse cx="110" cy="90" rx="46" ry="9" fill="#FFFFFF" opacity=".1"><animate attributeName="opacity" values=".04;.22;.04" dur="3.1s" repeatCount="indefinite"/><animate attributeName="cx" values="100;130;100" dur="6s" repeatCount="indefinite"/></ellipse>';
+    var soupy=q.pal!=='salad'&&q.pal!=='dry',seed=q.id.length*7+q.id.charCodeAt(0);
+    broth+='<ellipse cx="160" cy="96" rx="116" ry="31" fill="none" stroke="'+p[0]+'" stroke-width="6" opacity=".55"/>';
+    if(soupy)broth+='<g fill="#FFFFFF" opacity=".28"><circle cx="66" cy="98" r="3.4"/><circle cx="75" cy="108" r="2"/><circle cx="252" cy="90" r="3"/><circle cx="262" cy="100" r="1.8"/><circle cx="118" cy="120" r="2.2"/><circle cx="206" cy="121" r="2.6"/><circle cx="160" cy="72" r="2"/></g>';
+    var W=q.plain?[]:[wave(84,84,-q.amp*.6,q.len,236),wave(62,94,q.amp*.8,q.len,256),wave(66,104,-q.amp*.7,q.len,254),wave(88,114,q.amp*.6,q.len,232)];if(q.w<=6&&!q.plain)W.push(wave(100,76,q.amp*.4,q.len,222));
+    var n='<g fill="none" stroke-linecap="round"><g stroke="#10312A" stroke-width="'+(q.w+1.4)+'" opacity=".22" transform="translate(0,1.6)">'+W.map(function(d){return '<path d="'+d+'"/>';}).join('')+'</g>'+
+      '<g stroke="'+q.nd+'" stroke-width="'+q.w+'">'+W.map(function(d){return '<path d="'+d+'"/>';}).join('')+'</g>'+
+      '<g stroke="#FFFFFF" stroke-width="'+Math.max(1,q.w*.28).toFixed(1)+'" opacity=".5" transform="translate(0,-'+(q.w*.22).toFixed(1)+')"><path d="'+W[1]+'"/><path d="'+W[2]+'"/></g></g>';
+    var order=q.tops.map(function(k,j){return j;}).sort(function(a,b){return SLOTS[a%SLOTS.length][1]-SLOTS[b%SLOTS.length][1];});
+    var tp=order.map(function(j){var s=SLOTS[j%SLOTS.length];
+      return '<g class="tp" transform="translate('+s[0]+','+s[1]+') rotate('+s[2]+') scale('+s[3]+')"><ellipse cy="5" rx="15" ry="5" fill="#10312A" opacity=".16" stroke="none"/><g stroke="#10312A" stroke-width="1" stroke-linejoin="round">'+TOP[q.tops[j]]+'</g></g>';}).join('');
+    var bits=(q.g||[]).map(function(k,i){return scatter(k,k==='chiliOil'?5:10,seed+i*13);}).join('');
+    return broth+n+tp+bits;
   }
   var SUNK=[[104,160],[216,154],[160,182]];
   function sunk(q,live){
-    var p=PAL[q.pal],anim=live&&!calm,s='';
-    if(anim)s+='<rect x="0" y="96" width="320" height="124" fill="'+p[1]+'" opacity=".2"><animate attributeName="opacity" values=".08;.4;.08" dur="5s" repeatCount="indefinite"/></rect>';
-    s+='<g stroke="'+q.nd+'" stroke-width="'+q.w+'" fill="none" stroke-linecap="round" opacity=".3"><path d="'+wave(64,146,q.amp*.7,q.len,256)+'"/><path d="'+wave(86,166,-q.amp*.6,q.len,236)+'"/><path d="'+wave(112,186,q.amp*.5,q.len,210)+'"/>'+
+    var anim=live&&!calm,s='';
+    if(!q.plain)s+='<g stroke="'+q.nd+'" stroke-width="'+q.w+'" fill="none" stroke-linecap="round" opacity=".3"><path d="'+wave(64,146,q.amp*.7,q.len,256)+'"/><path d="'+wave(86,166,-q.amp*.6,q.len,236)+'"/><path d="'+wave(112,186,q.amp*.5,q.len,210)+'"/>'+
       (anim?'<animate attributeName="opacity" values=".16;.4;.16" dur="4.4s" repeatCount="indefinite"/>':'')+'</g>';
     q.tops.slice(0,3).forEach(function(k,j){
       var c=SUNK[j];
       s+='<g transform="translate('+c[0]+','+c[1]+')"><g opacity=".3">'+TOP[k]+
-        (anim?'<animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="'+(3.4+j*.9)+'s" repeatCount="indefinite"/><animate attributeName="opacity" values=".2;.4;.2" dur="'+(3.9+j*.7)+'s" repeatCount="indefinite"/>':'')+'</g></g>';
+        (anim?'<animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="'+(3.4+j*.9)+'s" repeatCount="indefinite"/>':'')+'</g></g>';
     });
     return s;
   }
@@ -777,6 +932,21 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       },
       back:function(sw){return '<rect x="112" y="168" width="96" height="12" rx="4" fill="#FBFBF4" stroke="#10312A" stroke-width="'+sw+'"/>';},
       over:function(){return '';}},
+    /* hủ tiếu khô: the dry bowl, with its small cup of broth on the side */
+    kho:{body:'M36 96 Q46 200 160 206 Q274 200 284 96 Z',rim:[96,124,36],top:98,depth:104,maxRx:116,textY:186,fill:'#FFFFFF',
+      front:'M36 96 C36 144 284 144 284 96',hw:hw,
+      back:function(sw){return '<rect x="118" y="204" width="84" height="14" rx="4" fill="#FBFBF4" stroke="#10312A" stroke-width="'+sw+'"/>';},
+      over:function(sw,q){var c=q.cup||['#E9B04A','herb'];return '<g transform="translate(262,176)"><rect x="-14" y="26" width="28" height="7" rx="3" fill="#FBFBF4" stroke="#10312A" stroke-width="'+sw+'"/>'+
+        '<path d="M-34 0 Q-30 30 0 30 Q30 30 34 0 Z" fill="#F1EEE2" stroke="#10312A" stroke-width="'+sw+'" stroke-linejoin="round"/>'+
+        '<ellipse rx="34" ry="10" fill="#FFFFFF" stroke="#10312A" stroke-width="'+sw+'"/><ellipse cy="1" rx="29" ry="7.4" fill="'+c[0]+'"/><ellipse cx="-8" cy="-1" rx="10" ry="2.4" fill="#FFFFFF" opacity=".3"/>'+
+        (c[1]==='ball'?'<g stroke="#10312A" stroke-width="1"><circle cx="-12" cy="1" r="5" fill="#A79C92"/><circle cx="2" cy="2" r="5" fill="#A79C92"/><path d="M12 0 q5 -3 10 0 q-5 3 -10 0z" fill="#C8574E"/></g>':'')+
+        '<g fill="none" stroke="#2F7D32" stroke-width="1.4"><ellipse cx="-10" cy="2" rx="2.4" ry="1.6"/><ellipse cx="6" cy="-1" rx="2.4" ry="1.6"/><ellipse cx="13" cy="3" rx="2.4" ry="1.6"/></g>'+
+        '<path d="M-2 2 q2.4 -3 4.8 0" stroke="#8A4A12" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>';}},
+    /* bún đậu: a flat bamboo tray (mẹt) lined with a banana leaf */
+    met:{body:'M26 108 Q40 150 160 154 Q280 150 294 108 Z',rim:[108,134,36],top:110,depth:34,maxRx:122,textY:136,fill:'#D9B36A',dryFill:'#D9B36A',dryRim:'#E6C788',
+      front:'M26 108 C26 156 294 156 294 108',hw:function(y){var c=Math.max(0,Math.min(40,y-108));return 134*Math.sqrt(Math.max(0,1-c*c/1764));},
+      back:function(){return '';},
+      over:function(sw){return '<ellipse cx="160" cy="108" rx="129" ry="33.5" fill="none" stroke="#8A5A1E" stroke-width="'+(sw*.9)+'" stroke-dasharray="6 5"/><path d="M36 126 Q160 170 284 126" fill="none" stroke="#8A5A1E" stroke-width="'+(sw*.5)+'" opacity=".7"/>';}},
     pot:{body:'M40 100 L46 188 Q160 210 274 188 L280 100 Z',rim:[100,120,30],top:102,depth:90,maxRx:113,textY:186,fill:'#B4B2A9',
       front:'M40 100 C40 140 280 140 280 100',hw:function(y){return 120-Math.max(0,Math.min(88,y-100))/88*6;},
       back:function(sw){return '<g fill="none" stroke="#10312A" stroke-width="'+(sw+3)+'" stroke-linejoin="round" stroke-linecap="round"><path d="M42 122 h-24 v18 h26"/><path d="M278 122 h24 v18 h-26"/></g>'+
@@ -787,15 +957,16 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     var v=VES[q.ves||'bowl'];
     return '<defs><clipPath id="'+cid+'"><path d="'+v.body+'"/><ellipse cx="160" cy="'+v.rim[0]+'" rx="'+(v.rim[1]-3)+'" ry="'+(v.rim[2]-3)+'"/></clipPath></defs>'+
       v.back(sw)+
-      '<path d="'+v.body+'" fill="'+v.fill+'" fill-opacity=".45" stroke="#10312A" stroke-width="'+sw+'" stroke-linejoin="round"/>'+
-      '<ellipse cx="160" cy="'+v.rim[0]+'" rx="'+v.rim[1]+'" ry="'+v.rim[2]+'" fill="'+v.fill+'" fill-opacity=".35" stroke="#10312A" stroke-width="'+sw+'"/>'+
+      '<path d="'+v.body+'" fill="'+(q.dry?(v.dryFill||'#F1EEE2'):v.fill)+'" fill-opacity="'+(q.dry?1:.45)+'" stroke="#10312A" stroke-width="'+sw+'" stroke-linejoin="round"/>'+
+      '<ellipse cx="160" cy="'+v.rim[0]+'" rx="'+v.rim[1]+'" ry="'+v.rim[2]+'" fill="'+(q.dry?(v.dryRim||'#FFFFFF'):v.fill)+'" fill-opacity="'+(q.dry?1:.35)+'" stroke="#10312A" stroke-width="'+sw+'"/>'+
       '<g clip-path="url(#'+cid+')"'+(cid==='bowlclip'?' id="inside"':'')+'>'+inner+'</g>'+
-      '<path d="'+v.front+'" fill="none" stroke="#10312A" stroke-width="'+sw+'" opacity=".55"/>'+v.over(sw);
+      '<path d="'+v.front+'" fill="none" stroke="#10312A" stroke-width="'+sw+'" opacity=".55"/>'+v.over(sw,q);
   }
+  /* dry dishes have no broth: no coloured liquid and nothing bobbing under the surface */
   function thumb(q){
     var v=VES[q.ves||'bowl'];
     return '<svg viewBox="14 40 292 184" aria-hidden="true">'+vesselSvg(q,5,'clip-'+q.id,
-      '<rect x="0" y="'+v.top+'" width="320" height="150" fill="'+PAL[q.pal][0]+'"/>'+sunk(q,false)+
+      (q.dry?'':'<rect x="0" y="'+v.top+'" width="320" height="150" fill="'+PAL[q.pal][0]+'"/>'+sunk(q,false))+
       '<g transform="translate(160,'+v.top+') scale('+(v.maxRx/116).toFixed(3)+') translate(-160,-98)">'+contents(q,false)+'</g>')+'</svg>';
   }
   /* ---------- menu book: two pages side by side on wide screens, one half page at a time on phones ---------- */
@@ -1089,7 +1260,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     [ART.bone,'Xương, vỏ ốc: chạm vào tô (hoặc bấm X) để gắp ra. Lỡ húp phải thì ho ra.','Bones and shells: tap the bowl (or press X) to pick them out. Slurp one and cough it up.']
   ];
   var SPREADS=[
-    {t:'cover',tab:'Cách chơi',tc:'#F9BE1A',title:'HÚP PHỞ',sub:'30 tô, mỗi tô một luật',mark:'Cách chơi',small:'chili',land:'bigbowl',mL:['chili','quay','bone'],mR:['quay','lime','chili'],
+    {t:'cover',tab:'Cách chơi',tc:'#F9BE1A',title:'HÚP PHỞ',sub:'31 tô, mỗi tô một luật',mark:'Cách chơi',small:'chili',land:'bigbowl',mL:['chili','quay','bone'],mR:['quay','lime','chili'],
       foot:function(){return water(['#F2B04A','#E0921F','#BA7517']);}},
     {t:'north',r:'B',tab:'Miền Bắc',tc:'#1F3D2B',title:'MIỀN BẮC',edge:'hoguom',small2:'halong',land:'mausoleum',mL:['flag','buffalo','bamboo'],mR:['lotus','peach','bamboo'],
       foot:function(){return water(['#8FD0C2','#5FB0A6','#3F9488']);},objR:'junk'},
@@ -1101,7 +1272,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       foot:road}
   ];
   /* menu words: English for the ribbons, titles and subtitles */
-  var SP_EN={'Cách chơi':'How to play','HÚP PHỞ':'HÚP PHỞ','30 tô, mỗi tô một luật':'30 bowls, one rule each','Miền Bắc':'North','MIỀN BẮC':'THE NORTH',
+  var SP_EN={'Cách chơi':'How to play','HÚP PHỞ':'HÚP PHỞ','31 tô, mỗi tô một luật':'31 bowls, one rule each','Miền Bắc':'North','MIỀN BẮC':'THE NORTH',
     'Miền Trung':'Central','MIỀN TRUNG':'THE CENTRAL','Miền Nam':'South','MIỀN NAM':'THE SOUTH','Mì gói':'Instant','MÌ GÓI':'INSTANT','và món mới':'and new dishes'};
   function SPT(v){return tx(v,SP_EN[v]||v);}
   var BG={cover:'#17594A',north:'#A9CF7C',central:'#63C0D1',south:'#F5C543',modern:'#2B2350'};
@@ -1112,7 +1283,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   function inn(html,cls,i){return '<span class="in '+(cls||'')+'" style="--i:'+i+'">'+html+'</span>';}
   function cardHtml(i){
     var q=DISHES[i];
-    return '<button type="button" class="card" id="item-'+q.id+'" data-i="'+i+'"><span class="pic">'+STEAM+pic(q).replace('<svg ','<svg class="bowlpic" ')+'</span><span class="txt"><b>'+q.n+' <span class="cbest" id="best-'+q.id+'"></span></b><span class="crule">'+RULE(q)+'</span></span></button>';
+    return '<button type="button" class="card" id="item-'+q.id+'" data-i="'+i+'"><span class="pic">'+(q.dry?'':STEAM)+pic(q).replace('<svg ','<svg class="bowlpic" ')+'</span><span class="txt"><b>'+q.n+' <span class="cbest" id="best-'+q.id+'"></span></b><span class="crule">'+RULE(q)+'</span></span></button>';
   }
   function pageHtml(sp,si,side){
     var L=side==='L',body='',k,half;
@@ -1216,7 +1387,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     $('dreg').textContent=REGN(q.r)+tx(' · Món ',' · Dish ')+(same.indexOf(q)+1)+'/'+same.length;
     $('dname').textContent=picked?tx('Đã chọn: ','Picked: ')+q.n:q.n;
     $('drule').textContent=picked?tx('Đang múc tô ra bàn…','Serving it up…'):RULE(q);
-    $('dpic').innerHTML=HOT+pic(q).replace('<svg ','<svg class="dbowl" ');
+    $('dpic').innerHTML=(q.dry?'':HOT)+pic(q).replace('<svg ','<svg class="dbowl" ');
     $('go').disabled=!!picked;
     var s=$('detail');s.classList.remove('pop');void s.offsetWidth;s.classList.add('pop');
   }
@@ -1525,13 +1696,24 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 
   function paintBest(q){var el=$('best-'+q.id);if(el)el.textContent=store.best[q.id]?fmt(store.best[q.id])+' s':'';}
 
+  /* the dish as drawn right now: a two-bowl dish shows its dry bowl first, then its soup bowl */
+  var vd=DISHES[0];
+  function stage(q,n){if(n<2||!q.soup)return q;var o=Object.create(q),k;for(k in q.soup)o[k]=q.soup[k];o.dry=false;o.ves='bowl';return o;}
   function pick(i,daily){
     cur=i;isDaily=!!daily;d=DISHES[i];
+    drawVessel(d);
+    paintDish();
+    $('dailybtn').setAttribute('aria-pressed',String(isDaily));
+    markItems();
+    reset();
+  }
+  function drawVessel(q){
+    var d=q;vd=q;
     var p=PAL[d.pal];
     var v=VES[d.ves||'bowl'];
     $('vessel').innerHTML=vesselSvg(d,3,'bowlclip',
-      '<text x="160" y="'+v.textY+'" text-anchor="middle" font-family="Bungee, Arial Black, sans-serif" font-size="24" fill="#D7262B">'+tx('SẠCH!','CLEAN!')+'</text>'+
-      '<g clip-path="url(#lvclip)"><rect x="0" y="60" width="320" height="180" fill="'+p[0]+'"/>'+sunk(d,true)+'</g>'+
+      '<text id="clean" x="160" y="'+v.textY+'" text-anchor="middle" font-family="Bungee, Arial Black, sans-serif" font-size="24" fill="#D7262B">'+tx('SẠCH!','CLEAN!')+'</text>'+
+      (d.dry?'':'<g clip-path="url(#lvclip)"><rect x="0" y="60" width="320" height="180" fill="'+p[0]+'"/>'+sunk(d,true)+'</g>')+
       '<g id="fill">'+contents(d,true)+'<g id="ev" opacity="0"></g></g>');
     steam.setAttribute('transform','translate(0,'+(v.top-98)+')');
     fill=$('fill');topEls=fill.querySelectorAll('.tp');topLeft=topEls.length;
@@ -1539,10 +1721,6 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     strand.setAttribute('stroke',d.nd);strand.setAttribute('stroke-width',d.w);
     $('ln1').setAttribute('stroke-width',d.w+6);$('ln2').setAttribute('stroke',d.nd);$('ln2').setAttribute('stroke-width',d.w+2);
     bar.style.background=p[1];
-    paintDish();
-    $('dailybtn').setAttribute('aria-pressed',String(isDaily));
-    markItems();
-    reset();
   }
   function paintDish(){$('dish').textContent=d.n;$('rule').textContent=RULE(d);$('ricon').innerHTML='<svg viewBox="0 0 24 24">'+ruleIcon(d)+'</svg>';}
   /* one small picture for the rule chip, from the rule's main twist */
@@ -1553,6 +1731,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     if((m.bone||0)>=.3)return '<path d="M8 8l8 8M6.5 4.5a2 2 0 0 0-2 3 2 2 0 0 0 3 2l1.5-1.5M17.5 19.5a2 2 0 0 0 2-3 2 2 0 0 0-3-2L15 16"/>';
     if(m.lime)return '<circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16M6.5 6.5l11 11M17.5 6.5l-11 11"/>';
     if(q.needTreats)return '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/>';
+    if(q.bowls>1)return '<path d="M3 11h8a4 4 0 0 1-8 0zM13 11h8a4 4 0 0 1-8 0zM5 18h14"/>';
     if(q.oneBreath||q.maxSlurp||q.minSlurp)return '<circle cx="12" cy="13" r="7.5"/><path d="M12 13V9.5M10 3h4M12 3v2.5"/>';
     if(q.bowls>1)return '<path d="M3 11h8a4 4 0 0 1-8 0zM13 11h8a4 4 0 0 1-8 0zM5 18h14"/>';
     if(q.leak||q.swell||q.pour)return '<path d="M12 3.5S6.5 10 6.5 14a5.5 5.5 0 0 0 11 0C17.5 10 12 3.5 12 3.5z"/>';
@@ -1664,6 +1843,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     pendingStart=false;started=true;paintStart();say(idleText());
   }
   function reset(){
+    if(vd!==d)drawVessel(d);
     level=d.start;breath=1;holdT=0;elapsed=0;started=false;done=false;lock=false;was=false;
     ev=null;longN=null;longCount=0;blockUntil=0;flashUntil=0;treats=0;pours=d.pour;bowls=d.bowls;
     heat=d.hot?1:0;reheatI=0;stuck=null;micCoughs=0;mode='';paintMode();
@@ -1798,7 +1978,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       if(d.needTreats&&treats<d.needTreats&&level<.06)level=.06;
       was=slurping;
       bowl.classList.toggle('shake',!!stuck&&elapsed-stuck.t0<.5);
-      if(level<=0&&bowls>1){bowls--;level=cap;flash(tx('Xong tô khô. Còn tô nước!','Dry bowl done. Now the soup!'),true);}
+      if(level<=0&&bowls>1){bowls--;level=(d.soup&&d.soup.start)||cap;drawVessel(stage(d,d.bowls-bowls+1));beep(660,.12,'sine',.14);flash(tx('Xong tô khô. Còn tô nước!','Dry bowl done. Now the soup!'),true);}
       if(level<=0){finish();slurping=false;}
       else if(elapsed<blockUntil)say(blockText,true);
       else if(stuck&&stuck.kind==='cay')say(tx('Cay xé lưỡi! Ho khụ khụ cho hết cay.','So spicy! Cough it out.'),true);
@@ -1818,8 +1998,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       hud();
     }
     paintMode();
-    var v=VES[d.ves||'bowl'], ys=v.top+(1-level)*v.depth, sc=Math.max(.05,Math.min(v.maxRx,v.hw(ys)-4)/116), dy=ys-98;
-    strand.setAttribute('opacity',slurping&&!longN?'1':'0');
+    var v=VES[vd.ves||'bowl'], ys=v.top+(1-level)*v.depth, sc=Math.max(.05,Math.min(v.maxRx,v.hw(ys)-4)/116), dy=ys-98;
+    strand.setAttribute('opacity',slurping&&!longN&&!vd.plain?'1':'0');
     strand.setAttribute('transform','translate('+(Math.sin(now/40)*3).toFixed(1)+','+(dy-((now/6)%20)).toFixed(1)+')');
     var ln=$('longn');ln.setAttribute('opacity',longN?'1':'0');
     if(longN){
@@ -1831,6 +2011,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     $('mom').setAttribute('opacity',ev&&ev.type==='mom'?'1':'0');
     fill.setAttribute('transform','translate(160,'+ys.toFixed(1)+') scale('+sc.toFixed(3)+') translate(-160,-98)');
     fill.setAttribute('opacity',Math.min(1,level/.05).toFixed(2));
+    /* soups hide the word under the broth; dry food sits on a solid plate, so the word only fades in as the last bite goes */
+    if(vd.dry)$('clean').setAttribute('opacity',Math.max(0,1-level/.05).toFixed(2));
     /* milestones: surface toppings get eaten one by one as the bowl drains */
     var nTop=topEls.length,left=Math.min(nTop,Math.ceil(level/Math.max(d.start,.01)*nTop-1e-6));
     if(left!==topLeft){
@@ -1844,7 +2026,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     if(pct!==ringPct){ringPct=pct;bar.style.width=pct+'%';$('rbowl').style.strokeDashoffset=String(100-pct);}
     var ring=stuck?['spice',(stuck.need-stuck.got)/stuck.need]:heat>0?['heat',heat]:[breath<.25?'low':'',breath],ap=ring[0]+Math.round(ring[1]*100);
     if(ap!==airPct){airPct=ap;$('breath').style.width=Math.round(breath*100)+'%';var ra=$('rair');ra.style.strokeDashoffset=String(100-Math.round(ring[1]*100));ra.setAttribute('class','rair'+(ring[0]?' '+ring[0]:''));}
-    steam.setAttribute('opacity',heat>0?'1':(.15+level*.75).toFixed(2));
+    steam.setAttribute('opacity',vd.dry?'0':heat>0?'1':(.15+level*.75).toFixed(2));
     clock.textContent=fmt(elapsed);
     if(micOn)readMic();
     Duel.frame();

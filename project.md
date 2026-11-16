@@ -42,7 +42,7 @@ The first time each of PHÙ and KHỤ appears, a banner explains it once.
 
 **Screen layout** (one centred column):
 - the big red sign;
-- a row with "Tô hôm nay" on the left and the menu ("30 tô"), sound and language (VI/EN) buttons on the right;
+- a row with "Tô hôm nay" on the left and the menu ("31 tô"), sound and language (VI/EN) buttons on the right;
 - the dish name between ‹ › arrows, with its rule in a chip that has a small icon;
 - the bowl;
 - one round yellow "HÚP" button. During a run it shows the clock and turns red while you slurp. Its outer ring shows what is left in the bowl, and its thin inner ring shows your air, turning red when it runs low;
@@ -50,17 +50,17 @@ The first time each of PHÙ and KHỤ appears, a banner explains it once.
 
 **Titles:** Thánh Húp, Húp như bố, Tạm được, or Ăn như mèo, set by how close your time is to a simulated ideal run of that dish.
 
-## The 30 dishes
+## The 31 dishes
 
-There are 30 dishes in four groups, and each adds one rule on top of the shared mechanics.
+There are 31 dishes in four groups, and each adds one rule on top of the shared mechanics.
 
 | # | Dish | Group | Its rule |
 | --- | --- | --- | --- |
 | 1 | Phở bò | North | Basic rules only; the tutorial bowl |
 | 2 | Phở gà | North | Quẩy floats up constantly |
-| 3 | Bún chả | North | Each slurp lasts 1 second at most, then release and go again |
+| 3 | Bún chả | North | Served dry on a plate, with the bún beside a bowl of dipping sauce. Each slurp lasts 1 second at most, then release and go again |
 | 4 | Bún riêu | North | Must eat 3 toppings before the bowl can finish |
-| 5 | Bún đậu mắm tôm | North | Breath recovers at half speed |
+| 5 | Bún đậu mắm tôm | North | Served dry on a bamboo tray (mẹt) lined with banana leaf. Breath recovers at half speed |
 | 6 | Bún thang | North | Mostly long noodles, up to 5 per bowl |
 | 7 | Bún ốc | North | Snail shells appear; tap the bowl to pick them out |
 | 8 | Miến lươn | North | Slippery: the bowl refills while you rest |
@@ -72,20 +72,21 @@ There are 30 dishes in four groups, and each adds one rule on top of the shared 
 | 14 | Bún chả cá | Central | Fish bones to tap out, plus normal chili |
 | 15 | Bánh canh | Central | Noodles swell: the bowl slowly refills over time |
 | 16 | Bún hến | Central | Must eat 5 clams before the bowl can finish |
-| 17 | Phở khô Gia Lai | Central | Two bowls: the dry one, then the soup |
+| 17 | Phở khô Gia Lai | Central | Two bowls: the dry bowl of phở with minced pork, then the bowl of beef broth. Both must be cleaned; the broth bowl has no noodles, so no long-noodle events |
 | 18 | Hủ tiếu Nam Vang | South | Bird's eye chili takes three coughs |
 | 19 | Hủ tiếu gõ | South | Half-size bowl, nothing floats up; pure speed |
-| 20 | Bún mắm | South | The vendor tops the bowl up twice with hot broth; blow again each time |
-| 21 | Phở xe lửa | South | Giant bowl, drains at 60% speed |
-| 22 | Bún thịt nướng | South | Lime floats up and must be slurped, or the bowl refills |
-| 23 | Hủ tiếu bò kho | South | Arrives hot; blow before slurping |
-| 24 | Bún suông | South | Long noodles and a slippery bowl together |
-| 25 | Mì tôm | Instant and modern | Mom looks over and stays until you cough to fake being sick; slurp in front of her and you get scolded for 2 seconds |
-| 26 | Mì ly | Instant and modern | One breath: release midway and the cup refills |
-| 27 | Mì cay 7 cấp | Instant and modern | Chili 2.5 times as often, three coughs each, and short breath |
-| 28 | Mì trộn | Instant and modern | Only the part of each slurp between 0.5 and 1.5 seconds counts |
-| 29 | Lẩu mì | Instant and modern | A boiling pot; friends add noodles three times, and each top-up reheats it |
-| 30 | Tô thập cẩm đặc biệt | Instant and modern | Final boss: every hazard at once |
+| 20 | Hủ tiếu khô | South | Two bowls: the dry noodles in sauce, then a smaller cup of broth (starts half full). Each slurp lasts 0.8 seconds at most; chili and lime float up |
+| 21 | Bún mắm | South | The vendor tops the bowl up twice with hot broth; blow again each time |
+| 22 | Phở xe lửa | South | Giant bowl, drains at 60% speed |
+| 23 | Bún thịt nướng | South | Served dry, no broth. Lime floats up and must be slurped, or the bowl refills |
+| 24 | Hủ tiếu bò kho | South | Arrives hot; blow before slurping |
+| 25 | Bún suông | South | Long noodles and a slippery bowl together |
+| 26 | Mì tôm | Instant and modern | Mom looks over and stays until you cough to fake being sick; slurp in front of her and you get scolded for 2 seconds |
+| 27 | Mì ly | Instant and modern | One breath: release midway and the cup refills |
+| 28 | Mì cay 7 cấp | Instant and modern | Chili 2.5 times as often, three coughs each, and short breath |
+| 29 | Mì trộn | Instant and modern | Only the part of each slurp between 0.5 and 1.5 seconds counts |
+| 30 | Lẩu mì | Instant and modern | A boiling pot; friends add noodles three times, and each top-up reheats it |
+| 31 | Tô thập cẩm đặc biệt | Instant and modern | Final boss: every hazard at once |
 
 ## Look and feel
 
@@ -94,8 +95,11 @@ The page is styled as a street stall: a red and yellow hand-painted sign on a mi
 - **Bowl:** see-through, so the broth colour shows through the side. Toppings sit large on the surface, and faint noodles and toppings bob inside the liquid at about 30% opacity.
 - **Broth:** shimmers gently. The animation is off for people with reduced motion turned on.
 - **Draining:** the liquid level drops through the bowl and the surface narrows with the bowl's shape. "SẠCH!" shows on the bottom when it is empty.
-- **Vessels:** each dish can have its own container. Mì ly is a cup with a peeled lid, and lẩu mì is a pot with handles on a burner. The other 28 use the bowl.
-- **Menu book:** opens over the game from "Thực đơn 30 tô" (or "Cách chơi"). Five spreads: how to play, then Miền Bắc, Miền Trung, Miền Nam and Mì gói, each with its own colours, landmarks and animated scene. It is built mobile first: phones show one half page at a time, and from 641px wide the book opens to two pages and turns a whole spread. The "Húp Phở" sign sits at the top. Each card shows the bowl, its rule and your best time. A panel under the book shows the chosen dish with a big steaming bowl, its region and place ("Miền Trung · Món 3/7"), its rule and a "Húp tô này" button; it starts on the dish being played. The first tap on a card shows it there; the second, or the button, stamps "CHỌN!" and loads the dish. The game clock pauses while the book is open.
+- **Vessels:** each dish can have its own container. Mì ly is a cup with a peeled lid, and lẩu mì is a pot with handles on a burner. Bún chả is on a plate and bún đậu mắm tôm on a bamboo tray, and phở khô Gia Lai and hủ tiếu khô show their soup in a small cup beside the dry bowl. The rest use the bowl.
+- **Dry dishes** (bún chả, bún đậu mắm tôm, bún thịt nướng, plus the first bowl of phở khô Gia Lai and hủ tiếu khô): a solid plate or bowl with no broth and no steam. The noodles sit in a pile (or as pressed bún lá blocks on the tray), with herbs, meat and sauce arranged around them as in the menu design. "SẠCH!" fades in only as the last bite goes.
+- **Two-bowl dishes:** the game shows the dry bowl with its soup beside it. When the dry bowl is clean, a beep plays, "Xong tô khô. Còn tô nước!" shows, and the bowl is redrawn as the soup bowl (broth and toppings, no noodles). The line under the dish name counts "Tô 1/2", "Tô 2/2".
+- **Toppings:** each dish has its own recipe of drawn pieces (beef slices, shrimp, quail eggs, herbs, chả lá lốt and so on) plus scattered garnishes such as scallion, fried shallot and chili slices.
+- **Menu book:** opens over the game from "Thực đơn 31 tô" (or "Cách chơi"). Five spreads: how to play, then Miền Bắc, Miền Trung, Miền Nam and Mì gói, each with its own colours, landmarks and animated scene. It is built mobile first: phones show one half page at a time, and from 641px wide the book opens to two pages and turns a whole spread. The "Húp Phở" sign sits at the top. Each card shows the bowl, its rule and your best time. A panel under the book shows the chosen dish with a big steaming bowl, its region and place ("Miền Trung · Món 3/7"), its rule and a "Húp tô này" button; it starts on the dish being played. The first tap on a card shows it there; the second, or the button, stamps "CHỌN!" and loads the dish. The game clock pauses while the book is open.
 - **Themes:** light and dark, following the viewer's setting.
 - **Language:** a VI | EN switch at the top of the game and in the menu. Vietnamese is the default; the choice is saved on the device. Every interface word, message, rule, title and result switch over in place, even mid-bowl. Dish names stay in Vietnamese, and English times use a decimal point instead of a comma.
 
@@ -105,7 +109,7 @@ Expect a spike of a week or two, as with any joke game. The aim is a daily reaso
 
 **Built**
 
-- **Tô hôm nay:** one dish per day, rotating through all 30. Only the first attempt counts, and it tracks a day streak.
+- **Tô hôm nay:** one dish per day, rotating through all 31. Only the first attempt counts, and it tracks a day streak.
 - **Personal bests:** one per dish, shown on the menu cards.
 - **Result card:** slides up when the bowl is clean, with a stamped verdict ("SẠCH TÔ!", or "THẮNG!", "THUA!" or "HÒA!" in a 1v1), the time and title, and confetti and a chime on a win. "Đóng" closes it; after a race the main button reopens it. The old copy-result button was removed.
 
@@ -154,7 +158,7 @@ Built as live matchmaking through a small Node.js server in `server/`, which you
 The game itself is one `index.html` file with no libraries. Only 1v1 uses a backend: the Node.js server in `server/` (one dependency, `ws`).
 
 - **Drawing:** inline SVG, generated from each dish's data (broth palette, noodle style, toppings, vessel).
-- **Dishes:** a data table of 30 entries. A new dish is one line: colours, toppings, speeds and rule flags.
+- **Dishes:** a data table of 31 entries. A new dish is one line: colours, toppings, speeds and rule flags.
 - **Sound detection:** two bands (250 Hz–1 kHz and 2–8 kHz), each compared with a noise floor measured for one second before play. No speech recognition, so accent does not matter.
   - **Slurp:** loud, noisy hiss above 2 kHz, lasting at least 8 frames (about 0.13 s).
   - **Blow:** loud, noisy wind strongest below 1 kHz, lasting at least 8 frames.
@@ -173,7 +177,7 @@ The game itself is one `index.html` file with no libraries. Only 1v1 uses a back
 **What has and has not been checked**
 
 - Checked: the script parses; a simulated ideal run clears every dish in roughly 2 to 14 seconds; screenshots at rest of the bowl, the cup and the pot look right.
-- Not checked: nobody has played it in a browser. Mic detection, the animations in motion, draining, and the balance of all 30 rules are untested.
+- Not checked: nobody has played it in a browser. Mic detection, the animations in motion, draining, and the balance of all 31 rules are untested.
 
 ## Next steps
 
