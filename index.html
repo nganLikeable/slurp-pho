@@ -298,7 +298,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 .pfoot .obj svg{height:100%;width:auto}
 .L .pfoot .obj{left:16%}.R .pfoot .obj{right:16%}
 
-/* dish cards */
+/* dish cards: the drawn bowl, the name with your best time, and the rule */
 .card{position:relative;display:grid;grid-template-columns:clamp(34px,23cqw,72px) minmax(0,1fr);gap:6px;align-items:center;text-align:left;
   padding:4px 6px;border-radius:10px;border:1.5px solid transparent;background:transparent;color:var(--paper-ink);cursor:pointer;
   font:600 clamp(12px,3.6cqw,16px)/1.25 var(--body);transition:transform .15s,background .15s,box-shadow .15s}
@@ -317,13 +317,10 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 .crule{display:none;font-weight:400;font-size:12px;line-height:1.35;color:var(--paper-soft)}
 .card.sel .crule{color:var(--paper-ink)}
 @container (min-width:300px){.crule{display:block}}
-.stamp{position:absolute;right:2px;top:0;font:400 clamp(11px,4.6cqw,18px) var(--display);color:var(--sign);border:2.5px solid var(--sign);border-radius:6px;
-  padding:1px 6px;background:#FFF8E6EE;transform:translateY(-45%) rotate(8deg);pointer-events:none;animation:thump .38s cubic-bezier(.3,1.7,.5,1) both}
+.cbest{font-weight:400;font-size:.8em;color:var(--paper-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.card[aria-pressed="true"]{border-color:var(--paper-ink);border-style:dashed}
 .how{display:grid;grid-template-columns:clamp(30px,17cqw,56px) minmax(0,1fr);gap:8px;align-items:center;font-size:clamp(11px,3.4cqw,15px);line-height:1.35;padding:2px 4px}
 .how svg{width:100%;height:auto;display:block}
-.bit{position:absolute;left:var(--x);top:var(--y);width:11px;height:5px;border-radius:3px;background:var(--c);z-index:8;pointer-events:none;animation:fly .8s cubic-bezier(.2,.7,.3,1) forwards}
-@keyframes hop{30%{transform:translateY(-12px) rotate(-10deg)}60%{transform:translateY(0) rotate(5deg)}80%{transform:translateY(-3px)}}
-@keyframes thump{from{transform:translateY(-45%) rotate(8deg) scale(2.8);opacity:0}}
 @keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
 @keyframes steam{0%{transform:translateY(4px);opacity:0}40%{opacity:1}100%{transform:translateY(-5px);opacity:0}}
 
@@ -383,30 +380,68 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 /* under the book */
 .turns{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:600}
 .chip[disabled]{opacity:.35;cursor:default}
-/* the chosen dish: a big steaming bowl beside its name, rule and button */
-.detail{display:grid;grid-template-columns:clamp(110px,36vw,150px) minmax(0,1fr);gap:12px;align-items:center;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:12px 14px}
-.detail.pop{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
-@keyframes pop{from{transform:translateY(6px) scale(.97);opacity:.5}}
-.dpic{position:relative;display:flex;flex-direction:column;align-items:center}
-.dpic .hot{display:block;width:72%;height:auto;margin-bottom:-4%;overflow:visible}
-.dpic .hot path{fill:none;stroke:var(--soft);stroke-width:5;stroke-linecap:round;opacity:.5;transform-box:fill-box;transform-origin:50% 100%;animation:hot 2.4s ease-in-out infinite}
-.dpic .hot path:nth-child(2){animation-delay:.8s}
-.dpic .hot path:nth-child(3){animation-delay:1.6s}
-@keyframes hot{0%{opacity:.2;transform:translateY(10px) scaleY(.75)}35%{opacity:.95}100%{opacity:.15;transform:translateY(-12px) scaleY(1.15)}}
-.dpic .dbowl{display:block;width:100%;height:auto}
-.dtxt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
-.dreg{margin:0;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--sign)}
-.dname{margin:0;font:600 clamp(20px,6vw,28px)/1.15 var(--body);color:var(--ink);text-wrap:balance}
-.drule{margin:2px 0 8px;font-size:14px;line-height:1.4;color:var(--ink);text-wrap:pretty}
-.go{font:400 16px var(--display);padding:11px 16px;border-radius:10px;border:1.5px solid #10312A;background:var(--gold);color:#10312A;cursor:pointer}
-.go[disabled]{opacity:.4;cursor:default}
-@media (min-width:641px){
-  .detail{grid-template-columns:minmax(140px,190px) minmax(0,1fr);gap:18px;padding:14px 18px}
-  .dreg{font-size:12px}
-  .drule{font-size:15px;max-width:52ch}
-}
-.cbest{font-weight:400;font-size:.8em;color:var(--paper-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
-.card[aria-pressed="true"]{border-color:var(--paper-ink);border-style:dashed}
+/* food passport: how many of the dishes you have cleaned */
+.pass{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:8px 12px}
+.pass svg{flex:none;width:28px;height:28px}
+.pass .t{flex:1;min-width:0}
+.pass b{display:block;font-size:14px}
+.pass .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:5px}
+.pass .bar i{display:block;height:100%;background:var(--sign);width:0;transition:width .4s}
+.pass .n{font-family:var(--display);font-size:18px;font-variant-numeric:tabular-nums}
+/* the dish slip: on a wide screen it lands, taped, on the opposite page; on a phone the same slip slides up as a sheet */
+.menuwrap{--B:#A9C97E;--T:#7CCBD3;--N:#F5AAA6;--V:#F4B55E}
+.page.under .panel .cards,.page.under .margin{opacity:.35}
+.book.slipon .corner{visibility:hidden}
+.slip{position:absolute;inset:14px 10px 8px 8px;z-index:7;background:#FFFFFF;color:#10312A;border:2px solid #10312A;border-radius:10px;box-shadow:-6px 6px 0 #10312A33;
+  transform:rotate(1.2deg);display:flex;flex-direction:column;animation:land .35s cubic-bezier(.3,1.5,.5,1)}
+@keyframes land{from{transform:translateY(-14px) rotate(-2deg) scale(1.04);opacity:0}}
+.slip .tape{position:absolute;top:-9px;left:50%;width:70px;height:20px;margin-left:-35px;background:#F9BE1AD9;transform:rotate(-3deg);z-index:1}
+.sbody{flex:1;min-height:0;overflow-y:auto;padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
+.sx{position:absolute;top:6px;right:6px;z-index:2;width:30px;height:30px;border:0;border-radius:50%;background:#FFFFFFE6;color:#10312A;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sx svg{width:16px;height:16px}
+.sph{position:relative;flex:none;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--tint);display:flex;align-items:center;justify-content:center}
+.sph img{width:100%;height:100%;object-fit:cover;display:block}
+.sph svg.bowl{width:62%;height:auto}
+.snav{position:absolute;top:50%;margin-top:-18px;width:36px;height:36px;border:0;border-radius:50%;background:#FFFFFFE6;color:#10312A;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px #0003}
+.snav svg{width:18px;height:18px}
+.snav.sp{left:8px}.snav.sn{right:8px}
+.bigstamp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-14deg);border:5px solid var(--sign);color:var(--sign);background:#FFFFFFD9;border-radius:10px;padding:4px 16px;font-family:var(--display);font-size:30px;line-height:1.1;pointer-events:none;white-space:nowrap}
+.bigstamp.go{animation:bstamp .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes bstamp{from{transform:translate(-50%,-50%) rotate(-14deg) scale(2.4);opacity:0}}
+.swhere{margin:0;display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--sign)}
+.swhere svg{width:13px;height:13px;flex:none}
+.sname{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(20px,6cqw,28px);line-height:1.05;text-wrap:balance}
+.sone{margin:0;font-size:14px;line-height:1.45}
+.sing{display:flex;flex-wrap:wrap;gap:5px;margin:0;padding:0;list-style:none}
+.sing li{background:#E1F0E6;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600}
+.srule{margin:0;display:flex;gap:6px;font-size:12px;line-height:1.4;color:#4B6B62}
+.srule svg{flex:none;width:15px;height:15px;margin-top:1px}
+.sfa{margin:0;font-size:14px;line-height:1.45;animation:fadeup .25s ease-out}
+@keyframes fadeup{from{opacity:0;transform:translateY(6px)}}
+.srow{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1.5px dashed #10312A22;padding-top:10px}
+.sfq{border:0;background:none;padding:0;font:700 13px var(--body);color:var(--sign);display:flex;align-items:center;gap:4px;cursor:pointer}
+.sfq svg{width:14px;height:14px;transition:transform .2s}
+.sfq[aria-expanded="true"] svg{transform:rotate(180deg)}
+.sgo{font:400 15px var(--display);background:var(--gold);border:2px solid #10312A;border-radius:8px;padding:8px 14px;color:#10312A;cursor:pointer;white-space:nowrap}
+.sgo:active{transform:scale(.97)}
+.sgo .p,.grab{display:none}
+.sheetveil{position:fixed;inset:0;z-index:30;background:#0A1E1A66;opacity:0;transition:opacity .25s}
+.sheetveil.on{opacity:1}
+.slip.sheet{position:fixed;inset:auto 0 0 0;z-index:31;max-height:88vh;border:0;border-radius:18px 18px 0 0;box-shadow:0 -6px 24px #0004;
+  transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.9,.3,1.05);animation:none}
+.slip.sheet.on{transform:none}
+.slip.sheet .tape,.slip.sheet .sx{display:none}
+.slip.sheet .grab{display:block;flex:none;padding:6px 0 2px}
+.grab button{display:block;width:44px;height:18px;margin:0 auto;border:0;background:none;cursor:pointer;position:relative}
+.grab button::before{content:"";position:absolute;left:5px;right:5px;top:7px;height:4px;border-radius:2px;background:#B4B2A9}
+.slip.sheet .sbody{padding:4px 12px 14px}
+.slip.sheet .sph{aspect-ratio:16/10}
+.slip.sheet .snav{display:flex}
+.slip.sheet .srow{flex-direction:column;align-items:stretch}
+.slip.sheet .sfq{align-self:flex-start}
+.slip.sheet .sgo{font-size:17px;padding:12px}
+.slip.sheet .sgo .w{display:none}
+.slip.sheet .sgo .p{display:inline}
 .mOut{animation:outR .7s cubic-bezier(.42,.05,.4,1) forwards}
 .mIn{animation:inR .7s cubic-bezier(.42,.05,.4,1) forwards}
 .mOut::after{animation:shadeIn .7s cubic-bezier(.42,.05,.4,1) forwards}
@@ -539,6 +574,11 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       </header>
       <div class="mtools"><div class="lang" role="group" aria-label="Ngôn ngữ / Language"><button type="button" data-lang="vi">VI</button><button type="button" data-lang="en">EN</button></div><button class="chip" id="bookclose" type="button" data-en="Close ✕">Đóng ✕</button></div>
     </div>
+    <div class="pass" aria-live="polite">
+      <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="5" y="3" width="20" height="24" rx="3" fill="#D7262B" stroke="#10312A" stroke-width="1.8"/><circle cx="15" cy="13" r="5" fill="none" stroke="#F9BE1A" stroke-width="1.6"/><path d="M10 13 h10 M15 8 q-3 5 0 10 q3 -5 0 -10" stroke="#F9BE1A" stroke-width="1.2" fill="none"/><path d="M10 22 h10" stroke="#F9BE1A" stroke-width="1.6"/></svg>
+      <div class="t"><b data-en="Food passport">Hộ chiếu ẩm thực</b><div class="bar"><i id="passBar"></i></div></div>
+      <span class="n" id="passN">0/31</span>
+    </div>
     <nav class="ribbons" id="ribbons" aria-label="Các trang thực đơn" data-en-label="Menu pages"></nav>
     <div class="stage">
       <div class="book" id="book">
@@ -551,15 +591,6 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       <span id="pnum" aria-live="polite"></span>
       <button class="chip" id="bnext" type="button" data-en="Next page ›">Trang sau ›</button>
     </div>
-    <section class="detail" id="detail" aria-live="polite">
-      <div class="dpic" id="dpic"></div>
-      <div class="dtxt">
-        <p class="dreg" id="dreg"></p>
-        <h3 class="dname" id="dname"></h3>
-        <p class="drule" id="drule"></p>
-        <button class="go" id="go" type="button" data-en="Slurp this bowl">Húp tô này</button>
-      </div>
-    </section>
   </div>
 </div>
 
@@ -1277,16 +1308,70 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   function SPT(v){return tx(v,SP_EN[v]||v);}
   var BG={cover:'#17594A',north:'#A9CF7C',central:'#63C0D1',south:'#F5C543',modern:'#2B2350'};
   var SCAL='<svg class="scal" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M100 0 H15 C7 0 2 4 6 10 C12 19 12 27 5 35 C-1 44 -1 56 5 65 C12 73 12 81 6 90 C2 96 7 100 15 100 H100 Z" fill="#FFF8E6"/></svg>';
-  var STEAM='<svg class="st" viewBox="0 0 30 16" aria-hidden="true"><path d="M9 14 q-4 -4 0 -8" fill="none" stroke="#10312A" stroke-width="2" stroke-linecap="round"/><path d="M21 14 q-4 -4 0 -8" fill="none" stroke="#10312A" stroke-width="2" stroke-linecap="round"/></svg>';
   var uid=0;
   function pic(q){var u='clip-'+q.id;return thumb(q).split(u).join(u+'-'+(uid++));}
   function inn(html,cls,i){return '<span class="in '+(cls||'')+'" style="--i:'+i+'">'+html+'</span>';}
+  /* what each dish is, where it is from, what is in it, and one fact behind a tap */
+  var INFO={
+    phobo:['pho-bo','Hà Nội · Nam Định','Hà Nội · Nam Định','Món nước biểu tượng của Việt Nam: nước xương bò hầm nhiều giờ với quế, hồi và gừng nướng.','Vietnam\'s signature noodle soup: beef bone broth simmered for hours with cinnamon, star anise and charred ginger.',[['Bánh phở','Flat rice noodles'],['Bò tái, nạm','Rare beef, brisket'],['Quế, hồi','Cinnamon, star anise']],'Phở ra đời ở miền Bắc đầu thế kỷ 20, rồi theo người di cư vào Nam và ra khắp thế giới.','Phở was born in northern Vietnam in the early 20th century, then travelled south and around the world with migrants.','Luật cơ bản. Tô để làm quen.','Basic rules. The warm-up bowl.'],
+    phoga:['pho-ga','Hà Nội','Hà Nội','Phở với nước dùng gà trong, thịt gà xé và lá chanh thái chỉ.','Phở with a clear chicken broth, shredded chicken and fine strips of lime leaf.',[['Bánh phở','Flat rice noodles'],['Gà ta','Free-range chicken'],['Lá chanh','Lime leaf']],'Người Hà Nội ăn phở gà với lá chanh thái sợi, thứ hiếm thấy trên tô phở bò.','In Hà Nội, chicken phở comes with shredded lime leaf, which you rarely see on beef phở.','Quẩy nổi liên tục. Húp trúng càng nhiều càng nhanh.','Quẩy keeps floating up. Catch as many as you can.'],
+    buncha:['bun-cha','Hà Nội','Hà Nội','Chả heo nướng than, ăn với bún và rau sống, chấm nước mắm chua ngọt.','Charcoal-grilled pork with rice vermicelli and herbs, dipped in a sweet and sour fish sauce.',[['Chả nướng','Grilled pork'],['Bún','Rice vermicelli'],['Nước chấm','Dipping sauce']],'Năm 2016, Tổng thống Mỹ Barack Obama và đầu bếp Anthony Bourdain cùng ăn bún chả ở một quán bình dân Hà Nội.','In 2016, US President Barack Obama and chef Anthony Bourdain shared bún chả at a simple Hà Nội eatery.','Chấm từng gắp: mỗi hơi tối đa 1 giây.','One dip at a time: each slurp lasts 1 second at most.'],
+    bunrieu:['bun-rieu','Đồng bằng Bắc Bộ','Red River Delta','Nước dùng chua nhẹ từ cà chua và cua đồng giã nhuyễn.','A gently sour soup of tomato and pounded paddy crab.',[['Riêu cua','Paddy crab'],['Cà chua','Tomato'],['Đậu rán','Fried tofu']],'Cua đồng sống ở ruộng lúa; người ta giã cả con rồi lọc lấy nước để nấu riêu.','Paddy crabs live in rice fields; they are pounded whole and strained to make the broth.','Phải húp đủ 3 miếng topping mới sạch tô.','Eat 3 toppings before the bowl can be finished.'],
+    bundau:['bun-dau-mam-tom','Hà Nội','Hà Nội','Bún lá, đậu rán giòn và thịt luộc, chấm mắm tôm đánh với chanh.','Pressed vermicelli, crispy tofu and boiled pork, dipped in shrimp paste whipped with lime.',[['Bún lá','Pressed vermicelli'],['Đậu rán','Fried tofu'],['Mắm tôm','Shrimp paste']],'Mắm tôm rất nồng; người Hà Nội đánh với chanh, đường, ớt đến khi sủi bọt.','Shrimp paste smells strong; locals whip it with lime, sugar and chili until it foams.','Mắm tôm nồng: hồi hơi chậm gấp đôi.','Shrimp paste is strong: breath recovers half as fast.'],
+    bunthang:['bun-thang','Hà Nội','Hà Nội','Bún tinh tế với nước dùng thật trong và nhiều loại topping thái sợi.','A refined noodle soup with a crystal-clear broth and finely shredded toppings.',[['Trứng tráng','Egg omelette'],['Giò lụa, gà','Pork sausage, chicken'],['Tôm ruốc','Shrimp floss']],'Chữ "thang" ví món ăn như một thang thuốc: nhiều vị phối đúng tỉ lệ.','The name likens it to a herbal remedy ("thang"): many ingredients in exact proportion.','Toàn sợi dài. Gần như hơi nào cũng phải trọn.','Almost all long noodles. Finish each in one breath.'],
+    bunoc:['bun-oc','Hà Nội','Hà Nội','Ốc trong nước dùng chua từ cà chua và giấm bỗng.','River snails in a sour broth of tomato and fermented rice vinegar.',[['Ốc','River snails'],['Giấm bỗng','Rice vinegar'],['Tía tô','Perilla']],'Giấm bỗng làm từ bã rượu nếp, cho vị chua thơm rất riêng.','Giấm bỗng is made from rice-wine dregs, giving a fragrant sourness.','Vỏ ốc lẫn trong tô: chạm để gắp ra.','Snail shells hide in the bowl: tap to pick them out.'],
+    mienluon:['mien-luon','Hà Nội','Hà Nội','Miến dong với lươn chiên giòn, ăn khô hoặc chan nước.','Glass noodles with crispy fried eel, eaten dry or in broth.',[['Miến dong','Glass noodles'],['Lươn chiên','Fried eel'],['Hành phi','Fried shallots']],'Miến làm từ củ dong riềng nên sợi trong và dai.','The noodles are made from canna starch, which makes them clear and chewy.','Miến trơn: ngừng húp là tuột lại vào tô.','Slippery noodles slide back if you stop.'],
+    banhdacua:['banh-da-cua','Hải Phòng','Hải Phòng','Sợi bánh đa đỏ dai trong nước riêu cua, kèm chả lá lốt.','Chewy red-brown rice noodles in crab broth, with betel-leaf rolls.',[['Bánh đa đỏ','Red rice noodles'],['Riêu cua','Crab'],['Chả lá lốt','Betel-leaf rolls']],'Bánh đa có màu nâu đỏ nhờ trộn mật mía vào bột gạo.','The noodles get their red-brown colour from sugarcane molasses in the rice dough.','Sợi bản to: nửa giây đầu mỗi hơi chưa ăn thua.','Wide noodles: the first half-second of each slurp doesn\'t count.'],
+    vanthan:['mi-van-than','Hà Nội','Hà Nội','Mì trứng, hoành thánh và xá xíu, gốc từ bếp người Hoa.','Egg noodles with wontons and char siu, from Chinese-Vietnamese cooking.',[['Mì trứng','Egg noodles'],['Hoành thánh','Wontons'],['Xá xíu','Char siu']],'"Vằn thắn" là cách người Hà Nội gọi hoành thánh, tức wonton.','"Vằn thắn" is the Hà Nội way of saying wonton.','Cà rốt cam trông như ớt nhưng vô hại.','Orange carrot looks like chili but is harmless.'],
+    bbh:['bun-bo-hue','Huế','Huế','Nước dùng sả, mắm ruốc và ớt, sợi bún to, cay đậm.','A spicy broth of lemongrass, fermented shrimp sauce and chili, with thick round noodles.',[['Sả','Lemongrass'],['Bắp bò, giò heo','Beef shank, pork trotter'],['Mắm ruốc','Shrimp sauce']],'Huế từng là kinh đô triều Nguyễn, nên ẩm thực nơi đây cầu kỳ và cay hơn hẳn.','Huế was the Nguyễn dynasty\'s capital, and its cooking is famously elaborate and spicy.','Ớt gấp đôi. Sợi to, húp dài mới đã.','Double chili. Thick noodles reward long slurps.'],
+    miquang:['mi-quang','Quảng Nam','Quảng Nam','Sợi mì vàng bản to, chan ít nước, ăn với bánh tráng mè.','Wide yellow noodles with just a little broth, eaten with a sesame rice cracker.',[['Mì nghệ','Turmeric noodles'],['Tôm, thịt','Prawns, pork'],['Bánh tráng mè','Sesame cracker']],'Nước dùng mì Quảng gọi là "nhưn", chỉ vừa láng mặt sợi.','The broth, called "nhưn", only just covers the noodles.','Tô chỉ đầy 70%, nhưng hụt hơi rất nhanh.','Only 70% full, but you run out of breath fast.'],
+    caolau:['cao-lau','Hội An','Hội An','Sợi dai vàng nâu, xá xíu và bánh giòn, gần như không có nước.','Chewy yellow-brown noodles with char siu and crunchy crackers, almost no broth.',[['Sợi cao lầu','Cao lầu noodles'],['Xá xíu','Char siu'],['Rau Trà Quế','Trà Quế herbs']],'Người Hội An kể sợi cao lầu chuẩn phải dùng nước tro và nước giếng Bá Lễ.','Locals say true cao lầu needs ash-water and water from the old Bá Lễ well.','Sợi dai: hơi ngắn gần như vô ích.','Chewy: short slurps barely work.'],
+    bunchaca:['bun-cha-ca','Đà Nẵng','Đà Nẵng','Chả cá chiên trong nước dùng ngọt thanh, có thơm và cà chua.','Fried fish cake in a light, sweet broth with pineapple and tomato.',[['Chả cá','Fish cake'],['Thơm','Pineapple'],['Cà chua','Tomato']],'Nước dùng ninh từ xương cá và rau củ nên ngọt thanh.','The broth is simmered from fish bones and vegetables, so it tastes light and sweet.','Có xương cá: chạm để gắp ra. Ớt vẫn nổi.','Fish bones to tap out, and chili as usual.'],
+    banhcanh:['banh-canh','Miền Trung','Central Vietnam','Sợi to, mềm làm từ bột gạo hoặc bột lọc, nước dùng sánh.','Thick soft noodles of rice or tapioca flour in a thick broth.',[['Sợi bánh canh','Thick noodles'],['Cua, tôm','Crab, prawns'],['Trứng cút','Quail eggs']],'Mỗi vùng một kiểu bánh canh: cua, cá lóc, chả cá, ghẹ.','Every region has its own version: crab, snakehead fish, fish cake, blue crab.','Sợi nở dần: để lâu tô đầy lại.','Noodles swell: the bowl slowly refills.'],
+    bunhen:['bun-hen','Huế','Huế','Bún trộn hến xào, tóp mỡ, đậu phộng, kèm chén nước hến.','Vermicelli tossed with baby clams, pork crackling and peanuts, with a cup of clam broth.',[['Hến','Baby clams'],['Tóp mỡ','Pork crackling'],['Bánh tráng','Rice cracker']],'Hến nổi tiếng nhất lấy từ cồn Hến trên sông Hương.','The best-known clams come from Cồn Hến, an islet on the Perfume River.','Phải húp đủ 5 con hến mới sạch tô.','Eat 5 clams before the bowl can be finished.'],
+    phokho:['pho-kho-gia-lai','Pleiku, Gia Lai','Pleiku, Gia Lai','Còn gọi là phở hai tô: một tô phở trộn khô, một tô nước riêng.','Also called "two-bowl phở": dry tossed noodles, and broth in a separate bowl.',[['Sợi phở nhỏ','Thin phở noodles'],['Thịt bằm','Minced pork'],['Bò viên','Beef balls']],'Sợi phở ở đây nhỏ như sợi bún, khác hẳn bánh phở bản to miền Bắc.','The noodles here are thin like vermicelli, unlike the wide northern phở.','Hai tô: sạch tô khô rồi còn tô nước.','Two bowls: the dry one, then the broth.'],
+    hutieunv:['hu-tieu-nam-vang','Sài Gòn','Saigon','Hủ tiếu dai trong nước xương heo, có tôm, thịt bằm và gan.','Chewy rice noodles in pork broth with prawns, minced pork and liver.',[['Hủ tiếu','Rice noodles'],['Tôm, gan','Prawns, liver'],['Hẹ','Garlic chives']],'"Nam Vang" là tên cũ của Phnom Penh: món này theo người Hoa từ Campuchia sang.','"Nam Vang" is the old name for Phnom Penh; the dish came with Chinese-Cambodian migrants.','Ớt hiểm: gần như không kịp báo trước.','Bird\'s-eye chili: almost no warning.'],
+    hutieugo:['hu-tieu-go','Sài Gòn','Saigon','Tô hủ tiếu nhỏ, rẻ, bán rong trong hẻm.','A small, cheap bowl sold from carts in the alleys.',[['Hủ tiếu','Rice noodles'],['Thịt heo','Pork'],['Giá','Bean sprouts']],'Người bán gõ hai thanh tre "cắc cắc" để báo hàng đến, nên gọi là hủ tiếu gõ.','Vendors knock two bamboo sticks to announce themselves, hence "gõ" (knock).','Tô nhỏ, không ớt. Đua tốc độ thuần.','Small bowl, no chili. Pure speed.'],
+    hutieukho:['hu-tieu-kho','Mỹ Tho · Sài Gòn','Mỹ Tho · Saigon','Hủ tiếu trộn nước sốt sền sệt, ăn kèm một chén nước lèo.','Noodles tossed in a thick savoury sauce, with a small bowl of broth on the side.',[['Hủ tiếu','Rice noodles'],['Nước sốt','Sauce'],['Chén nước lèo','Side broth']],'Ăn khô giữ sợi dai, còn chén nước để húp xen kẽ.','Eating it dry keeps the noodles chewy; the broth is sipped between bites.','Sợi trơn: húp ngắn, húp nước để giữ hơi.','Sauce-slick noodles: slurp short, sip broth to breathe.'],
+    bunmam:['bun-mam','Sóc Trăng · Trà Vinh','Sóc Trăng · Trà Vinh','Nước dùng từ mắm cá linh, cá sặc, đậm vị miền Tây.','A broth of fermented linh and sặc fish, deeply Mekong Delta.',[['Mắm cá','Fermented fish'],['Heo quay, tôm','Roast pork, prawns'],['Cà tím','Eggplant']],'Món này mang đậm dấu ấn ẩm thực Khmer ở miền Tây.','It carries strong Khmer influence from the Mekong Delta.','Cô chủ chan thêm nước hai lần.','The vendor tops you up twice.'],
+    phoxelua:['pho-xe-lua','Miền Nam','Southern Vietnam','Tô phở cỡ "xe lửa", to gấp mấy lần tô thường.','A "train-sized" bowl of phở, several times a normal portion.',[['Bánh phở','Flat rice noodles'],['Bò tái, nạm','Rare beef, brisket'],['Bò viên','Beef balls']],'','','Tô khổng lồ, gần gấp đôi. Giữ sức mà húp.','A giant bowl, nearly double. Pace yourself.'],
+    bunthitnuong:['bun-thit-nuong','Sài Gòn','Saigon','Bún trộn thịt nướng sả, chả giò, đồ chua, rưới nước mắm.','Vermicelli with lemongrass-grilled pork, spring rolls and pickles, dressed with fish sauce.',[['Thịt nướng','Grilled pork'],['Chả giò','Spring rolls'],['Đồ chua','Pickles']],'Người miền Nam gọi nem rán là chả giò; món này ăn khô, không có nước.','Southerners call fried spring rolls chả giò; this dish has no broth.','Chanh nổi lên là phải húp ngay.','Slurp the lime when it floats, or it turns sour.'],
+    bokho:['hu-tieu-bo-kho','Sài Gòn','Saigon','Bò hầm mềm với sả, hồi và ngũ vị, nước sốt đỏ cam.','Beef stewed tender with lemongrass, star anise and five-spice in a red-orange sauce.',[['Bò kho','Stewed beef'],['Cà rốt','Carrot'],['Húng quế','Thai basil']],'Bò kho hay ăn với bánh mì buổi sáng; ăn với hủ tiếu cũng phổ biến không kém.','Bò kho is often eaten with a baguette for breakfast; with noodles is just as popular.','Nóng hổi: 4 giây đầu chỉ húp hơi ngắn.','Piping hot: only short slurps for 4 seconds.'],
+    bunsuong:['bun-suong','Trà Vinh','Trà Vinh','Bún với "suông": tôm và thịt giã nhuyễn, nặn cong như lưỡi liềm.','Noodle soup with "suông": pounded shrimp and pork shaped into curved crescents.',[['Suông tôm','Shrimp dumplings'],['Tôm','Prawns'],['Hẹ','Garlic chives']],'Đặc sản của Trà Vinh, nơi có đông đồng bào Khmer sinh sống.','A speciality of Trà Vinh, home to a large Khmer community.','Sợi dài, trơn: nhiều sợi dài và dễ tuột.','Long and slippery: many long noodles, and it slides back.'],
+    mitom:['mi-tom','Khắp Việt Nam','All over Vietnam','Mì gói nấu vội, thêm trứng và rau, món quen của sinh viên.','Instant noodles cooked in a hurry with an egg and greens, the student staple.',[['Mì gói','Instant noodles'],['Trứng','Egg'],['Hành lá','Scallion']],'Việt Nam thuộc nhóm nước ăn mì gói nhiều nhất thế giới tính theo đầu người.','Vietnam is among the world\'s biggest instant-noodle eaters per person.','Mẹ ngó sang là phải ngừng.','Mom looks over: stop or get scolded.'],
+    mily:['mi-ly','Khắp Việt Nam','All over Vietnam','Mì ly chế nước sôi, đợi ba phút là ăn.','Cup noodles: add boiling water, wait three minutes.',[['Mì ly','Cup noodles'],['Trứng cút','Quail egg'],['Xúc xích','Sausage']],'Món quen của dân văn phòng tăng ca và học sinh ôn thi.','A favourite of late-shift office workers and students cramming for exams.','Một hơi: nhả ra là đầy lại từ đầu.','One breath: let go and the cup refills.'],
+    micay:['mi-cay-7-cap','Trào lưu kiểu Hàn','Korean-inspired trend','Mì cay kiểu Hàn với nhiều cấp độ cay để thử thách.','Korean-style spicy noodles with levels of heat to dare yourself.',[['Mì','Noodles'],['Hải sản','Seafood'],['Kim chi','Kimchi']],'Giới trẻ hay rủ nhau thử cấp cay cao nhất rồi quay video.','Young people dare each other to try the top level, and film it.','Ớt dày đặc và cay đến hụt hơi.','Chili everywhere, and it takes your breath.'],
+    mitron:['mi-tron','Khắp Việt Nam','All over Vietnam','Mì gói trộn gia vị, thêm trứng ốp la và topping.','Instant noodles tossed with the seasoning, a fried egg and toppings.',[['Mì','Noodles'],['Trứng ốp la','Fried egg'],['Xúc xích','Sausage']],'Không chan nước nên vị đậm hơn hẳn mì nước.','With no broth, the flavour is much more intense.','Mỗi hơi chỉ tính từ 0,5 đến 1,5 giây.','Each slurp only counts between 0.5 and 1.5 seconds.'],
+    laumi:['lau-mi','Khắp Việt Nam','All over Vietnam','Nồi lẩu nhỏ sôi trên bếp ga, thả mì và đủ thứ topping.','A small hotpot bubbling on a gas burner, loaded with noodles and toppings.',[['Mì','Noodles'],['Hải sản, bò','Seafood, beef'],['Nấm kim châm','Enoki']],'Ăn lẩu là dịp tụ tập: cả nhóm gắp chung một nồi.','Hotpot is a social meal: everyone eats from the same pot.','Bạn bè gắp thêm mì ba lần. Ớt nhiều hơn.','Friends add noodles three times. More chili.'],
+    thapcam:['to-thap-cam-dac-biet','Mọi quán phở','Every phở shop','Tô có đủ mọi loại topping của quán.','The bowl with every topping the shop has.',[['Bò tái','Rare beef'],['Tôm','Prawns'],['Trứng','Egg']],'"Đặc biệt" trên bảng giá quán phở nghĩa là tô đủ mọi loại thịt.','On a phở menu, "đặc biệt" (special) means the bowl with everything.','Trùm cuối: mọi chướng ngại cùng lúc.','Final boss: every hazard at once.']
+  };
+  var PIN='<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 13 C3 8.5 2.4 6.6 2.4 5.2 a4.6 4.6 0 0 1 9.2 0 c0 1.4 -.6 3.3 -4.6 7.8z" fill="#D7262B"/><circle cx="7" cy="5.2" r="1.7" fill="#fff"/></svg>';
+  /* the dish photo from dish-pics/, or the drawn bowl if the photo is missing */
+  function photo(q,big){return '<img src="dish-pics/'+INFO[q.id][0]+'.jpg" alt="" loading="lazy" decoding="async" data-id="'+q.id+'" data-big="'+(big?1:0)+'">';}
+  function fixImgs(root){
+    [].forEach.call(root.querySelectorAll('img[data-id]'),function(im){
+      im.addEventListener('error',function(){
+        var q=DISHES.filter(function(x){return x.id===im.dataset.id;})[0];if(!q)return;
+        var w=document.createElement('span');w.style.display='contents';
+        w.innerHTML=im.dataset.big==='1'?pic(q).replace('<svg ','<svg class="bowl" '):pic(q);im.replaceWith(w);
+      },{once:true});
+    });
+  }
+  var STEAM='<svg class="st" viewBox="0 0 30 16" aria-hidden="true"><path d="M9 14 q-4 -4 0 -8" fill="none" stroke="#10312A" stroke-width="2" stroke-linecap="round"/><path d="M21 14 q-4 -4 0 -8" fill="none" stroke="#10312A" stroke-width="2" stroke-linecap="round"/></svg>';
   function cardHtml(i){
-    var q=DISHES[i];
-    return '<button type="button" class="card" id="item-'+q.id+'" data-i="'+i+'"><span class="pic">'+(q.dry?'':STEAM)+pic(q).replace('<svg ','<svg class="bowlpic" ')+'</span><span class="txt"><b>'+q.n+' <span class="cbest" id="best-'+q.id+'"></span></b><span class="crule">'+RULE(q)+'</span></span></button>';
+    var q=DISHES[i],b=store.best[q.id];
+    return '<button type="button" class="card" id="item-'+q.id+'" data-i="'+i+'"><span class="pic">'+(q.dry?'':STEAM)+pic(q).replace('<svg ','<svg class="bowlpic" ')+'</span><span class="txt"><b>'+q.n+' <span class="cbest" id="best-'+q.id+'">'+(b?fmt(b)+' s':'')+'</span></b><span class="crule">'+RULE(q)+'</span></span></button>';
+  }
+  function passPaint(){
+    var n=DISHES.filter(function(q){return store.best[q.id];}).length;
+    $('passN').textContent=n+'/'+DISHES.length;$('passBar').style.width=(n/DISHES.length*100).toFixed(1)+'%';
+  }
+  function stampCard(q){
+    var el=$('best-'+q.id);if(el)el.textContent=store.best[q.id]?fmt(store.best[q.id])+' s':'';
+    passPaint();
   }
   function pageHtml(sp,si,side){
-    var L=side==='L',body='',k,half;
+    var L=side==='L',body='',k,half,cls='';
     if(sp.r){
       var ids=[];DISHES.forEach(function(q,i){if(q.r===sp.r)ids.push(i);});
       half=Math.ceil(ids.length/2);
@@ -1301,7 +1386,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     var obj=L?sp.objL:sp.objR;
     return '<section class="page '+side+' t-'+sp.t+'" id="'+side+si+'" aria-label="'+SPT(sp.tab)+(L?tx(', trang trái',', left page'):tx(', trang phải',', right page'))+'">'+
       '<div class="band">'+band+'</div><div class="margin">'+mar+'</div>'+
-      '<div class="panel">'+SCAL+'<div class="cards">'+body+'</div></div>'+
+      '<div class="panel">'+SCAL+'<div class="cards'+cls+'">'+body+'</div></div>'+
       '<div class="pfoot">'+sp.foot()+(obj?(sp.travel&&L?inn('<span class="sail">'+A[obj]()+'</span>','obj trav',5):inn(A[obj](),'obj',5)):'')+'</div></section>';
   }
 
@@ -1320,7 +1405,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     [].forEach.call(book.querySelectorAll('.page'),function(p){p.remove();});
     $('ribbons').innerHTML='';ribs=[];
     var h='';SPREADS.forEach(function(sp,i){h+=pageHtml(sp,i,'L')+pageHtml(sp,i,'R');});
-    book.insertAdjacentHTML('afterbegin',h);
+    book.insertAdjacentHTML('afterbegin',h);fixImgs(book);passPaint();
     SPREADS.forEach(function(sp,i){
       var b=document.createElement('button');b.type='button';b.className='rib';b.textContent=SPT(sp.tab);
       b.style.setProperty('--c',BG[sp.t]);b.style.setProperty('--t',sp.tc);
@@ -1328,7 +1413,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     });
   }
   function build(){book=$('book');render();wire();show();}
-  function relang(){finish();render();show();if(bookOpen&&sel>=0&&!timer)detail(sel,false);}
+  function relang(){finish();var k=slipI;closeSlip(true);render();show();if(bookOpen&&k>=0&&!timer)openSlip(k,true);}
   function show(){
     finish();
     [].forEach.call(book.querySelectorAll('.page'),function(p){p.classList.remove('show');});
@@ -1377,66 +1462,126 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     var leaf=fwd?a:b;leaf.classList.add('turn',fwd?'mOut':'mIn');
     enter([b]);busy={a:[a],b:[b],timer:setTimeout(finish,1000)};after(leaf,/^(outR|inR)$/);
   }
-  function step(k){if(mobile())goHalf(half+k);else go(cur+k);}
-  function jump(i){if(mobile())goHalf(i*2);else go(i);}
+  function step(k){closeSlip();if(mobile())goHalf(half+k);else go(cur+k);}
+  function jump(i){closeSlip();if(mobile())goHalf(i*2);else go(i);}
 
-  var HOT='<svg class="hot" viewBox="0 0 120 44" aria-hidden="true"><path d="M38 42 q-8 -9 0 -19 q8 -9 0 -19"/><path d="M60 40 q-8 -9 0 -18 q8 -9 0 -18"/><path d="M82 42 q-8 -9 0 -19 q8 -9 0 -19"/></svg>';
-  /* the panel under the book: region and place in it, name, rule, and a steaming bowl */
-  function detail(i,picked){
-    var q=DISHES[i],same=DISHES.filter(function(x){return x.r===q.r;});
-    $('dreg').textContent=REGN(q.r)+tx(' · Món ',' · Dish ')+(same.indexOf(q)+1)+'/'+same.length;
-    $('dname').textContent=picked?tx('Đã chọn: ','Picked: ')+q.n:q.n;
-    $('drule').textContent=picked?tx('Đang múc tô ra bàn…','Serving it up…'):RULE(q);
-    $('dpic').innerHTML=(q.dry?'':HOT)+pic(q).replace('<svg ','<svg class="dbowl" ');
-    $('go').disabled=!!picked;
-    var s=$('detail');s.classList.remove('pop');void s.offsetWidth;s.classList.add('pop');
+  /* ---------- the dish slip ----------
+     Wide screens: tap a dish on one page and its slip lands, taped, on the opposite page.
+     Phones: the same slip slides up as a sheet; swipe down to close it, sideways for the next dish. */
+  var slip=null,slipI=-1,veil=null,lastCard=null;
+  var X='<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5 L15 15 M15 5 L5 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+  var CHEV=function(d){return '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="'+d+'" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';};
+  var PAD='<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="4.5" width="13" height="8" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 7 v3 M3.5 8.5 h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10.5" cy="7.6" r="1" fill="currentColor"/><circle cx="12" cy="9.6" r="1" fill="currentColor"/></svg>';
+  /* which spread and which page a dish is printed on */
+  function where(i){
+    var q=DISHES[i],s,ids;
+    for(s=0;s<N;s++)if(SPREADS[s].r===q.r)break;
+    ids=[];DISHES.forEach(function(x,j){if(x.r===q.r)ids.push(j);});
+    return {s:s,side:ids.indexOf(i)<Math.ceil(ids.length/2)?'L':'R'};
   }
-  function clearMarks(){
-    [].forEach.call(book.querySelectorAll('.card.sel'),function(c){c.classList.remove('sel','hop');});
-    [].forEach.call(book.querySelectorAll('.stamp'),function(s){s.remove();});
+  function slipHtml(i){
+    var q=DISHES[i],I=INFO[q.id],l=lang==='en'?1:0,f=I[6+l],b=store.best[q.id];
+    return '<span class="tape" aria-hidden="true"></span>'+
+      '<div class="grab"><button type="button" data-a="close" aria-label="'+tx('Đóng','Close')+'"></button></div>'+
+      '<button type="button" class="sx" data-a="close" aria-label="'+tx('Đóng','Close')+'">'+X+'</button>'+
+      '<div class="sbody">'+
+        '<div class="sph" style="--tint:var(--'+q.r+')">'+photo(q,true)+'<span class="bigstamp" hidden></span>'+
+          '<button type="button" class="snav sp" data-a="prev" aria-label="'+tx('Món trước','Previous dish')+'">'+CHEV('M12 4 L6 10 L12 16')+'</button>'+
+          '<button type="button" class="snav sn" data-a="next" aria-label="'+tx('Món sau','Next dish')+'">'+CHEV('M8 4 L14 10 L8 16')+'</button></div>'+
+        '<p class="swhere">'+PIN+REGN(q.r)+'</p>'+
+        '<h3 class="sname" id="slipname">'+q.n+'</h3>'+
+        '<p class="sone">'+(l?I[4]:I[3])+'</p>'+
+        '<ul class="sing">'+I[5].map(function(k){return '<li>'+k[l]+'</li>';}).join('')+'</ul>'+
+        '<p class="srule">'+PAD+'<span>'+RULE(q)+(b?' · '+tx('Kỷ lục ','Best ')+fmt(b)+' s':'')+'</span></p>'+
+        (f?'<p class="sfa" id="slipfact" hidden>'+f+'</p>':'')+
+        '<div class="srow">'+(f?'<button type="button" class="sfq" data-a="fact" aria-expanded="false" aria-controls="slipfact">'+tx('Có biết?','Did you know?')+CHEV('M5 8 L10 13 L15 8')+'</button>':'<span></span>')+
+          '<button type="button" class="sgo" data-a="go"><span class="w">'+tx('HÚP','SLURP')+'</span><span class="p">'+tx('HÚP TÔ NÀY','SLURP THIS BOWL')+'</span></button></div>'+
+      '</div>';
   }
-  function select(i,el){
-    if(timer)return;
-    if(sel===i&&el.classList.contains('sel')){confirmPick(el);return;}
-    clearMarks();sel=i;el.classList.add('sel');void el.offsetWidth;el.classList.add('hop');
-    detail(i,false);
-  }
-  function confirmPick(el){
-    if(timer||sel<0)return;
-    var i=sel,q=DISHES[i];
-    el=el||$('item-'+q.id);
-    var seen=el&&el.closest('.page').classList.contains('show');
-    el.classList.remove('hop');void el.offsetWidth;el.classList.add('hop');
-    var st=document.createElement('span');st.className='stamp';st.textContent=tx('CHỌN!','PICKED!');el.appendChild(st);
-    if(!calm&&seen){
-      var br=book.getBoundingClientRect(),r=el.getBoundingClientRect(),cx=r.left-br.left+r.width/2,cy=r.top-br.top+r.height/2,cols=['#F9BE1A','#D7262B','#3FA860','#FAEEDA','#F0884A'],k,b,a,dd;
-      for(k=0;k<16;k++){
-        b=document.createElement('i');b.className='bit';a=Math.random()*Math.PI*2;dd=50+Math.random()*70;
-        b.style.setProperty('--x',cx+'px');b.style.setProperty('--y',cy+'px');b.style.setProperty('--c',cols[k%cols.length]);
-        b.style.setProperty('--dx',(Math.cos(a)*dd).toFixed(0)+'px');b.style.setProperty('--dy',(Math.sin(a)*dd-30).toFixed(0)+'px');b.style.setProperty('--r',(Math.random()*720-360).toFixed(0)+'deg');
-        book.appendChild(b);(function(b){setTimeout(function(){b.remove();},900);})(b);
-      }
+  function openSlip(i,quiet){
+    var phone=mobile(),w=where(i),old=slip;
+    if(old){old.remove();}
+    [].forEach.call(book.querySelectorAll('.page.under'),function(p){p.classList.remove('under');});
+    [].forEach.call(book.querySelectorAll('.card.sel'),function(c){c.classList.remove('sel');});
+    slipI=i;
+    var el=document.createElement('div');
+    el.className='slip'+(phone?' sheet':'');el.setAttribute('role','dialog');el.setAttribute('aria-labelledby','slipname');
+    el.innerHTML=slipHtml(i);
+    if(phone){
+      if(!veil){veil=document.createElement('div');veil.className='sheetveil';veil.addEventListener('click',function(){closeSlip();});}
+      $('menuwrap').appendChild(veil);$('menuwrap').appendChild(el);
+      if(old||quiet||calm){veil.classList.add('on');el.classList.add('on');}
+      else requestAnimationFrame(function(){requestAnimationFrame(function(){veil.classList.add('on');el.classList.add('on');});});
+    }else{
+      var opp=$((w.side==='L'?'R':'L')+w.s);opp.classList.add('under');opp.appendChild(el);book.classList.add('slipon');
+      if(quiet)el.style.animation='none';
     }
-    detail(i,true);
+    slip=el;fixImgs(el);wireSlip(el);
+    var c=$('item-'+DISHES[i].id);if(c)c.classList.add('sel');
+    if(!quiet){var g=el.querySelector('.sgo');if(g)g.focus({preventScroll:true});}
+  }
+  function closeSlip(now){
+    if(!slip){slipI=-1;return;}
+    var el=slip,back=$('item-'+DISHES[slipI].id);slip=null;slipI=-1;book.classList.remove('slipon');
+    [].forEach.call(book.querySelectorAll('.page.under'),function(p){p.classList.remove('under');});
+    if(back)back.classList.remove('sel');
+    if(el.classList.contains('sheet')&&!now&&!calm){
+      el.classList.remove('on');if(veil)veil.classList.remove('on');
+      setTimeout(function(){el.remove();if(veil&&!slip)veil.remove();},300);
+    }else{el.remove();if(veil)veil.remove();}
+    if(!now&&back&&bookOpen)back.focus({preventScroll:true});
+  }
+  /* next or previous dish through the whole menu; the book turns underneath when the dish is on another page */
+  function stepDish(k){
+    if(slipI<0||timer)return;
+    var i=(slipI+k+DISHES.length)%DISHES.length,w=where(i);
+    if(mobile()){var t=w.s*2+(w.side==='R'?1:0);if(t!==half)goHalf(t);}
+    else if(w.s!==cur)go(w.s);
+    openSlip(i);
+  }
+  function slurpIt(){
+    if(timer||slipI<0)return;
+    var i=slipI,st=slip.querySelector('.bigstamp');
+    st.textContent=tx('CHỌN!','PICKED!');st.hidden=false;st.classList.remove('go');void st.offsetWidth;st.classList.add('go');
     timer=setTimeout(function(){timer=0;close();pick(i,false);window.scrollTo(0,0);},calm?0:750);
+  }
+  function wireSlip(el){
+    el.addEventListener('click',function(e){
+      var b=e.target.closest('[data-a]');if(!b)return;
+      e.stopPropagation();
+      var a=b.getAttribute('data-a');
+      if(a==='close')closeSlip();
+      else if(a==='prev')stepDish(-1);
+      else if(a==='next')stepDish(1);
+      else if(a==='go')slurpIt();
+      else if(a==='fact'){var on=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',String(on));el.querySelector('.sfa').hidden=!on;}
+    });
+    /* swipe: down closes the sheet, sideways goes to the next dish */
+    var sx=null,sy=0;
+    el.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;});
+    el.addEventListener('pointerup',function(e){
+      if(sx===null)return;var dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
+      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){e.stopPropagation();swiped=Date.now();stepDish(dx<0?1:-1);}
+      else if(el.classList.contains('sheet')&&dy>70&&dy>Math.abs(dx)*1.5)closeSlip();
+    });
+    el.addEventListener('pointercancel',function(){sx=null;});
   }
   function wire(){
     book.addEventListener('click',function(e){
       var c=e.target.closest?e.target.closest('.card'):null;
-      if(!c||Date.now()-swiped<400)return;
-      select(+c.getAttribute('data-i'),c);
+      if(!c||Date.now()-swiped<400||timer)return;
+      lastCard=c;openSlip(+c.getAttribute('data-i'));
     });
-    $('go').addEventListener('click',function(){confirmPick(book.querySelector('.card.sel'));});
     $('cprev').addEventListener('click',function(){step(-1);});$('cnext').addEventListener('click',function(){step(1);});
     $('bprev').addEventListener('click',function(){step(-1);});$('bnext').addEventListener('click',function(){step(1);});
     $('bookclose').addEventListener('click',close);
     var w=$('menuwrap');
     w.addEventListener('keydown',function(e){
-      if(e.key==='Escape'){e.preventDefault();close();}
-      else if(e.key==='ArrowRight'){e.preventDefault();step(1);}
-      else if(e.key==='ArrowLeft'){e.preventDefault();step(-1);}
+      if(e.key==='Escape'){e.preventDefault();if(slip)closeSlip();else close();}
+      else if(e.key==='ArrowRight'){e.preventDefault();if(slip)stepDish(1);else step(1);}
+      else if(e.key==='ArrowLeft'){e.preventDefault();if(slip)stepDish(-1);else step(-1);}
       else if(e.key==='Tab'){
-        var f=[].slice.call(w.querySelectorAll('button')).filter(function(b){return !b.disabled&&!b.hidden&&b.getClientRects().length&&getComputedStyle(b).visibility!=='hidden';});
+        var f=[].slice.call((slip&&slip.classList.contains('sheet')?slip:w).querySelectorAll('button')).filter(function(b){return !b.disabled&&!b.hidden&&b.getClientRects().length&&getComputedStyle(b).visibility!=='hidden';});
         if(!f.length)return;var a=f[0],z=f[f.length-1];
         if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}
         else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}
@@ -1445,31 +1590,30 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     var sx=null,sy=0;
     book.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;});
     book.addEventListener('pointerup',function(e){
-      if(sx===null)return;var dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
+      if(sx===null||(e.target.closest&&e.target.closest('.slip')))return;var dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
       if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){swiped=Date.now();step(dx<0?1:-1);}
     });
     book.addEventListener('pointercancel',function(){sx=null;});
     /* rotating a phone or resizing a window switches between one page and two */
-    function relayout(){show();}
+    function relayout(){var k=slipI;closeSlip(true);show();if(k>=0)openSlip(k,true);}
     if(mq.addEventListener)mq.addEventListener('change',relayout);else if(mq.addListener)mq.addListener(relayout);
   }
   function open(i){
     if(typeof i!=='number'||i<0||i>=N)i=0;
     bookOpen=true;
     $('menuwrap').hidden=false;document.body.style.overflow='hidden';
-    cur=i;half=i*2;clearMarks();
-    /* the panel starts on the dish being played, so "Húp tô này" works straight away */
-    sel=DISHES.indexOf(d);detail(sel,false);
+    cur=i;half=i*2;closeSlip(true);passPaint();
     show();enter(shown());
     $('bookclose').focus();
   }
   function close(){
     if(!bookOpen)return;
     finish();if(timer){clearTimeout(timer);timer=0;}
+    closeSlip(true);
     bookOpen=false;$('menuwrap').hidden=true;document.body.style.overflow='';
     $('tomenu').focus({preventScroll:true});
   }
-  return {build:build,open:open,close:close,relang:relang};
+  return {build:build,open:open,close:close,relang:relang,stamp:stampCard};
   })();
   function buildBoard(){Menu.build();DISHES.forEach(function(q){paintBest(q);});}
 
@@ -1694,7 +1838,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     };
   })();
 
-  function paintBest(q){var el=$('best-'+q.id);if(el)el.textContent=store.best[q.id]?fmt(store.best[q.id])+' s':'';}
+  /* a cleaned dish gets its ĐÃ HÚP stamp in the menu, and the food passport counts it */
+  function paintBest(q){Menu.stamp(q);}
 
   /* the dish as drawn right now: a two-bowl dish shows its dry bowl first, then its soup bowl */
   var vd=DISHES[0];

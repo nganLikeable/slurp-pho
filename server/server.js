@@ -1,7 +1,7 @@
 'use strict';
 /*
   Húp Phở 1v1 server.
-  - Serves the game (index.html, and photos/ if present) over HTTP.
+  - Serves the game (index.html, the menu photos in dish-pics/, and photos/ if present) over HTTP.
   - Pairs players over a WebSocket at /ws: both get the same dish and hazard seed, see each other's
     bowl drain live, and get a result when both are done.
   - Nobody else waiting after WAIT_MS: the player races a recorded run of an earlier real player
@@ -44,8 +44,8 @@ const server = http.createServer((req, res) => {
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); res.end(); return; }
   if (url === '/' || url === '/index.html') return sendFile(res, path.join(ROOT, 'index.html'));
   if (url === '/health') { res.writeHead(200, { 'Content-Type': 'text/plain' }); res.end('ok'); return; }
-  // only photos/ is served besides the page; nothing else in the project folder is exposed
-  if (/^\/photos\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/.test(url)) return sendFile(res, path.join(ROOT, url));
+  // only photos/ and dish-pics/ are served besides the page; nothing else in the project folder is exposed
+  if (/^\/(photos|dish-pics)\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/.test(url)) return sendFile(res, path.join(ROOT, url));
   res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Not found');
 });
 
