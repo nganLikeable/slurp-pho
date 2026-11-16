@@ -4,6 +4,8 @@
   - Serves the game (index.html, the menu photos in dish-pics/, and photos/ if present) over HTTP.
   - Pairs players over a WebSocket at /ws: both get the same dish and hazard seed, see each other's
     bowl drain live, and get a result when both are done.
+  - Thách đấu: a player opens a private room for one dish and sends its link; the friend who opens it
+    joins that room and both race live on that dish. A room waits up to INVITE_MS for the friend.
   - Nobody else waiting after WAIT_MS: the player races a recorded run of an earlier real player
     (a "ghost"), or a house bot when that dish has no recordings yet.
   The server trusts the times clients report; there is no cheat protection in this version.
@@ -23,6 +25,7 @@ const MAX_MSG = 8192;           // bytes per message
 const MAX_RATE = 30;            // messages per second per connection
 const RUNS_PER_DISH = 20;
 const MAX_SAMPLES = 80;
+const INVITE_MS = 30 * 60 * 1000;   // an unused invite link expires after 30 minutes
 const EVENTS = new Set(['choke', 'gasp', 'scold', 'treat', 'broke', 'long', 'cay', 'hoc', 'cough', 'hot', 'cool', 'burn']);
 
 /* ---------- static files: the game page, and photos/ ---------- */
@@ -97,13 +100,42 @@ function unqueue(ws) {
   clearTimeout(ws.waitTimer); ws.waitTimer = null;
 }
 
-function startRoom(a, b) {
-  const room = { id: crypto.randomUUID(), players: [a, b], seed: randSeed(), dish: randDish(), ready: new Set(), done: new Map(), rematch: new Set(), started: false };
+/* friend rooms keep their dish, also for a rematch; random matches get a random one */
+function startRoom(a, b, dish, friend) {
+  const room = { id: crypto.randomUUID(), players: [a, b], seed: randSeed(), dish: dish == null ? randDish() : dish, friend: !!friend,
+    ready: new Set(), done: new Map(), rematch: new Set(), started: false };
   rooms.set(room.id, room);
   for (const ws of room.players) {
     ws.room = room; ws.solo = null;
-    send(ws, { type: 'match', room: room.id, seed: room.seed, dish: room.dish, opp: { name: other(room, ws).name } });
+    send(ws, { type: 'match', room: room.id, seed: room.seed, dish: room.dish, friend: room.friend, opp: { name: other(room, ws).name } });
   }
+}
+
+/* ---------- Thách đấu: private rooms behind a 6-letter code ---------- */
+const invites = new Map();   // code -> { ws, dish, at }
+const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';   // no 0/O or 1/I/L to misread
+function newCode() {
+  let c;
+  do { c = ''; for (let i = 0; i < 6; i++) c += CODE_CHARS[crypto.randomInt(0, CODE_CHARS.length)]; } while (invites.has(c));
+  return c;
+}
+function uninvite(ws) { if (ws.invite) { invites.delete(ws.invite); ws.invite = null; } }
+function host(ws, name, dish) {
+  ws.name = cleanName(name);
+  leaveRoom(ws, true); unqueue(ws); uninvite(ws); ws.solo = null;
+  const d = Number.isInteger(dish) && dish >= 0 && dish < DISH_COUNT ? dish : randDish();
+  const code = newCode();
+  invites.set(code, { ws, dish: d, at: Date.now() }); ws.invite = code;
+  send(ws, { type: 'hosted', code, dish: d });
+}
+function join(ws, code, name) {
+  ws.name = cleanName(name);
+  leaveRoom(ws, true); unqueue(ws); uninvite(ws); ws.solo = null;
+  const c = typeof code === 'string' ? code.toUpperCase() : '';
+  const inv = invites.get(c);
+  if (!inv || inv.ws === ws || inv.ws.readyState !== 1 || inv.ws.invite !== c) { send(ws, { type: 'nojoin' }); return; }
+  invites.delete(c); inv.ws.invite = null;
+  startRoom(inv.ws, ws, inv.dish, true);
 }
 
 function leaveRoom(ws, notify) {
@@ -122,7 +154,7 @@ function leaveRoom(ws, notify) {
 
 function find(ws, name) {
   ws.name = cleanName(name);
-  leaveRoom(ws, true); unqueue(ws); ws.solo = null;
+  leaveRoom(ws, true); unqueue(ws); uninvite(ws); ws.solo = null;
   const opp = queue.find((p) => p !== ws && p.readyState === 1);
   if (opp) { unqueue(opp); startRoom(opp, ws); return; }
   queue.push(ws);
@@ -148,7 +180,9 @@ function onMessage(ws, msg) {
   const room = ws.room;
   switch (msg.type) {
     case 'find': return find(ws, msg.name);
-    case 'cancel': unqueue(ws); leaveRoom(ws, true); ws.solo = null; return;
+    case 'host': return host(ws, msg.name, msg.dish);
+    case 'join': return join(ws, msg.code, msg.name);
+    case 'cancel': unqueue(ws); uninvite(ws); leaveRoom(ws, true); ws.solo = null; return;
     case 'ready': {
       if (!room || room.started) return;
       room.ready.add(ws);
@@ -196,7 +230,7 @@ function onMessage(ws, msg) {
       room.rematch.add(ws);
       if (room.rematch.size === 2) {
         rooms.delete(room.id);
-        startRoom(room.players[0], room.players[1]);
+        startRoom(room.players[0], room.players[1], room.friend ? room.dish : null, room.friend);
       } else send(opp, { type: 'rematchasked' });
       return;
     }
@@ -207,7 +241,7 @@ function onMessage(ws, msg) {
 /* ---------- sockets ---------- */
 const wss = new WebSocketServer({ server, path: '/ws', maxPayload: MAX_MSG });
 wss.on('connection', (ws) => {
-  ws.alive = true; ws.name = 'Khách'; ws.room = null; ws.solo = null;
+  ws.alive = true; ws.name = 'Khách'; ws.room = null; ws.solo = null; ws.invite = null;
   ws.rate = { second: 0, count: 0 };
   ws.on('pong', () => { ws.alive = true; });
   ws.on('message', (data) => {
@@ -219,7 +253,7 @@ wss.on('connection', (ws) => {
     if (!msg || typeof msg.type !== 'string') return;
     onMessage(ws, msg);
   });
-  ws.on('close', () => { unqueue(ws); leaveRoom(ws, true); });
+  ws.on('close', () => { unqueue(ws); uninvite(ws); leaveRoom(ws, true); });
   send(ws, { type: 'hello' });
 });
 // drop connections that stopped answering
@@ -228,6 +262,8 @@ setInterval(() => {
     if (!ws.alive) { ws.terminate(); continue; }
     ws.alive = false; ws.ping();
   }
+  const now = Date.now();
+  for (const [c, inv] of invites) if (now - inv.at > INVITE_MS || inv.ws.readyState !== 1) { invites.delete(c); if (inv.ws.invite === c) inv.ws.invite = null; }
 }, 30000).unref();
 
 server.listen(PORT, () => console.log(`Húp Phở server on http://localhost:${PORT}`));

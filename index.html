@@ -129,6 +129,9 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 .ostat{grid-column:2/4;font-size:13px;color:var(--soft);min-height:18px}
 .dmsg{font-size:14px;font-weight:600;text-wrap:pretty}
 .dmsg:empty{display:none}
+.dinvite{display:flex;gap:8px;align-items:center}
+.dinvite input{flex:1;min-width:0;padding:8px 10px;border:1.5px dashed var(--sign);border-radius:8px;background:transparent;color:var(--ink);font:600 13px var(--body)}
+.dsend{background:var(--sign);border-color:var(--sign);color:#FFFFFF}
 .count{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none;font:400 88px/1 var(--display);color:var(--sign);text-shadow:0 3px 0 #FFFFFF,0 6px 14px #0004}
 .count span{animation:countpop .95s ease-out both}
 @keyframes countpop{from{transform:scale(1.8);opacity:0}30%{transform:scale(1);opacity:1}to{transform:scale(.92);opacity:.25}}
@@ -490,6 +493,11 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       <span class="ostat" id="ostat"></span>
     </div>
     <div class="dmsg" id="dmsg"></div>
+    <!-- Thách đấu: the private room's link, to send to a friend -->
+    <div class="dinvite" id="dinvite" hidden>
+      <input id="dlink" type="text" readonly aria-label="Link thách đấu" data-en-label="Challenge link">
+      <button class="chip dsend" id="dsend" type="button" data-en="Send link">Gửi link</button>
+    </div>
   </section>
 
   <div class="table">
@@ -530,6 +538,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 
   <div class="links">
     <button class="quiet duelbtn" id="duelbtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M13 13l-2.5 2.5M13 13l2.5-2.5M20 4l-9 9M11 13l2.5 2.5M11 13l-2.5-2.5M6 18l-2 2M18 18l2 2"/></svg><span data-en="Find opponent">Tìm đối thủ</span></button>
+    <button class="quiet duelbtn" id="invitebtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span data-en="Challenge a friend">Thách bạn</span></button>
     <button class="quiet" id="again" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg><span data-en="New bowl">Múc tô mới</span></button>
     <button class="quiet" id="micbtn" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V7a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v3M4 4l16 16"/></svg><span data-en="Mic off">Tắt mic</span></button>
   </div>
@@ -1625,7 +1634,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     var NICK=['Ớt Hiểm','Quẩy Giòn','Hành Phi','Chanh Leo','Rau Thơm','Sa Tế','Mắm Tôm','Nước Dùng','Bánh Phở','Tỏi Phi','Giá Sống','Bò Tái','Chả Lụa','Hến Xào','Bún Tươi','Trứng Lòng Đào'];
     var EVT={choke:['Sặc!','Choked!'],gasp:['Hết hơi!','Out of air!'],scold:['Bị mẹ mắng!','Mom caught them!'],
       cay:['Cay xé lưỡi!','Too spicy!'],hoc:['Hóc xương!','Bone stuck!'],cough:['Khụ khụ!','Cough cough!'],burn:['Bỏng lưỡi!','Burnt tongue!'],hot:['Nước sôi! Đang thổi…','Boiling! Blowing…'],cool:['Nguội rồi!','Cooled down!']};
-    var ws=null,state='off',kind='',opp=null,seed=0,dishI=0,run=null,botTime=0,res=null,oppDone=null,oppLeft=false,oppReady=false,rematchAsked=false;
+    var invite=null,ws=null,state='off',kind='',opp=null,seed=0,dishI=0,run=null,botTime=0,res=null,oppDone=null,oppLeft=false,oppReady=false,rematchAsked=false;
     var samples=[],lastSample=-1,lastSend=0,cdTimer=null,connTimer=null,dm=['',''],myT=0;
     function newNick(){return NICK[Math.floor(Math.random()*NICK.length)]+' '+(1+Math.floor(Math.random()*99));}
     function nick(){if(!store.nick){store.nick=newNick();save();}return store.nick;}
@@ -1639,26 +1648,49 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     /* during a duel the dish can't change: arrows, daily bowl, menu and new bowl are locked */
     function lock(on){['prev','next','dailybtn','tomenu','howto','again','rnext'].forEach(function(id){$(id).disabled=on;});}
 
-    function find(){
+    function find(){connect({type:'find'});}
+    /* Thách đấu: open a private room on the dish you're on, then send its link */
+    function host(){connect({type:'host',dish:cur});}
+    function join(code){connect({type:'join',code:code});}
+    function connect(msg){
       audio();
       clearTimeout(cdTimer);$('count').hidden=true;
-      $('duel').hidden=false;opp=null;res=null;paint();
+      $('duel').hidden=false;opp=null;res=null;invite=null;paint();
       var u=url();
       if(!u||!window.WebSocket){state='off';paint();
         M('Chế độ đấu cần máy chủ Húp Phở. Mở game từ máy chủ đó (xem project.md); chơi một mình thì vẫn được.','1v1 needs the Húp Phở server. Open the game from that server (see project.md); solo play still works.');return;}
       state='connecting';kind='';paint();M('Đang kết nối…','Connecting…');
-      if(ws&&ws.readyState===1){out({type:'find',name:nick()});return;}
+      msg.name=nick();
+      if(ws&&ws.readyState===1){ask(msg);return;}
       try{ws=new WebSocket(u);}catch(e){fail();return;}
       var sock=ws;
       connTimer=setTimeout(function(){if(sock.readyState!==1){try{sock.close();}catch(e){}fail();}},4000);
-      sock.onopen=function(){clearTimeout(connTimer);out({type:'find',name:nick()});};
+      sock.onopen=function(){clearTimeout(connTimer);ask(msg);};
       sock.onmessage=function(e){var m;try{m=JSON.parse(e.data);}catch(x){return;}on(m);};
       sock.onclose=function(){
         if(ws!==sock)return;ws=null;
         if(state==='connecting'){fail();return;}
+        if(state==='hosting'){state='off';invite=null;lock(false);paint();M('Mất kết nối với máy chủ, phòng đã đóng. Bấm "Thách bạn" để mở phòng mới.','Lost connection to the server, so the room closed. Press "Challenge a friend" to open a new one.');return;}
         if(kind==='live'&&state!=='off'&&state!=='finished'){oppLeft=true;paint();M('Mất kết nối với máy chủ. Bạn vẫn húp tiếp được.','Lost connection to the server. You can still finish your bowl.');
           $('duel').classList.add('alert');toast(tx('Mất kết nối máy chủ','Lost connection to the server'),tx('Bạn vẫn húp tiếp được.','You can still finish your bowl.'));}
       };
+    }
+    function inviteUrl(){return invite?location.href.split('#')[0]+'#phong='+invite.code:'';}
+    /* the phone's share sheet, else the clipboard, else the link selected in its box */
+    function send(){
+      var u=inviteUrl();if(!u)return;
+      var text=tx('Vào đua húp '+DISHES[invite.dish].n+' trực tiếp với mình không? Mở link:','Race me live at slurping '+DISHES[invite.dish].n+'! Open the link:');
+      function manual(){var i=$('dlink');i.focus();i.select();}
+      function copied(){toast(tx('Đã chép link thách đấu','Challenge link copied'),tx(' Dán vào tin nhắn gửi bạn bè. Giữ trang này mở để chờ bạn vào.',' Paste it into a chat with your friend. Keep this page open while you wait.'));}
+      function clip(){if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text+' '+u).then(copied,manual);else manual();}
+      if(navigator.share){navigator.share({title:'Húp Phở',text:text,url:u}).catch(function(e){if(!e||e.name!=='AbortError')clip();});return;}
+      clip();
+    }
+    /* send, then give up if the server never answers (an older server ignores messages it doesn't know) */
+    function ask(msg){
+      out(msg);clearTimeout(connTimer);
+      connTimer=setTimeout(function(){if(state!=='connecting')return;state='off';kind='';invite=null;lock(false);paint();paintStart();
+        M('Máy chủ đấu không trả lời. Nếu vừa cập nhật game, hãy khởi động lại máy chủ (node server.js) rồi thử lại.','The 1v1 server did not answer. If the game was just updated, restart the server (node server.js) and try again.');},5000);
     }
     function fail(){clearTimeout(connTimer);state='off';kind='';paint();lock(false);
       M('Không kết nối được máy chủ đấu. Chơi một mình vẫn được.','Could not reach the 1v1 server. Solo play still works.');}
@@ -1666,7 +1698,18 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     function on(m){
       switch(m.type){
         case 'searching':state='searching';paint();M('Đang tìm đối thủ… Chưa ai thì sau vài giây sẽ đua với lượt ghi của người chơi trước.','Finding an opponent… If nobody turns up, in a few seconds you race an earlier player’s recorded run.');break;
-        case 'match':setup('live',m.dish,m.seed,m.opp&&m.opp.name);break;
+        case 'match':invite=null;setup('live',m.dish,m.seed,m.opp&&m.opp.name);
+          if(m.friend)M((m.opp&&m.opp.name||'?')+' đã vào phòng! Cùng món '+DISHES[m.dish].n+', cùng ớt. Bấm "Bắt đầu húp" khi sẵn sàng.',(m.opp&&m.opp.name||'?')+' is in the room! Same dish, '+DISHES[m.dish].n+', same chilies. Press "Start slurping" when ready.');
+          break;
+        case 'hosted':
+          state='hosting';kind='';invite={code:m.code,dish:m.dish};lock(true);
+          if(m.dish!==cur)pick(m.dish,false);
+          paint();paintStart();M('Phòng đã mở. Gửi link cho bạn bè: khi bạn ấy mở link, hai người đua trực tiếp món '+DISHES[m.dish].n+'.','The room is open. Send the link to a friend: when they open it, you race '+DISHES[m.dish].n+' live.');
+          break;
+        case 'nojoin':
+          state='off';kind='';invite=null;lock(false);paint();paintStart();
+          M('Phòng này không còn nữa. Có thể bạn bè đã đóng phòng hoặc link đã cũ. Bấm "Thách bạn" để tự mở phòng.','This room is gone. Your friend may have closed it, or the link is old. Press "Challenge a friend" to open your own.');
+          break;
         case 'ghost':run=m.run;setup('ghost',m.dish,m.seed,run.name);break;
         case 'bot':run=null;setup('bot',m.dish,m.seed,'');break;
         case 'oppready':oppReady=true;paint();break;
@@ -1805,7 +1848,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     function paint(){
       $('dmyname').textContent=nick();
       $('dreroll').disabled=!(state==='off'||state==='searching');
-      $('duelbtn').disabled=state!=='off';
+      $('duelbtn').disabled=state!=='off';$('invitebtn').disabled=state!=='off';
+      var iv=$('dinvite');iv.hidden=state!=='hosting'||!invite;if(!iv.hidden)$('dlink').value=inviteUrl();
       if(dm[0])$('dmsg').textContent=tx(dm[0],dm[1]);
       paintOpp();paintRes();
     }
@@ -1813,13 +1857,14 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       out({type:'cancel'});
       if(ws){var s=ws;ws=null;try{s.close();}catch(e){}}
       clearTimeout(cdTimer);clearTimeout(connTimer);$('count').hidden=true;
-      var was=state;state='off';kind='';opp=null;res=null;run=null;dm=['',''];$('dmsg').textContent='';
+      var was=state;state='off';kind='';opp=null;res=null;run=null;invite=null;dm=['',''];$('dmsg').textContent='';
       $('duel').classList.remove('alert');$('toast').hidden=true;
       seedRnd(null);lock(false);$('duel').hidden=true;paint();
-      if(was!=='off'&&was!=='connecting'&&was!=='searching')reset();else paintStart();
+      if(was!=='off'&&was!=='connecting'&&was!=='searching'&&was!=='hosting')reset();else paintStart();
     }
     function label(){
       if(state==='connecting'||state==='searching')return tx('Đang tìm đối thủ…','Finding opponent…');
+      if(state==='hosting')return tx('Chờ bạn bè vào phòng…','Waiting for your friend…');
       if(state==='waiting')return tx('Chờ đối thủ…','Waiting…');
       if(state==='countdown')return tx('Sắp bắt đầu…','Get ready…');
       if(state==='finished')return tx('Xem kết quả','See result');
@@ -1827,6 +1872,9 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       return '';
     }
     $('duelbtn').addEventListener('click',find);
+    $('invitebtn').addEventListener('click',host);
+    $('dsend').addEventListener('click',send);
+    $('dlink').addEventListener('focus',function(){this.select();});
     $('dleave').addEventListener('click',leave);
     $('dnew').addEventListener('click',find);
     $('dreroll').addEventListener('click',function(){store.nick=newNick();save();paint();if(state==='searching')out({type:'find',name:nick()});});
@@ -1834,7 +1882,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     return {
       hold:hold,frame:frame,event:event,finish:finish,paint:paint,label:label,paintRes:paintRes,
       /* after a race the main button reopens the result card instead of starting a bowl */
-      blocks:function(){if(state==='finished'){$('result').hidden=false;return true;}return state==='connecting'||state==='searching'||state==='left';}
+      join:join,
+      blocks:function(){if(state==='finished'){$('result').hidden=false;return true;}return state==='connecting'||state==='searching'||state==='hosting'||state==='left';}
     };
   })();
 
@@ -2324,10 +2373,18 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   }
   [].forEach.call(document.querySelectorAll('.lang button'),function(b){b.addEventListener('click',function(){applyLang(b.getAttribute('data-lang'));});});
   $('langbtn').addEventListener('click',function(){applyLang(lang==='en'?'vi':'en');});
+  /* a Thách đấu link (#phong=ABC123) drops you into your friend's room; the code is cleared so a reload doesn't rejoin */
+  function joinFromLink(){
+    var m=/(?:^#|&)phong=([A-Za-z0-9]{6})(?:&|$)/.exec(location.hash||'');if(!m)return;
+    try{history.replaceState(null,'',location.href.split('#')[0]);}catch(e){}
+    Duel.join(m[1].toUpperCase());
+  }
+  window.addEventListener('hashchange',function(){if(!bookOpen)joinFromLink();});
   function start(data){
     paintStatic();
     buildBoard();
     if(typeof data.cur==='number'&&data.cur>=0&&data.cur<DISHES.length)pick(data.cur,!!data.daily);else pick(dailyIdx,true);
+    joinFromLink();
     requestAnimationFrame(tick);
   }
   var hot=window.claude&&window.claude.hot;

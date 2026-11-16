@@ -113,10 +113,10 @@ Expect a spike of a week or two, as with any joke game. The aim is a daily reaso
 - **Tô hôm nay:** one dish per day, rotating through all 31. Only the first attempt counts, and it tracks a day streak.
 - **Personal bests:** one per dish, shown on the menu cards.
 - **Result card:** slides up when the bowl is clean, with a stamped verdict ("SẠCH TÔ!", or "THẮNG!", "THUA!" or "HÒA!" in a 1v1), the time and title, and confetti and a chime on a win. "Đóng" closes it; after a race the main button reopens it. The old copy-result button was removed.
+- **Thách đấu (live, with a friend):** see "Thách đấu: race a friend live" below.
 
 **Planned, needs a backend**
 
-- **Thách đấu links:** a link carrying your time, so a friend races it.
 - **Group boards:** a private leaderboard for a class, office or friend group.
 - **Hà Nội vs Sài Gòn:** a city scoreboard that resets every Monday.
 - **New and seasonal dishes:** one every week or two, plus Tết and rainy-season specials.
@@ -135,6 +135,15 @@ Built as live matchmaking through a small Node.js server in `server/`, which you
 4. A row above your bowl shows the opponent's bowl draining live, about 10 updates a second, with their big moments ("Sặc!", "Hết hơi!").
 5. When you finish, the result card slides up. If your opponent is still eating it shows "XONG! CHỜ…" with their clock ticking. Then the verdict stamps in ("THẮNG!", "THUA!" or "HÒA!") above a you-vs-them score with the winner highlighted. Buttons: "Đấu lại", "Tìm đối thủ mới" and "Đóng".
 6. If your opponent leaves, a red banner drops in at the top with a warning beep, their row greys out with an "ĐÃ RỜI" tag, and the result card says you won because they left.
+
+**Thách đấu: race a friend live**
+
+1. Pick a dish, then tap "Thách bạn" under the HÚP button. The server opens a private room for that dish and gives it a 6-letter code (no 0/O or 1/I/L, so it is easy to read out).
+2. The duel box shows "Phòng đã mở…", the link (`…/#phong=BNN3YD`) and a red "Gửi link" button. On a phone it opens the share sheet (Zalo, Messenger…); otherwise it copies the link, or selects it to copy by hand. The round button reads "Chờ bạn bè vào phòng…" and the dish is locked while you wait.
+3. Your friend opens the link. The game joins that room straight away, with no searching and no ghost or bot fallback. Both screens show "<name> đã vào phòng! Cùng món …", and from there it is a normal live race: both press "Bắt đầu húp", 3-2-1, live bowls, verdict. "Đấu lại" keeps the same dish.
+4. A link works once. If the room was used, closed with "Rời trận", lost its connection, or is older than 30 minutes, the friend sees "Phòng này không còn nữa…" and can open their own room. The code is cleared from the address bar once read, so a reload doesn't rejoin.
+
+Needs the server, like the rest of 1v1. The page and the link must come from the same host (or set `DUEL_SERVER`).
 
 **When nobody is online:** after 6 seconds alone you race a recorded run of an earlier real player on the same dish and seed, labelled "Lượt ghi". If that dish has no recordings yet, you race a labelled bot ("Máy") at 1.6 times the dish's par time. Every finished race is saved as a future recording; the server keeps the last 20 per dish.
 
