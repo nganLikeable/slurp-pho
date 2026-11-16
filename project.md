@@ -34,7 +34,7 @@ Every dish shares these mechanics, and each adds one rule of its own.
 **Controls:** press "Bắt đầu húp". If the mic is off it asks for permission, measures the room's background noise for one second, then the run starts and the clock runs; only real slurps into the mic drain the bowl. "Tắt mic" pauses the run. There is no hold-to-slurp button or keyboard slurp any more, so the game needs a working mic. Tap the bowl (or press X) to pick out bones and shells. Steam rises from the bowl while you eat.
 
 **Three sounds, no silence, no way around them:** the round button always shows the sound the bowl wants. No hazard is answered by going quiet, and nothing clears on its own: a hot bowl waits for a blow, and spice, a stuck bone and Mom wait for a cough.
-- **HÚP** (yellow): slurp.
+- **HÚP** (yellow): slurp. In English the button says SLURP, BLOW and COUGH; neither language shows words from the other, apart from names (Húp Phở, dish names, player nicknames).
 - **PHÙ** (orange): blow. A hot bowl glows, steams hard and fills the inner ring with orange heat.
 - **KHỤ** (red): cough. It clears a swallowed chili (the inner ring turns into a red spice meter), a stuck bone, or Mom (cough to fake being sick).
 

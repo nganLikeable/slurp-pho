@@ -72,6 +72,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
 .hup.on{background:var(--sign);color:#fff;animation:throb .5s ease-in-out infinite alternate}
 @keyframes throb{to{transform:scale(1.04)}}
 .hword{font:400 28px/1 var(--display);letter-spacing:1px}
+html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 .hup .clock{display:none;font:400 26px/1 var(--display);font-variant-numeric:tabular-nums}
 .hup.run .hword{display:none}
 .hup.run .clock{display:block}
@@ -606,7 +607,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     D({id:'phobo',n:'Phở bò',r:'B',rule:'Luật cơ bản. Tô để làm quen.',tops:['beef','beef','herb']}),
     D({id:'phoga',n:'Phở gà',r:'B',rule:'Quẩy nổi liên tục. Húp trúng càng nhiều càng nhanh.',pal:'clear',tops:['pork','herb','chive'],mix:{chili:.25,treat:.6,long:.15},evRate:1.4}),
     D({id:'buncha',n:'Bún chả',r:'B',rule:'Chấm từng gắp: mỗi hơi tối đa 1 giây, nhả ra rồi gắp tiếp.',nd:'#FFFFFF',w:4,tops:['pork','roll','herb'],base:.2,bonus:0,maxSlurp:1,mix:{chili:.6,treat:.4}}),
-    D({id:'bunrieu',n:'Bún riêu',r:'B',rule:'Phải húp đủ 3 miếng topping mới được sạch tô.',pal:'tomato',nd:'#FFFFFF',w:4,tops:['tomato','tofu','crab','herb'],needTreats:3,treatName:'Topping',mix:{treat:.6,chili:.3,long:.1},evRate:1.5}),
+    D({id:'bunrieu',n:'Bún riêu',r:'B',rule:'Phải húp đủ 3 miếng đồ ăn kèm mới được sạch tô.',pal:'tomato',nd:'#FFFFFF',w:4,tops:['tomato','tofu','crab','herb'],needTreats:3,treatName:'Đồ ăn kèm',mix:{treat:.6,chili:.3,long:.1},evRate:1.5}),
     D({id:'bundau',ves:'plate',n:'Bún đậu mắm tôm',r:'B',rule:'Mắm tôm nồng: hồi hơi chậm gấp đôi.',pal:'salad',nd:'#FFFFFF',w:6,tops:['tofu','pork','tofu','herb'],regen:2.4}),
     D({id:'bunthang',n:'Bún thang',r:'B',rule:'Toàn sợi dài. Gần như hơi nào cũng phải trọn.',pal:'clear',nd:'#FFFFFF',w:3,len:36,tops:['egg','cha','chive'],mix:{long:.7,chili:.2,treat:.1},longMax:5,longLen:1.2,evRate:1.5}),
     D({id:'bunoc',n:'Bún ốc',r:'B',rule:'Vỏ ốc lẫn trong tô: chạm vào tô để gắp ra, húp phải là hóc, ho ra mới ăn tiếp được.',pal:'tomato',nd:'#FFFFFF',w:4,tops:['snail','tomato','snail','herb'],mix:{bone:.7,treat:.3},boneName:'vỏ ốc',boneArt:'shell',evRate:1.3}),
@@ -680,7 +681,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     laumi:'Eat straight from the boiling pot. Friends add noodles three times, and each time you blow again.',
     thapcam:'Final boss: heat, chili, lime, bones, long noodles and Mom.'
   };
-  var WORD_EN={'Quẩy':'Dough stick','Topping':'Topping','Hến':'Clam','xương':'bone','vỏ ốc':'snail shell','xương cá':'fish bone',
+  var WORD_EN={'Quẩy':'Dough stick','Đồ ăn kèm':'Topping','Hến':'Clam','xương':'bone','vỏ ốc':'snail shell','xương cá':'fish bone',
     'Cô chủ chan thêm nước!':'The owner tops up your broth!','Bạn gắp thêm mì vào nồi!':'A friend adds more noodles!'};
   var REG_EN={B:'North',T:'Central',N:'South',V:'Instant and new'};
   function RULE(q){return tx(q.rule,RULE_EN[q.id]||q.rule);}
@@ -1081,8 +1082,8 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
   var HOW=[
     ['<rect x="-8" y="-12" width="40" height="22" rx="6" fill="#F9BE1A" stroke="#10312A" stroke-width="2"/>','Bấm "Bắt đầu húp", cho phép mic, rồi húp thật vào điện thoại.','Press "Start slurping", allow the mic, then slurp into your phone for real.'],
     ['<rect x="-8" y="-6" width="40" height="10" rx="5" fill="none" stroke="#10312A" stroke-width="2"/><rect x="-8" y="-6" width="12" height="10" rx="5" fill="#D7262B"/>','Húp lâu là cạn hơi. Nhả ra để thở, hết hơi là nghỉ 2 giây.','Long slurps use up your air. Pause to breathe; run out and you rest for 2 seconds.'],
-    ['<path d="M2 -2 q-6 -8 0 -14 M12 -2 q-6 -8 0 -14 M22 -2 q-6 -8 0 -14" stroke="#F06A1E" stroke-width="3.5" fill="none" stroke-linecap="round"/><rect x="-8" y="1" width="40" height="13" rx="6.5" fill="#F0884A" stroke="#10312A" stroke-width="2"/><text x="12" y="11.5" text-anchor="middle" font-family="Bungee,Arial Black,sans-serif" font-size="9" fill="#3A1405">PHÙ</text>','Tô bốc khói đỏ rực là còn nóng: thổi phù phù vào điện thoại cho nguội. Húp lúc nóng là bỏng lưỡi.','A red, steaming bowl is still hot: blow into your phone to cool it. Slurp it hot and you burn your tongue.'],
-    [ART.chili+'<rect x="-8" y="3" width="40" height="13" rx="6.5" fill="#D7262B" stroke="#10312A" stroke-width="2"/><text x="12" y="13.5" text-anchor="middle" font-family="Bungee,Arial Black,sans-serif" font-size="9" fill="#FFFFFF">KHỤ</text>','Húp phải ớt là cay: không ho khụ khụ vào điện thoại thì không hết cay.','Slurp a chili and it burns: it won’t clear until you cough into your phone.'],
+    ['<path d="M2 -2 q-6 -8 0 -14 M12 -2 q-6 -8 0 -14 M22 -2 q-6 -8 0 -14" stroke="#F06A1E" stroke-width="3.5" fill="none" stroke-linecap="round"/><rect x="-8" y="1" width="40" height="13" rx="6.5" fill="#F0884A" stroke="#10312A" stroke-width="2"/><text x="12" y="11.5" text-anchor="middle" font-family="Bungee,Arial Black,sans-serif" font-size="9" fill="#3A1405">{BLOW}</text>','Tô bốc khói đỏ rực là còn nóng: thổi phù phù vào điện thoại cho nguội. Húp lúc nóng là bỏng lưỡi.','A red, steaming bowl is still hot: blow into your phone to cool it. Slurp it hot and you burn your tongue.'],
+    [ART.chili+'<rect x="-8" y="3" width="40" height="13" rx="6.5" fill="#D7262B" stroke="#10312A" stroke-width="2"/><text x="12" y="13.5" text-anchor="middle" font-family="Bungee,Arial Black,sans-serif" font-size="9" fill="#FFFFFF">{COUGH}</text>','Húp phải ớt là cay: không ho khụ khụ vào điện thoại thì không hết cay.','Slurp a chili and it burns: it won’t clear until you cough into your phone.'],
     [ART.treat,'Quẩy nổi lên: húp ngay, tô vơi thêm một miếng.','A dough stick floats up: slurp it now for an extra bite.'],
     ['<path d="M-6 -4 q8 -14 16 0 t16 0" stroke="#10312A" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M-6 -4 q8 -14 16 0 t16 0" stroke="#FAEEDA" stroke-width="4" fill="none" stroke-linecap="round"/>','Sợi dài: lấy hơi, rồi húp một hơi không ngắt.','Long noodle: take a breath, then slurp it in one go.'],
     [ART.bone,'Xương, vỏ ốc: chạm vào tô (hoặc bấm X) để gắp ra. Lỡ húp phải thì ho ra.','Bones and shells: tap the bowl (or press X) to pick them out. Slurp one and cough it up.']
@@ -1120,7 +1121,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
       half=Math.ceil(ids.length/2);
       body=(L?ids.slice(0,half):ids.slice(half)).map(cardHtml).join('');
     }else{
-      body=HOW.slice(L?0:4,L?4:7).map(function(h){return '<div class="how"><svg viewBox="-12 -22 50 38" aria-hidden="true">'+h[0]+'</svg><span>'+tx(h[1],h[2])+'</span></div>';}).join('');
+      body=HOW.slice(L?0:4,L?4:7).map(function(h){return '<div class="how"><svg viewBox="-12 -22 50 38" aria-hidden="true">'+h[0].replace('{BLOW}',tx('PHÙ','BLOW')).replace('{COUGH}',tx('KHỤ','COUGH')).replace(/font-size="9"/,lang==='en'?'font-size="7.5"':'font-size="9"')+'</svg><span>'+tx(h[1],h[2])+'</span></div>';}).join('');
     }
     var tl=SPT(sp.title),rg=/^(MIỀN|THE) (.+)$/.exec(tl),ttl=rg?'<small>'+rg[1]+'</small><span class="big">'+rg[2]+'</span>':tl;
     var band=L?'<div class="tt"><h2 class="ttl'+(rg?' rg':'')+'">'+ttl+'</h2>'+(sp.sub?'<span class="psub">'+SPT(sp.sub)+'</span>':'')+'</div>'+(sp.edge?inn(A[sp.edge](),'edge',1):inn(A[sp.small](),'small',1))
@@ -1329,7 +1330,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
       $('duel').hidden=false;opp=null;res=null;paint();
       var u=url();
       if(!u||!window.WebSocket){state='off';paint();
-        M('1v1 cần máy chủ Húp Phở. Mở game từ máy chủ đó (xem project.md); chơi một mình thì vẫn được.','1v1 needs the Húp Phở server. Open the game from that server (see project.md); solo play still works.');return;}
+        M('Chế độ đấu cần máy chủ Húp Phở. Mở game từ máy chủ đó (xem project.md); chơi một mình thì vẫn được.','1v1 needs the Húp Phở server. Open the game from that server (see project.md); solo play still works.');return;}
       state='connecting';kind='';paint();M('Đang kết nối…','Connecting…');
       if(ws&&ws.readyState===1){out({type:'find',name:nick()});return;}
       try{ws=new WebSocket(u);}catch(e){fail();return;}
@@ -1345,7 +1346,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
       };
     }
     function fail(){clearTimeout(connTimer);state='off';kind='';paint();lock(false);
-      M('Không kết nối được máy chủ 1v1. Chơi một mình vẫn được.','Could not reach the 1v1 server. Solo play still works.');}
+      M('Không kết nối được máy chủ đấu. Chơi một mình vẫn được.','Could not reach the 1v1 server. Solo play still works.');}
 
     function on(m){
       switch(m.type){
@@ -1633,6 +1634,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     slurpBtn.classList.toggle('run',started||done||elapsed>0);
     bowl.classList.toggle('eating',started&&!done);
     if(mode&&started&&!done){modeKey='';paintMode();}
+    else slurpBtn.querySelector('.hword').textContent=tx('HÚP','SLURP');
   }
   /* the sound the bowl wants right now, as one word on the round button; the label under it says how */
   var modeKey='';
@@ -1643,7 +1645,7 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
     if(key===modeKey)return;
     var first=m&&m!==mode;modeKey=key;mode=m;
     slurpBtn.classList.toggle('say',!!m);slurpBtn.classList.toggle('m-blow',m==='blow');slurpBtn.classList.toggle('m-cough',m==='cough');
-    slurpBtn.querySelector('.hword').textContent=m==='blow'?'PHÙ':m==='cough'?'KHỤ':'HÚP';
+    slurpBtn.querySelector('.hword').textContent=m==='blow'?tx('PHÙ','BLOW'):m==='cough'?tx('KHỤ','COUGH'):tx('HÚP','SLURP');
     if(m==='blow')$('slabel').textContent=tx('Thổi cho nguội','Blow to cool it');
     else if(m==='cough')$('slabel').textContent=stuck&&stuck.need>1?tx('Ho '+left+' lần','Cough ×'+left):tx('Ho một cái','Cough once');
     else paintStart();
