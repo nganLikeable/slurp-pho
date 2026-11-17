@@ -98,6 +98,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 .quiet{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--soft);font:600 13px var(--body);padding:6px 4px;cursor:pointer}
 .quiet:hover{color:var(--ink)}
 .quiet.duelbtn{color:var(--sign)}
+.duelrow{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px}
+.duelrow[hidden]{display:none}
 .gauges{display:none}
 .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .lang{display:flex;flex:none;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;margin-top:4px}
@@ -466,6 +468,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     <span class="tright">
       <button class="pill ghost" id="tomenu" type="button" aria-haspopup="dialog" aria-label="Thực đơn 31 tô" data-en-label="Menu: 31 bowls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.3 9.2 4.3 12 6c2.8-1.7 5.5-1.7 8-.5V19c-2.5-1.2-5.2-1.2-8 .5-2.8-1.7-5.5-1.7-8-.5zM12 6v13.5"/></svg><span data-en="31 bowls">31 tô</span></button>
       <button class="round" id="sndbtn" type="button" aria-label="Tiếng"></button>
+      <button class="round" id="themebtn" type="button" aria-label="Giao diện"></button>
       <button class="round" id="langbtn" type="button" aria-label="Switch to English">VI</button>
     </span>
   </nav>
@@ -478,6 +481,12 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     </div>
     <p class="rule"><span class="ricon" id="ricon" aria-hidden="true"></span><span id="rule"></span></p>
     <p class="sub"><span id="best">Chưa có kỷ lục</span><span id="hud"></span></p>
+  </div>
+
+  <!-- play with someone: up top so it's seen at a glance; hidden while the duel box is in use -->
+  <div class="duelrow" id="duelrow">
+    <button class="quiet duelbtn" id="duelbtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M13 13l-2.5 2.5M13 13l2.5-2.5M20 4l-9 9M11 13l2.5 2.5M11 13l-2.5-2.5M6 18l-2 2M18 18l2 2"/></svg><span data-en="Find opponent">Tìm đối thủ</span></button>
+    <button class="quiet duelbtn" id="invitebtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span data-en="Challenge a friend">Thách bạn</span></button>
   </div>
 
   <section class="duel" id="duel" hidden aria-live="polite">
@@ -537,8 +546,6 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   </div>
 
   <div class="links">
-    <button class="quiet duelbtn" id="duelbtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M13 13l-2.5 2.5M13 13l2.5-2.5M20 4l-9 9M11 13l2.5 2.5M11 13l-2.5-2.5M6 18l-2 2M18 18l2 2"/></svg><span data-en="Find opponent">Tìm đối thủ</span></button>
-    <button class="quiet duelbtn" id="invitebtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span data-en="Challenge a friend">Thách bạn</span></button>
     <button class="quiet" id="again" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg><span data-en="New bowl">Múc tô mới</span></button>
     <button class="quiet" id="micbtn" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V7a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v3M4 4l16 16"/></svg><span data-en="Mic off">Tắt mic</span></button>
   </div>
@@ -1848,7 +1855,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     function paint(){
       $('dmyname').textContent=nick();
       $('dreroll').disabled=!(state==='off'||state==='searching');
-      $('duelbtn').disabled=state!=='off';$('invitebtn').disabled=state!=='off';
+      $('duelbtn').disabled=state!=='off';$('invitebtn').disabled=state!=='off';$('duelrow').hidden=state!=='off';
       var iv=$('dinvite');iv.hidden=state!=='hosting'||!invite;if(!iv.hidden)$('dlink').value=inviteUrl();
       if(dm[0])$('dmsg').textContent=tx(dm[0],dm[1]);
       paintOpp();paintRes();
@@ -1940,7 +1947,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     var el=$('best');
     if(isDaily){
       var t=store.daily[dayNum];
-      el.textContent=t?(tx('Hôm nay: ','Today: ')+fmt(t)+' s · '+tx('chuỗi '+(store.streak||1)+' ngày',(store.streak||1)+'-day streak')):tx('Lượt đầu mới được tính','Only your first try counts');
+      el.textContent=t?(tx('Hôm nay: ','Today: ')+fmt(t)+' s · '+tx('chuỗi '+(store.streak||1)+' ngày',(store.streak||1)+'-day streak')):'';
     }else{
       var b=store.best[d.id];el.textContent=b?(tx('Kỷ lục: ','Best: ')+fmt(b)+' s'):tx('Chưa có kỷ lục','No record yet');
     }
@@ -2239,6 +2246,18 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   });
   $('sndbtn').addEventListener('click',function(){muted=!muted;store.mute=muted;save();paintSound();audio();});
   paintSound();
+  /* light / dark: follows the phone until you tap; then your pick is kept (store.theme) */
+  var sysDark=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):{matches:false};
+  function isDark(){return store.theme?store.theme==='dark':sysDark.matches;}
+  function paintTheme(){
+    if(store.theme)document.documentElement.setAttribute('data-theme',store.theme);else document.documentElement.removeAttribute('data-theme');
+    var dk=isDark(),b=$('themebtn');
+    b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(dk?'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>':'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>')+'</svg>';
+    b.setAttribute('aria-label',dk?tx('Giao diện tối. Bấm để chuyển sang sáng','Dark mode. Tap for light'):tx('Giao diện sáng. Bấm để chuyển sang tối','Light mode. Tap for dark'));
+  }
+  $('themebtn').addEventListener('click',function(){store.theme=isDark()?'light':'dark';save();paintTheme();});
+  if(sysDark.addEventListener)sysDark.addEventListener('change',function(){if(!store.theme)paintTheme();});
+  paintTheme();
   function grab(){if(ev&&ev.type==='bone'&&!done){clearEv();flash(tx('Gắp '+W(d.boneName)+' ra rồi. Húp tiếp.','Picked out the '+W(d.boneName)+'. Keep slurping.'));}}
   svg.addEventListener('pointerdown',grab);
   window.addEventListener('keydown',function(e){if(!bookOpen&&(e.key==='x'||e.key==='X'))grab();});
@@ -2363,7 +2382,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   /* switching language redraws every visible word in place; a bowl in progress keeps going */
   function applyLang(l){
     lang=l==='en'?'en':'vi';store.lang=lang;save();
-    paintStatic();paintSound();paintStart();paintDish();showBest();hud();
+    paintStatic();paintSound();paintTheme();paintStart();paintDish();showBest();hud();
     var ct=document.querySelector('#vessel text');if(ct)ct.textContent=tx('SẠCH!','CLEAN!');
     if(!result.hidden)paintResult();
     if(done)say(tx('Sạch tô!','Bowl cleaned!'));else if(!started)say(elapsed>0?pausedText():idleText());
