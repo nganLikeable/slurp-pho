@@ -26,7 +26,7 @@ Every dish shares these mechanics, and each adds one rule of its own.
 | --- | --- | --- |
 | Breath (Hơi) | Drains in about 3.2 seconds of slurping, refills in about 1.2 seconds of rest | Run it dry and you gasp for 2 seconds |
 | Chili (Ớt) | Floats until you slurp it; there is no dodging it | Spicy (cay): the bowl stops draining until you cough twice (three times on the hottest dishes). It never clears on its own |
-| Heat (Nóng) | Hot dishes arrive hot, and some reheat when the vendor adds broth | Nothing drains until you blow for about 1.5 seconds. Only blowing cools it; a clear slurp while it is hot burns your tongue (1.5 seconds frozen) |
+| Heat (Nóng) | Hot dishes arrive hot, and some reheat when the vendor adds broth | Nothing drains until you blow for 4 seconds in total (about 2.8 after a reheat). The button counts the cooling up ("Thổi cho nguội · 40%"). Stop blowing and it slowly heats back up (fully over 12 s), so it takes a real, steady blow. Only blowing cools it; a clear slurp while it is hot burns your tongue (1.5 seconds frozen) |
 | Bone or shell | Floats until you tap the bowl to pick it out | Slurp it and it sticks until you cough once |
 | Quẩy | Floats for about 1.3 seconds | Slurp while it floats and the bowl drops 7% |
 | Long noodle (Sợi dài) | Up to twice per bowl; release, then slurp unbroken for 1.6 seconds | Finish it for an 8% bonus; break it and 12% falls back in |
@@ -42,11 +42,12 @@ The first time each of PHÙ and KHỤ appears, a banner explains it once.
 
 **Screen layout** (one centred column):
 - the big red sign;
-- a row with "Tô hôm nay" on the left and the menu ("31 tô"), sound and language (VI/EN) buttons on the right;
-- the dish name between ‹ › arrows, with its rule in a chip that has a small icon;
+- a row with "Tô hôm nay" on the left and the menu ("31 tô"), sound, light/dark and language (VI/EN) buttons on the right;
+- the dish name between ‹ › arrows, with the record line under it. The dish's rule isn't shown here: it is on the menu cards and the dish slip, and the messages during a bowl teach it as it happens;
+- "Tìm đối thủ" and "Thách bạn" as red text links, hidden while a duel is on;
 - the bowl;
 - one round yellow "HÚP" button. During a run it shows the clock and turns red while you slurp. Its outer ring shows what is left in the bowl, and its thin inner ring shows your air, turning red when it runs low;
-- "Tìm đối thủ", "Múc tô mới" and, while the mic is on, "Tắt mic" as quiet links underneath.
+- "Múc tô mới" and, while the mic is on, "Tắt mic" as quiet links underneath.
 
 **Titles:** Thánh Húp, Húp như bố, Tạm được, or Ăn như mèo, set by how close your time is to a simulated ideal run of that dish.
 
@@ -112,7 +113,10 @@ Expect a spike of a week or two, as with any joke game. The aim is a daily reaso
 
 - **Tô hôm nay:** one dish per day, rotating through all 31. Only the first attempt counts, and it tracks a day streak.
 - **Personal bests:** one per dish, shown on the menu cards.
-- **Result card:** slides up when the bowl is clean, with a stamped verdict ("SẠCH TÔ!", or "THẮNG!", "THUA!" or "HÒA!" in a 1v1), the time and title, and confetti and a chime on a win. "Đóng" closes it; after a race the main button reopens it. The old copy-result button was removed.
+- **Result card:** slides up when the bowl is clean.
+  - **Photo:** the real dish photo is the header, and the verdict ("SẠCH TÔ!", or "THẮNG!", "THUA!" or "HÒA!" in a 1v1) stamps onto its corner. If the photo is missing, the card shows the stamp on its own.
+  - **Dish information,** the same as the menu slip, from one shared helper: region, description, ingredients, rule with your record, and the "Có biết?" fact, shown open.
+  - **Also:** the time and title, and confetti and a chime on a win. "Đóng" closes it; after a race the main button reopens it. The old copy-result button was removed.
 - **Thách đấu (live, with a friend):** see "Thách đấu: race a friend live" below.
 
 **Planned, needs a backend**
@@ -170,8 +174,9 @@ The game itself is one `index.html` file with no libraries. Only 1v1 uses a back
 - **Drawing:** inline SVG, generated from each dish's data (broth palette, noodle style, toppings, vessel).
 - **Dishes:** a data table of 31 entries. A new dish is one line: colours, toppings, speeds and rule flags.
 - **Sound detection:** two bands (250 Hz–1 kHz and 2–8 kHz), each compared with a noise floor measured for one second before play. No speech recognition, so accent does not matter.
-  - **Slurp:** loud, noisy hiss above 2 kHz, lasting at least 8 frames (about 0.13 s).
-  - **Blow:** loud, noisy wind strongest below 1 kHz, lasting at least 8 frames.
+  - **Slurp:** loud, noisy hiss above 2 kHz, lasting at least 8 frames (about 0.13 s). The low band must stay less than 6 dB above the high band.
+  - **Blow:** loud, noisy wind strongest below 1 kHz (6 dB or more over the high band), lasting at least 8 frames.
+  - **Slurp and blow never overlap:** any windy frame also locks slurps out for 0.4 s, so a blow's hissy start and tail can't eat the bowl.
   - **Cough:** a burst that jumps 12 dB or more, lasts 120–480 ms and is mostly noisy, not hiss-dominated. Bursts that start just after one of the game's beeps are ignored, and for 0.3 s after a cough nothing counts as a slurp.
   - **Rejected in synthetic tests:** claps, knocks, beeps, whistles, a held voice and a short "ơi".
   - **Known leaks:** a short sip can pass as a cough. A blow needs the low band at least 6 dB above the high band; a sound that is only loosely low-heavy neither cools a hot bowl nor burns you. If a phone can't produce a clear blow, hot dishes can't be finished, so tune with `?debug` first.

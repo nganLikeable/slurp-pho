@@ -12,7 +12,7 @@
   /* layout: one phone-width column; a hand-painted street sign on a mint stall wall, bowl on a steel table; the 31-dish menu is a flip-through menu book in an overlay */
   --wall:#E1F0E6; --card:#F6FBF7; --ink:#10312A; --soft:#4B6B62;
   --sign:#D7262B; --gold:#F9BE1A; --steel:#C5D2CC; --line:#10312A22;
-  --paper:#FFF8E6; --paper-ink:#10312A; --paper-soft:#4B6B62; --ricon:#D7262B;
+  --paper:#FFF8E6; --paper-ink:#10312A; --paper-soft:#4B6B62;
   --display:"Bungee","Arial Black",sans-serif;
   --body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
@@ -20,13 +20,13 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --wall:#0D201C; --card:#142B26; --ink:#E4F1EA; --soft:#9DB8AF;
-    --sign:#E9383D; --gold:#F9BE1A; --steel:#1D3832; --line:#E4F1EA26; --ricon:#F9BE1A;
+    --sign:#E9383D; --gold:#F9BE1A; --steel:#1D3832; --line:#E4F1EA26;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --wall:#0D201C; --card:#142B26; --ink:#E4F1EA; --soft:#9DB8AF;
-  --sign:#E9383D; --gold:#F9BE1A; --steel:#1D3832; --line:#E4F1EA26; --ricon:#F9BE1A;
+  --sign:#E9383D; --gold:#F9BE1A; --steel:#1D3832; --line:#E4F1EA26;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -51,9 +51,6 @@ main{max-width:440px;margin:0 auto;padding:18px 16px 16px;display:flex;flex-dire
 .arrow{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:transparent;color:var(--soft);display:grid;place-items:center;padding:0;cursor:pointer}
 .arrow svg{width:22px;height:22px}
 .arrow:hover{color:var(--ink)}
-.rule{display:inline-flex;align-items:flex-start;gap:7px;margin:0;background:var(--steel);color:var(--ink);font-size:13px;line-height:1.35;padding:6px 13px;border-radius:16px;text-align:left;text-wrap:pretty;max-width:100%}
-.ricon{flex:none;display:inline-flex;margin-top:1px;color:var(--ricon)}
-.ricon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .dishhead .sub span+span:not(:empty)::before{content:" · "}
 .pill:focus-visible,.round:focus-visible,.arrow:focus-visible,.quiet:focus-visible,.hup:focus-visible{outline:3px solid var(--sign);outline-offset:2px}
 .pill:disabled,.round:disabled,.arrow:disabled,.quiet:disabled{opacity:.35;cursor:default}
@@ -98,7 +95,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 .quiet{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--soft);font:600 13px var(--body);padding:6px 4px;cursor:pointer}
 .quiet:hover{color:var(--ink)}
 .quiet.duelbtn{color:var(--sign)}
-.duelrow{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px}
+.duelrow{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px;margin-top:-12px}
+.duelrow .quiet{padding-top:2px}
 .duelrow[hidden]{display:none}
 .gauges{display:none}
 .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
@@ -200,7 +198,18 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 .opp.gone .otag{background:var(--sign);color:#FFFFFF;padding:1px 6px;border-radius:999px}
 .opp.gone .ostat{color:var(--sign);font-weight:600}
 .duel.alert{border-color:var(--sign);box-shadow:0 0 0 3px #D7262B33}
-@media (min-width:641px){.result{bottom:20px;padding:22px 22px 16px}}
+.rphoto{position:relative;align-self:stretch;margin:-18px -16px 2px;aspect-ratio:16/9;border-radius:16px 16px 0 0;overflow:hidden;background:var(--steel);flex:none}
+.rphoto img{width:100%;height:100%;object-fit:cover;display:block}
+.rphoto .rstamp{position:absolute;left:12px;bottom:12px;margin:0;font-size:clamp(26px,8vw,38px);box-shadow:0 4px 14px #0005}
+.rphoto.nophoto{aspect-ratio:auto;margin:0;background:none;overflow:visible;border-radius:0}
+.rphoto.nophoto .rstamp{position:static;margin:4px 0 6px;font-size:clamp(34px,11vw,52px);box-shadow:none}
+.rinfo{align-self:stretch;display:flex;flex-direction:column;gap:6px;text-align:left;border-top:1.5px dashed var(--line);padding-top:10px;margin-top:2px}
+.rinfo .sone,.rinfo .sfa{font-size:13px;line-height:1.45}
+.rinfo .sing li{background:var(--wall);color:var(--ink)}
+.rinfo .srule{color:var(--soft)}
+.rinfo .sfa{animation:none}
+.rinfo .sfa b{color:var(--sign)}
+@media (min-width:641px){.result{bottom:20px;padding:22px 22px 16px}.rphoto{margin:-22px -22px 2px}}
 @media (prefers-reduced-motion:reduce){.result,.rstamp.thump,.toast,.result .bit{animation:none}}
 .foot{font-size:12px;color:var(--soft);text-align:center;margin:4px 0 0}
 .linkbtn{font:inherit;color:var(--ink);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
@@ -479,7 +488,6 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       <h2 class="dish" id="dish" aria-live="polite">Phở bò</h2>
       <button class="arrow" id="next" type="button" aria-label="Tô sau" data-en-label="Next bowl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
-    <p class="rule"><span class="ricon" id="ricon" aria-hidden="true"></span><span id="rule"></span></p>
     <p class="sub"><span id="best">Chưa có kỷ lục</span><span id="hud"></span></p>
   </div>
 
@@ -558,7 +566,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
 
   <!-- the result slides up over the bottom of the screen: a stamped verdict, the race score, then what to do next -->
   <section class="result" id="result" hidden role="dialog" aria-labelledby="rbig" aria-live="polite">
-    <div class="rstamp" id="rstamp"><span id="rbig">SẠCH TÔ!</span></div>
+    <!-- the real dish as the reward; the stamp lands on the photo -->
+    <div class="rphoto nophoto" id="rphoto"><div class="rstamp" id="rstamp"><span id="rbig">SẠCH TÔ!</span></div></div>
     <p class="rwarn" id="rwarn" hidden><span class="wicon" aria-hidden="true">!</span><span id="rwarntext"></span></p>
     <div class="vs" id="vs" hidden>
       <div class="side" id="vsme"><span class="vsn" id="vsmen"></span><b class="vst" id="vsmet"></b></div>
@@ -567,6 +576,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     </div>
     <h2 id="rtitle">Thánh Húp</h2>
     <p id="rtext"></p>
+    <!-- what you just ate: region, description, ingredients, rule and the "Có biết?" fact, as on the menu slip -->
+    <div class="rinfo" id="rinfo"></div>
     <div class="controls">
       <button class="btn main" id="rnext" type="button" data-en="Next bowl ›">Tô tiếp theo ›</button>
       <button class="btn main" id="drematch" type="button" hidden>Đấu lại</button>
@@ -894,6 +905,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   var ev=null, longN=null, longCount=0, nextEv=0, blockUntil=0, blockKind='', blockText='';
   /* heat: 1 = just served, 0 = cool enough to slurp. stuck: chili or a bone that must be coughed out ({kind,need,got,until}) */
   var heat=0, reheatI=0, stuck=null, mode='', burnT=0;
+  /* blowing: 4 s of it cools a just-served bowl (a reheat to .7 needs about 2.8 s); without blowing, heat creeps back over 12 s */
+  var BLOW_S=4, REHEAT_S=12;
   var treats=0, pours=0, bowls=1, flashText='', flashHot=false, flashUntil=0;
 
   function fmt(s){return lang==='en'?s.toFixed(2):s.toFixed(2).replace('.',',');}
@@ -921,8 +934,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       if(l<=0){if(bw>1){bw--;l=(q.soup&&q.soup.start)||q.start;}else break;}
       t+=.02;
     }
-    /* blowing: 1.5 s from hot, about 1 s after each reheat */
-    return t+q.needTreats*1.2+(q.hot?1.5:0)+q.reheat.length*1.05+(q.pourHot?q.pour*1.05:0);
+    /* blowing: BLOW_S from hot, 70% of it after each reheat */
+    return t+q.needTreats*1.2+(q.hot?BLOW_S:0)+q.reheat.length*.7*BLOW_S+(q.pourHot?q.pour*.7*BLOW_S:0);
   }
   function title(s){var r=s/par(d);return r<1.3?tx('Thánh Húp','Slurp Saint'):r<1.9?tx('Húp như bố','Slurp Boss'):r<2.7?tx('Tạm được','Not Bad'):tx('Ăn như mèo','Eats Like a Cat');}
 
@@ -1363,7 +1376,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   };
   var PIN='<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 13 C3 8.5 2.4 6.6 2.4 5.2 a4.6 4.6 0 0 1 9.2 0 c0 1.4 -.6 3.3 -4.6 7.8z" fill="#D7262B"/><circle cx="7" cy="5.2" r="1.7" fill="#fff"/></svg>';
   /* the dish photo from dish-pics/, or the drawn bowl if the photo is missing */
-  function photo(q,big){return '<img src="dish-pics/'+INFO[q.id][0]+'.jpg" alt="" loading="lazy" decoding="async" data-id="'+q.id+'" data-big="'+(big?1:0)+'">';}
+  function src(q){return 'dish-pics/'+INFO[q.id][0]+'.jpg';}
+  function photo(q,big){return '<img src="'+src(q)+'" alt="" loading="lazy" decoding="async" data-id="'+q.id+'" data-big="'+(big?1:0)+'">';}
   function fixImgs(root){
     [].forEach.call(root.querySelectorAll('img[data-id]'),function(im){
       im.addEventListener('error',function(){
@@ -1495,8 +1509,19 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     ids=[];DISHES.forEach(function(x,j){if(x.r===q.r)ids.push(j);});
     return {s:s,side:ids.indexOf(i)<Math.ceil(ids.length/2)?'L':'R'};
   }
+  /* a dish's information lines, shared by the menu slip and the result card so the two never drift apart */
+  function bits(q){
+    var I=INFO[q.id],l=lang==='en'?1:0,b=store.best[q.id];
+    return {
+      where:'<p class="swhere">'+PIN+REGN(q.r)+'</p>',
+      one:'<p class="sone">'+(l?I[4]:I[3])+'</p>',
+      ing:'<ul class="sing">'+I[5].map(function(k){return '<li>'+k[l]+'</li>';}).join('')+'</ul>',
+      rule:'<p class="srule">'+PAD+'<span>'+RULE(q)+(b?' · '+tx('Kỷ lục ','Best ')+fmt(b)+' s':'')+'</span></p>',
+      fact:I[6+l]||''
+    };
+  }
   function slipHtml(i){
-    var q=DISHES[i],I=INFO[q.id],l=lang==='en'?1:0,f=I[6+l],b=store.best[q.id];
+    var q=DISHES[i],I=INFO[q.id],l=lang==='en'?1:0,f=I[6+l],B=bits(q);
     return '<span class="tape" aria-hidden="true"></span>'+
       '<div class="grab"><button type="button" data-a="close" aria-label="'+tx('Đóng','Close')+'"></button></div>'+
       '<button type="button" class="sx" data-a="close" aria-label="'+tx('Đóng','Close')+'">'+X+'</button>'+
@@ -1504,11 +1529,9 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
         '<div class="sph" style="--tint:var(--'+q.r+')">'+photo(q,true)+'<span class="bigstamp" hidden></span>'+
           '<button type="button" class="snav sp" data-a="prev" aria-label="'+tx('Món trước','Previous dish')+'">'+CHEV('M12 4 L6 10 L12 16')+'</button>'+
           '<button type="button" class="snav sn" data-a="next" aria-label="'+tx('Món sau','Next dish')+'">'+CHEV('M8 4 L14 10 L8 16')+'</button></div>'+
-        '<p class="swhere">'+PIN+REGN(q.r)+'</p>'+
+        B.where+
         '<h3 class="sname" id="slipname">'+q.n+'</h3>'+
-        '<p class="sone">'+(l?I[4]:I[3])+'</p>'+
-        '<ul class="sing">'+I[5].map(function(k){return '<li>'+k[l]+'</li>';}).join('')+'</ul>'+
-        '<p class="srule">'+PAD+'<span>'+RULE(q)+(b?' · '+tx('Kỷ lục ','Best ')+fmt(b)+' s':'')+'</span></p>'+
+        B.one+B.ing+B.rule+
         (f?'<p class="sfa" id="slipfact" hidden>'+f+'</p>':'')+
         '<div class="srow">'+(f?'<button type="button" class="sfq" data-a="fact" aria-expanded="false" aria-controls="slipfact">'+tx('Có biết?','Did you know?')+CHEV('M5 8 L10 13 L15 8')+'</button>':'<span></span>')+
           '<button type="button" class="sgo" data-a="go"><span class="w">'+tx('HÚP','SLURP')+'</span><span class="p">'+tx('HÚP TÔ NÀY','SLURP THIS BOWL')+'</span></button></div>'+
@@ -1629,7 +1652,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     bookOpen=false;$('menuwrap').hidden=true;document.body.style.overflow='';
     $('tomenu').focus({preventScroll:true});
   }
-  return {build:build,open:open,close:close,relang:relang,stamp:stampCard};
+  return {build:build,open:open,close:close,relang:relang,stamp:stampCard,photo:photo,src:src,bits:bits};
   })();
   function buildBoard(){Menu.build();DISHES.forEach(function(q){paintBest(q);});}
 
@@ -1902,6 +1925,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   function stage(q,n){if(n<2||!q.soup)return q;var o=Object.create(q),k;for(k in q.soup)o[k]=q.soup[k];o.dry=false;o.ves='bowl';return o;}
   function pick(i,daily){
     cur=i;isDaily=!!daily;d=DISHES[i];
+    try{new Image().src=Menu.src(d);}catch(e){}   /* ready for the result card */
     drawVessel(d);
     paintDish();
     $('dailybtn').setAttribute('aria-pressed',String(isDaily));
@@ -1923,25 +1947,7 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     $('ln1').setAttribute('stroke-width',d.w+6);$('ln2').setAttribute('stroke',d.nd);$('ln2').setAttribute('stroke-width',d.w+2);
     bar.style.background=p[1];
   }
-  function paintDish(){$('dish').textContent=d.n;$('rule').textContent=RULE(d);$('ricon').innerHTML='<svg viewBox="0 0 24 24">'+ruleIcon(d)+'</svg>';}
-  /* one small picture for the rule chip, from the rule's main twist */
-  function ruleIcon(q){
-    var m=q.mix||{};
-    if(q.hot)return '<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-3.5 2-5.5 1 1 1.5 2 1.5 3C12.5 8 12 5.5 12 3z"/>';
-    if(m.mom)return '<path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/>';
-    if((m.bone||0)>=.3)return '<path d="M8 8l8 8M6.5 4.5a2 2 0 0 0-2 3 2 2 0 0 0 3 2l1.5-1.5M17.5 19.5a2 2 0 0 0 2-3 2 2 0 0 0-3-2L15 16"/>';
-    if(m.lime)return '<circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16M6.5 6.5l11 11M17.5 6.5l-11 11"/>';
-    if(q.needTreats)return '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/>';
-    if(q.bowls>1)return '<path d="M3 11h8a4 4 0 0 1-8 0zM13 11h8a4 4 0 0 1-8 0zM5 18h14"/>';
-    if(q.oneBreath||q.maxSlurp||q.minSlurp)return '<circle cx="12" cy="13" r="7.5"/><path d="M12 13V9.5M10 3h4M12 3v2.5"/>';
-    if(q.bowls>1)return '<path d="M3 11h8a4 4 0 0 1-8 0zM13 11h8a4 4 0 0 1-8 0zM5 18h14"/>';
-    if(q.leak||q.swell||q.pour)return '<path d="M12 3.5S6.5 10 6.5 14a5.5 5.5 0 0 0 11 0C17.5 10 12 3.5 12 3.5z"/>';
-    if((m.long||0)>=.5)return '<path d="M3 8c3-3 5 3 8 0s5 3 8 0M3 13c3-3 5 3 8 0s5 3 8 0M3 18c3-3 5 3 8 0s5 3 8 0"/>';
-    if((m.chili||0)>=.5)return '<path d="M7 20c-1.5-1 0-3 2-5s5-6 7-8c1.5-1.5 3 0 2 1.5-2 3.5-4 7.5-6.5 10C9.5 20.5 8 21 7 20zM16 7c0-2 1-3 2.5-3.5"/>';
-    if(q.noEv)return '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>';
-    if(q.breath<3||q.regen>1.5)return '<path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h7"/>';
-    return '<path d="M3.5 11h17a8.5 8.5 0 0 1-17 0zM8 7c0-1.5 1-1.5 1-3M12 7c0-1.5 1-1.5 1-3M16 7c0-1.5 1-1.5 1-3"/>';
-  }
+  function paintDish(){$('dish').textContent=d.n;}
   function markItems(){DISHES.forEach(function(q){var b=$('item-'+q.id);if(b)b.setAttribute('aria-pressed',String(q===d&&!isDaily));});}
   function showBest(){
     var el=$('best');
@@ -2020,13 +2026,13 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
   var modeKey='';
   function paintMode(){
     var live=started&&!done,m=!live?'':stuck||(ev&&ev.type==='mom'&&elapsed>=blockUntil)?'cough':heat>0?'blow':'';
-    var left=stuck?stuck.need-stuck.got:1,key=m+left+lang;
+    var left=stuck?stuck.need-stuck.got:1,cool=Math.floor((1-heat)*10)*10,key=m+left+(m==='blow'?cool:'')+lang;
     $('svg').parentNode.classList.toggle('hot',heat>0);
     if(key===modeKey)return;
     var first=m&&m!==mode;modeKey=key;mode=m;
     slurpBtn.classList.toggle('say',!!m);slurpBtn.classList.toggle('m-blow',m==='blow');slurpBtn.classList.toggle('m-cough',m==='cough');
     slurpBtn.querySelector('.hword').textContent=m==='blow'?tx('PHÙ','BLOW'):m==='cough'?tx('KHỤ','COUGH'):tx('HÚP','SLURP');
-    if(m==='blow')$('slabel').textContent=tx('Thổi cho nguội','Blow to cool it');
+    if(m==='blow')$('slabel').textContent=tx('Thổi cho nguội','Blow to cool it')+' · '+cool+'%';
     else if(m==='cough')$('slabel').textContent=stuck&&stuck.need>1?tx('Ho '+left+' lần','Cough ×'+left):tx('Ho một cái','Cough once');
     else paintStart();
     if(first&&!(store.seen||{})[m]){
@@ -2060,6 +2066,20 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     $('rtext').textContent=tx('Húp sạch '+d.n+' trong '+fmt(lastRun.el)+' giây.','Finished '+d.n+' in '+fmt(lastRun.el)+' seconds.')+n;
     /* solo: a "clean bowl" stamp; in a 1v1 the duel paints the race verdict and the score instead */
     if(!Duel.paintRes()){setStamp('',tx('SẠCH TÔ!','CLEAN BOWL!'));$('vs').hidden=true;$('rwarn').hidden=true;$('rnext').hidden=false;}
+    paintDishCard();
+  }
+  /* the result card's photo and dish information; a missing photo falls back to the plain stamp */
+  function paintDishCard(){
+    var ph=$('rphoto'),B=Menu.bits(d);
+    if(ph.dataset.id!==d.id){
+      ph.dataset.id=d.id;
+      var old=ph.querySelector('img');if(old)old.remove();
+      ph.classList.remove('nophoto');
+      ph.insertAdjacentHTML('afterbegin',Menu.photo(d,true).replace(' loading="lazy"',''));
+      var im=ph.querySelector('img');im.alt=d.n;
+      im.addEventListener('error',function(){if(ph.querySelector('img')===im){im.remove();ph.classList.add('nophoto');}},{once:true});
+    }
+    $('rinfo').innerHTML=B.where+B.one+B.ing+B.rule+(B.fact?'<p class="sfa"><b>'+tx('Có biết? ','Did you know? ')+'</b>'+B.fact+'</p>':'');
   }
   function setStamp(cls,text){$('rstamp').className='rstamp'+(cls?' '+cls:'');$('rbig').textContent=text;}
   /* the stamp lands with a thump; a win also throws confetti out of the card */
@@ -2129,8 +2149,10 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
       }else if(coughs&&ev&&ev.type==='mom'){clearEv(3);flash(tx('Mẹ: "Ốm à con? Thôi ăn đi."','Mom: "Are you sick? Go on, eat."'));Duel.event('cough');}
       /* blow: only blowing cools a hot bowl; slurping it burns your tongue */
       if(heat>0&&micSlurp&&!micBlow&&!micWindish&&!blocked){burnT+=dt;if(burnT>.3){burnT=0;block('burn',1.5,tx('Bỏng lưỡi! Còn nóng mà húp. Thổi đi!','Burnt tongue! Too hot to slurp. Blow on it!'));}}else burnT=0;
+      /* a full hot bowl takes BLOW_S seconds of real blowing; stop and it slowly heats back up */
+      if(heat>0&&!micBlow)heat=Math.min(1,heat+dt/REHEAT_S);
       if(heat>0&&micBlow){
-        heat=Math.max(0,heat-dt/1.5);
+        heat=Math.max(0,heat-dt/BLOW_S);
         if(heat<=0){schedule(1.2);flash(tx('Nguội rồi! Húp thôi.','Cool enough! Slurp away.'));beep(740,.12,'sine',.14);Duel.event('cool');}
       }
       if(!want)lock=false;
@@ -2313,12 +2335,16 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     lo/=m;hi/=n;
     return {hi:10*Math.log10(hi),lo:10*Math.log10(lo),flat:Math.exp(lg/n)/hi,flatLo:Math.exp(llg/m)/lo};
   }
-  function micCalibrate(hiF,loF){det.hiF=hiF;det.loF=loF;det.on=0;det.bl=0;det.burst=null;det.hush=0;det.recent=[];}
+  function micCalibrate(hiF,loF){det.hiF=hiF;det.loF=loF;det.on=0;det.bl=0;det.burst=null;det.hush=0;det.wLock=0;det.recent=[];}
   function micJudge(f,now,beepAt){
     var exHi=f.hi-det.hiF,exLo=f.lo-det.loF,ex=Math.max(exHi,exLo),noisy=f.flat>.2||f.flatLo>.2;
-    var loud=exHi>10,hissy=f.hi>f.lo-10&&f.flat>.2;
+    /* slurp and blow never overlap: 6 dB more in the low band makes it wind, never hiss */
+    var loud=exHi>10,hissy=f.hi>f.lo-6&&f.flat>.2;
     /* wind on the mic is far stronger in the low band; 6 dB keeps a flat, slurp-like hiss from counting as a blow */
     var windy=exLo>12&&f.lo>=f.hi+6&&f.flatLo>.2;
+    /* a blow's hissy start and tail must not count as a slurp: any wind locks slurps out for 0.4 s */
+    if(windy)det.wLock=now+400;
+    var windLock=now<(det.wLock||0);
     /* wind-ish: even loosely low-heavy within the last 0.3 s; a hot bowl only burns you for a clear, hiss-only slurp */
     if(exLo>12&&f.lo>=f.hi-3)det.wOff=now+300;
     var cough=false,b=det.burst;
@@ -2339,7 +2365,8 @@ html[lang="en"] .hword{font-size:19px;letter-spacing:.5px}
     /* a cough's breathy tail must not count as a slurp or a blow */
     if(cough)det.hush=now+300;
     var hush=now<det.hush;
-    if(loud&&hissy&&!hush){det.on++;det.off=now+160;}else if(hush||now>det.off)det.on=0;
+    if(windLock)det.on=0;
+    else if(loud&&hissy&&!hush){det.on++;det.off=now+160;}else if(hush||now>det.off)det.on=0;
     if(windy&&!hush){det.bl++;det.blOff=now+160;}else if(hush||now>det.blOff)det.bl=0;
     if(ex<6){det.hiF+=(f.hi-det.hiF)*.01;det.loF+=(f.lo-det.loF)*.01;}
     /* young: a burst under 480 ms old that may still turn out to be a cough; hazards wait for it before counting a slurp */
